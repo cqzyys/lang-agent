@@ -4,6 +4,20 @@
 传统的类WorkFlow项目一般只会将上一个节点的输出作为下一个节点的输入，Lang-Agent允许自定义[状态变量](#state)，可以作用于[节点](#节点)以及[条件边](#条件边)的输入和输出，从而实现更精准的控制。
 
 
+<table>
+  <tr>
+    <td align="center">
+      <img src="documents/screenshot/screenshot1.png" width="300"/><br/>
+      项目截图1
+    </td>
+    <td align="center">
+      <img src="documents/screenshot/screenshot2.png" width="300"/><br/>
+      项目截图2
+    </td>
+  </tr>
+</table>
+
+
 ## 技术栈
 
 - [LangGraph](https://langchain-ai.github.io/langgraph/)
