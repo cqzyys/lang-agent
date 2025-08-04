@@ -1,0 +1,12 @@
+.env
+.vscode/
+.idea/
+node_modules/
+build/
+coverage/
+.git/
+.DS_Store
+.venv
+.gitee/
+log/
+</import>

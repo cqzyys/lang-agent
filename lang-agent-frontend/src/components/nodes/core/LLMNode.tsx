@@ -1,0 +1,119 @@
+import { memo } from "react";
+import { Handle, Position, NodeResizer } from "@xyflow/react";
+import {
+  Card,
+  CardBody,
+  CardHeader,
+  Form,
+  Input,
+  Select,
+  SelectItem,
+  Textarea,
+} from "@heroui/react";
+
+import {
+  KeyInput,
+  BaseNodeData,
+  DEFAULT_HANDLE_STYLE,
+  NodeProps,
+} from "@/components";
+import { useModelStore } from "@/store/model";
+
+export type LLMNodeData = BaseNodeData & {
+  model: string;
+  system_prompt?: string;
+  user_prompt?: string;
+};
+
+export type LLMNodeProps = NodeProps<LLMNodeData>;
+
+function LLMNode({ id, data, onDataChange }: LLMNodeProps) {
+  const { llms } = useModelStore();
+
+  return (
+    <>
+      <NodeResizer isVisible={false} />
+      <Card className="m-1 bg-slate-50">
+        <CardHeader className="bg-yellow-200">
+          <div className="font-black ml-2 w-full">LLM</div>
+        </CardHeader>
+        <CardBody>
+          <Form className="w-full max-w-xs">
+            <KeyInput id={id} />
+            <Input
+              isRequired
+              className="nodrag"
+              errorMessage="请输入名称"
+              label="名称"
+              name="name"
+              placeholder="请输入名称"
+              radius="sm"
+              size="sm"
+              value={data.name}
+              onChange={(e) => onDataChange({ ...data, name: e.target.value })}
+            />
+            <Select
+              className="max-w-xs nodrag"
+              label="模型"
+              placeholder="请选择模型"
+              selectedKeys={new Set([data.model])}
+              selectionMode="single"
+              size="sm"
+              onSelectionChange={(keys) => {
+                const value = Array.from(keys)[0] as string;
+
+                onDataChange({ ...data, model: value });
+              }}
+            >
+              {llms.map((llm) => (
+                <SelectItem key={llm}>{llm}</SelectItem>
+              ))}
+            </Select>
+            <Textarea
+              disableAutosize
+              className="nodrag"
+              defaultValue={data.system_prompt}
+              label="系统提示词"
+              maxRows={3}
+              name="system_prompt"
+              placeholder="请输入系统提示词"
+              radius="sm"
+              size="sm"
+              onChange={(e) =>
+                onDataChange({ ...data, system_prompt: e.target.value })
+              }
+            />
+            <Textarea
+              disableAutosize
+              className="nodrag"
+              defaultValue={data.user_prompt}
+              label="用户提示词"
+              maxRows={3}
+              name="user_prompt"
+              placeholder="请输入用户提示词"
+              radius="sm"
+              size="sm"
+              onChange={(e) =>
+                onDataChange({ ...data, user_prompt: e.target.value })
+              }
+            />
+          </Form>
+        </CardBody>
+      </Card>
+      <Handle
+        id="input"
+        position={Position.Left}
+        style={DEFAULT_HANDLE_STYLE}
+        type="target"
+      />
+      <Handle
+        id="output"
+        position={Position.Right}
+        style={DEFAULT_HANDLE_STYLE}
+        type="source"
+      />
+    </>
+  );
+}
+
+export default memo(LLMNode);
