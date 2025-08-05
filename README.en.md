@@ -351,4 +351,4 @@ class XXXNode(BaseNode):
 
 ## License
 
-This project uses the MIT open-source license.
+This project uses the Apache-2.0 License open-source license.

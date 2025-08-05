@@ -385,4 +385,4 @@ class XXXNode(BaseNode):
 
 ## 许可证
 
-本项目使用MIT开源协议。
+本项目使用Apache-2.0 License开源协议。
