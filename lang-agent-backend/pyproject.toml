@@ -38,6 +38,7 @@ nltk = "^3.9.1"
 langchain-unstructured = "^0.1.6"
 unstructured = {extras = ["docx", "md"], version = "^0.18.9"}
 langchain-postgres = "^0.0.15"
+langchain-experimental = "^0.3.4"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "T201"]

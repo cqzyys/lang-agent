@@ -176,6 +176,12 @@ Agent配置页面分为左右两部分。左侧部分称为`资源树`，列出�
 - 名称：必要，需要保证在Agent中唯一
 - 上传文档：必要，从本地选择上传的文档
 
+##### 代码执行器节点
+
+可以执行python代码，输出代码执行结果。参考用例[examples/executor_demo.json]()
+
+- 名称：必要，需要保证在Agent中唯一
+- Python代码：必要，在节点中执行的Python代码，必须用\`\`\`python\`\`\`包裹
 
 ##### 向量存储节点
 
@@ -290,7 +296,7 @@ Agent也可以看作是特殊的节点，有**预制Agent**和**可复用Agent**
 在前端项目的扩展节点目录`lang-agent-frontend/src/components/nodes/extend`下创建一个名为`XXXNode.tsx`的文件，伪代码如下：
 ```tsx
 import { Handle, Position, NodeResizer } from "@xyflow/react";
-import { Card, CardBody, CardHeader } from "@heroui/react";
+import { Card, CardBody, CardHeader, Form } from "@heroui/react";
 
 import {
   KeyInput,
@@ -334,7 +340,8 @@ function XXXNode({ id, data, onDataChange }: XXXNodeProps) {
         </CardHeader>
         <CardBody>
           <Form className="w-full max-w-xs">
-          ...
+            <KeyInput id={id} />
+            ...
           </Form>
         </CardBody>
       </Card>
@@ -377,6 +384,9 @@ class XXXNode(BaseNode):
         adapter = TypeAdapter(XXXNodeParam)
         param = adapter.validate_python(param)
         super().__init__(param, state_schema)
+
+    async def ainvoke(self, state: dict):
+        '''Sync Business Processing Logic'''
 
     async def ainvoke(self, state: dict):
         '''ASync Business Processing Logic'''
