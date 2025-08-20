@@ -3,6 +3,7 @@ import { Tabs, Tab, Switch } from "@heroui/react";
 import AgentPage from "./agent";
 import ModelPage from "./model";
 import McpPage from "./mcp";
+import VectorStorePage from "./vectorstore";
 
 import { Icon } from "@/components";
 import { useThemeStore } from "@/store";
@@ -33,12 +34,15 @@ function HomePage() {
         <Tab key="model" className="ml-8 mr-8 mt-4 font-black" title="模型配置">
           <ModelPage />
         </Tab>
-        <Tab
-          key="MCP"
-          className="ml-8 mr-8 mt-4 mb-4 font-black"
-          title="MCP配置"
-        >
+        <Tab key="MCP" className="ml-8 mr-8 mt-4 font-black" title="MCP配置">
           <McpPage />
+        </Tab>
+        <Tab
+          key="VectorStore"
+          className="ml-8 mr-8 mt-4 mb-4 font-black"
+          title="向量库配置"
+        >
+          <VectorStorePage />
         </Tab>
       </Tabs>
     </div>

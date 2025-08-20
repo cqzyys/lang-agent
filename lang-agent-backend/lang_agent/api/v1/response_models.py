@@ -37,6 +37,17 @@ class ModelResponse(BaseModel):
     model_args: Optional[str] = Field(None, description="模型初始化参数")
     disabled: Optional[bool] = Field(False, description="是否禁用")
 
+class VectorStoreResponse(BaseModel):
+    id: Optional[str] = Field(None, description="向量库id")
+    name: str = Field(..., description="向量库名称")
+    type: str = Field(..., description="向量库类型")
+    uri: str = Field(..., description="URI")
+    user: Optional[str] = Field(None, description="用户名")
+    password: Optional[str] = Field(None, description="密码")
+    db_name: str = Field(..., description="数据库名")
+    collection_name: str = Field(..., description="集合名")
+    embedding_name: str = Field(..., description="嵌入模型")
+    disabled: Optional[bool] = Field(False, description="是否禁用")
 
 def orm_to_model(model_cls: Type[BaseModel], orm_obj) -> BaseModel:
     return model_cls.model_validate(orm_obj, from_attributes=True).model_dump()

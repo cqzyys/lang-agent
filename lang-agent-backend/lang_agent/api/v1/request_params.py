@@ -33,3 +33,15 @@ class MCPParams(BaseModel):
     description: Optional[str] = Field(None, description="MCP描述")
     mcp_args: Optional[str] = Field(None, description="MCP连接参数")
     disabled: Optional[bool] = Field(False, description="是否禁用")
+
+class VectorStoreParams(BaseModel):
+    id: Optional[str] = Field(None, description="向量库id")
+    name: str = Field(..., description="向量库名称")
+    type: str = Field(..., description="向量库类型")
+    uri: str = Field(..., description="URI")
+    user: Optional[str] = Field(None, description="用户名")
+    password: Optional[str] = Field(None, description="密码")
+    db_name: str = Field(..., description="数据库名")
+    collection_name: str = Field(..., description="集合名")
+    embedding_name: str = Field(..., description="嵌入模型")
+    disabled: Optional[bool] = Field(False, description="是否禁用")

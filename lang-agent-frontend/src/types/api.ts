@@ -33,4 +33,17 @@ export type Mcp = {
   disabled?: boolean;
 };
 
+export type VectorStore = {
+  id?: string;
+  name?: string;
+  type: string;
+  uri: string;
+  user?: string;
+  password?: string;
+  db_name: string;
+  collection_name: string;
+  embedding_name: string;
+  disabled?: boolean;
+};
+
 export type McpMap = Record<string, string[]>;

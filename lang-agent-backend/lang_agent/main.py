@@ -22,12 +22,15 @@ logger = get_logger(__name__)
 
 
 async def resource_init():
-    logger.debug("init_mcp start......")
+    logger.debug("init_mcps start......")
     await resource_manager.init_mcp_map()
-    logger.debug("init_mcp end")
+    logger.debug("init_mcps end")
     logger.debug("init_models start......")
     resource_manager.init_models()
     logger.debug("init_models end")
+    logger.debug("init_vectorstores start......")
+    resource_manager.init_vectorstore_map()
+    logger.debug("init_vectorstores end")
 
 
 @asynccontextmanager

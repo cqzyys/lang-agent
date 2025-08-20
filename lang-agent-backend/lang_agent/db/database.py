@@ -9,10 +9,15 @@ from sqlalchemy import create_engine, select
 from sqlalchemy.orm import sessionmaker
 from xid import XID
 
-from lang_agent.api.v1.request_params import AgentParams, MCPParams, ModelParams
+from lang_agent.api.v1.request_params import (
+    AgentParams,
+    MCPParams,
+    ModelParams,
+    VectorStoreParams
+)
 from lang_agent.setting import ResourceManager
 
-from .models import Agent, Base, Mcp, Model
+from .models import Agent, Base, Mcp, Model, VectorStore
 
 load_dotenv()
 logging.basicConfig()
@@ -338,5 +343,107 @@ def list_mcps() -> list[Mcp]:
 def list_available_mcps() -> list[Mcp]:
     with get_session() as session:
         stmt = select(Mcp).where(Mcp.disabled == False)
+        entities = session.scalars(stmt).all()
+        return entities
+
+
+async def save_vectorstore(
+        vectorstore: VectorStoreParams,
+        resource_manager: Optional[ResourceManager] = None
+    ):
+    if not select_vectorstore(vectorstore.id):
+        await create_vectorstore(vectorstore, resource_manager)
+    else:
+        await update_vectorstore(vectorstore, resource_manager)
+
+
+async def create_vectorstore(
+    vectorstore: VectorStoreParams, resource_manager: Optional[ResourceManager] = None
+) -> str:
+    with get_session() as session:
+        if select_vectorstore_by_name(vectorstore.name):
+            raise ValueError("VectorStore Name Already Exists")
+        id = XID().string()
+        entity = VectorStore(
+            id=id,
+            name=vectorstore.name,
+            type=vectorstore.type,
+            uri=vectorstore.uri,
+            db_name=vectorstore.db_name,
+            collection_name=vectorstore.collection_name,
+            embedding_name=vectorstore.embedding_name,
+            password=vectorstore.password,
+            user=vectorstore.user,
+            disabled=vectorstore.disabled
+        )
+        session.add(entity)
+        if resource_manager is not None and entity.disabled == False:
+            resource_manager.vectorstore_map[
+                entity.name] = resource_manager.init_vectorstore(entity)
+        return id
+
+
+async def update_vectorstore(
+    vectorstore: VectorStoreParams, resource_manager: Optional[ResourceManager] = None
+):
+    with get_session() as session:
+        existent_entity = select_vectorstore_by_name(vectorstore.name)
+        if existent_entity and existent_entity.id != vectorstore.id:
+            raise ValueError("VectorStore Name Already Exists")
+        stmt = select(VectorStore).where(VectorStore.id == vectorstore.id)
+        entity = session.scalars(stmt).first()
+        if resource_manager is not None:
+            if vectorstore.disabled is False:
+                resource_manager.vectorstore_map[
+                    entity.name] = resource_manager.init_vectorstore(entity)
+            else:
+                del resource_manager.vectorstore_map[entity.name]
+        entity.name = vectorstore.name
+        entity.disabled = vectorstore.disabled
+        entity.type = vectorstore.type
+        entity.uri = vectorstore.uri
+        entity.user = vectorstore.user
+        entity.password = vectorstore.password
+        entity.db_name = vectorstore.db_name
+        entity.collection_name = vectorstore.collection_name
+        entity.embedding_name = vectorstore.embedding_name
+        entity.disabled = vectorstore.disabled
+
+
+def delete_vectorstore(id: str, resource_manager: Optional[ResourceManager] = None):
+    with get_session() as session:
+        stmt = select(VectorStore).where(VectorStore.id == id)
+        entity = session.scalars(stmt).first()
+        if resource_manager is not None and entity.disabled == False:
+            del resource_manager.vectorstore_map[entity.name]
+        session.delete(entity)
+
+
+def select_vectorstore(id: str) -> VectorStore:
+    with get_session() as session:
+        stmt = select(VectorStore).where(VectorStore.id == id)
+        entity = session.scalars(stmt).first()
+        return entity
+
+
+def select_vectorstore_by_name(name: str) -> VectorStore:
+    with get_session() as session:
+        stmt = select(VectorStore).where(VectorStore.name == name)
+        entity = session.scalars(stmt).first()
+        return entity
+
+
+def list_vectorstores() -> list[VectorStore]:
+    with get_session() as session:
+        stmt = select(VectorStore)
+        entities = session.scalars(stmt).all()
+        return entities
+
+
+def list_available_vectorstores() -> list[VectorStore]:
+    with get_session() as session:
+        stmt = select(VectorStore).where(
+            VectorStore.disabled == False
+        )
         entities = session.scalars(stmt).all()
         return entities

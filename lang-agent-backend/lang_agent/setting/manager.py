@@ -1,12 +1,14 @@
 import json
+import os
 import traceback
 from typing import Any, Dict, List
 
 from langchain_core.tools import BaseTool
+from langchain_core.vectorstores import VectorStore as VS
 from langchain_mcp_adapters.tools import load_mcp_tools
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 
-from lang_agent.db.models import Mcp, Model
+from lang_agent.db.models import Mcp, Model, VectorStore
 from lang_agent.logger import get_logger
 
 logger = get_logger(__name__)
@@ -20,6 +22,7 @@ class ResourceManager:
     def __init__(self):
         self.models = {"llm": {}, "embedding": {}}
         self.mcp_map: Dict[str, Dict[str, BaseTool]] = {}
+        self.vectorstore_map: Dict[str, VS] = {}
 
     def init_models(self):
         from lang_agent.db.database import list_available_models
@@ -89,5 +92,70 @@ class ResourceManager:
             )
             raise ResourceInitializationError(f"Failed to initialize {mcp.name}") from e
 
+    def init_vectorstore_map(self):
+        from lang_agent.db.database import list_available_vectorstores
+
+        vectorstore_list: List[VectorStore] = list_available_vectorstores()
+        for vectorstore in vectorstore_list:
+            try:
+                self.vectorstore_map[vectorstore.name] = self.init_vectorstore(
+                    vectorstore
+                )
+            except ResourceInitializationError:
+                logger.error(
+                    "Initialize VectorStore [%s] Failed: \n %s",
+                    vectorstore.name,
+                    traceback.format_exc()
+                )
+                continue
+
+    def init_vectorstore(self, vectorstore: VectorStore) -> VS:
+        if vectorstore.embedding_name not in self.models.get("embedding", {}):
+            logger.error("Embedding Model Not Found: %s", vectorstore.embedding_name)
+            return None
+        match vectorstore.type:
+            case "postgress":
+                from langchain_postgres import PGVector
+                try:
+                    user = vectorstore.user or os.getenv("PGVECTOR_USER", "")
+                    password = vectorstore.password or os.getenv(
+                        "PGVECTOR_PASSWORD", ""
+                    )
+                    connection = f"postgresql+psycopg://{user}:{password}@{vectorstore.uri}/{vectorstore.db_name}"
+                    return PGVector(
+                        embeddings=resource_manager.models["embedding"][
+                            vectorstore.embedding_name],
+                        collection_name=vectorstore.collection_name,
+                        connection=connection,
+                        use_jsonb=True,
+                    )
+                except Exception as e:
+                    logger.error("Failed To Initialize PGVector: %s", e)
+                    raise RuntimeError("Failed To Initialize PGVector") from e
+            case "milvus":
+                from langchain_milvus import Milvus
+                from pymilvus import MilvusException
+                try:
+                    user = vectorstore.user or os.getenv("MILVUS_USER", "")
+                    password = vectorstore.password or os.getenv(
+                        "MILVUS_PASSWORD", ""
+                    )
+                    return Milvus(
+                        embedding_function=resource_manager.models["embedding"][
+                            vectorstore.embedding_name],
+                        connection_args={
+                            "uri": vectorstore.uri,
+                            "user": user,
+                            "password": password,
+                            "db_name": vectorstore.db_name,
+                        },
+                        collection_name=vectorstore.collection_name,
+                    )
+                except MilvusException as e:
+                    logger.error("Failed To Initialize Milvus: %s", e)
+                    raise RuntimeError("Failed To Initialize Milvus") from e
+            case _:
+                logger.error("Unsupported Vector Store Type: %s", vectorstore.type)
+                raise RuntimeError(f"Unsupported Vector Store Type: {vectorstore.type}")
 
 resource_manager = ResourceManager()

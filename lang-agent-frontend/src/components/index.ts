@@ -4,6 +4,7 @@ export * from "./flow";
 export * from "./agent";
 export * from "./model";
 export * from "./mcp";
+export * from "./vectorstore";
 export { default as Icon } from "./Icon";
 
 export const DEFAULT_HANDLE_STYLE = {

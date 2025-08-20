@@ -31,3 +31,16 @@ class Mcp(Base):
     description = Column(String, comment="MCP描述")
     mcp_args = Column(String, comment="MCP连接参数")
     disabled = Column(Boolean, default=False, comment="是否禁用")
+
+class VectorStore(Base):
+    __tablename__ = "vectorstore"
+    id = Column(String, primary_key=True, unique=True, index=True, comment="主键id")
+    name = Column(String, comment="名称")
+    type = Column(String, comment="向量库类型")
+    uri = Column(String, comment="URI")
+    user = Column(String, comment="用户名")
+    password = Column(String, comment="密码")
+    db_name = Column(String, comment="数据库名")
+    collection_name = Column(String, comment="集合名")
+    embedding_name = Column(String, comment="嵌入模型")
+    disabled = Column(Boolean, default=False, comment="是否禁用")
