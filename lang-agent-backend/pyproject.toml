@@ -9,7 +9,7 @@ description = "Agents system using LangGraph"
 authors = []
 readme = "README.md"
 repository = "https://github.com/cqzyys/lang-agent"
-license = "MIT"
+license = "Apache-2.0 License"
 
 [tool.mypy]
 disallow_untyped_defs = "True"
@@ -39,6 +39,7 @@ langchain-unstructured = "^0.1.6"
 unstructured = {extras = ["docx", "md"], version = "^0.18.9"}
 langchain-postgres = "^0.0.15"
 langchain-experimental = "^0.3.4"
+colorlog = "^6.9.0"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "T201"]

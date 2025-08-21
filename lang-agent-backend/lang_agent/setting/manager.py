@@ -131,7 +131,7 @@ class ResourceManager:
                     )
                 except Exception as e:
                     logger.error("Failed To Initialize PGVector: %s", e)
-                    raise RuntimeError("Failed To Initialize PGVector") from e
+                    #raise RuntimeError("Failed To Initialize PGVector") from e
             case "milvus":
                 from langchain_milvus import Milvus
                 from pymilvus import MilvusException
@@ -153,9 +153,9 @@ class ResourceManager:
                     )
                 except MilvusException as e:
                     logger.error("Failed To Initialize Milvus: %s", e)
-                    raise RuntimeError("Failed To Initialize Milvus") from e
+                    #raise RuntimeError("Failed To Initialize Milvus") from e
             case _:
                 logger.error("Unsupported Vector Store Type: %s", vectorstore.type)
-                raise RuntimeError(f"Unsupported Vector Store Type: {vectorstore.type}")
+                #raise RuntimeError(f"Unsupported Vector Store Type: {vectorstore.type}")
 
 resource_manager = ResourceManager()
