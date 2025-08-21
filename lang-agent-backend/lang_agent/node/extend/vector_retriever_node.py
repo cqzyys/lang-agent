@@ -7,16 +7,17 @@ from pydantic import Field, TypeAdapter
 
 from lang_agent.logger import get_logger
 from lang_agent.util import complete_content
+from lang_agent.setting import resource_manager
 
 from ..core import BaseNode, BaseNodeData, BaseNodeParam
-from .vector_store_provider import VectorStoreConfig, VectorStoreProvider
 
 logger = get_logger(__name__)
 
 __all__ = ["VectorRetrieverNode", "VectorRetrieverNodeParam"]
 
 
-class VectorRetrieverNodeData(BaseNodeData, VectorStoreConfig):
+class VectorRetrieverNodeData(BaseNodeData):
+    vs_name: str = Field(..., description="向量库名称")
     keywords: str = Field(..., description="关键字")
 
 
@@ -35,8 +36,9 @@ class VectorRetrieverNode(BaseNode):
         adapter = TypeAdapter(VectorRetrieverNodeParam)
         param = adapter.validate_python(param)
         super().__init__(param, state_schema)
+        self.vs_name: str = param.data.vs_name
         self.keywords: str = param.data.keywords
-        self.vs: VectorStore = VectorStoreProvider.init(param.data)
+        self.vs: VectorStore = resource_manager.vectorstore_map[self.vs_name]
 
     def invoke(self, state: dict):
         keywords = complete_content(self.keywords, state)

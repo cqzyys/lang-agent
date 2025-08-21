@@ -25,8 +25,8 @@ router = APIRouter(prefix="/vectorstore", tags=["VectorStore"])
 logger = get_logger(__name__)
 
 
-@router.get("/cached_vectorstore_map", status_code=200)
-async def cached_vectorstore_map():
+@router.get("/cached_vectorstores", status_code=200)
+async def cached_vectorstores():
     data = resource_manager.vectorstore_map.keys()
     return ApiResponse(success=True, data=data)
 

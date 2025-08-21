@@ -9,6 +9,7 @@ import {
   useAgentStore,
   useMcpStore,
   useThemeStore,
+  useVsStore,
 } from "@/store";
 
 if (import.meta.env.MODE === "development") {
@@ -24,6 +25,7 @@ function App() {
           useModelStore.getState().fetchModels(),
           useAgentStore.getState().fetchReuseAgents(),
           useMcpStore.getState().fetchMcpMap(),
+          useVsStore.getState().fetchReuseVectorStores(),
         ]);
       } catch (error) {
         log.error("初始化数据加载失败:", error);

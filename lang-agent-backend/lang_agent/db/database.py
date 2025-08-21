@@ -378,11 +378,14 @@ async def create_vectorstore(
         )
         session.add(entity)
         if resource_manager is not None and entity.disabled == False:
-            resource_manager.vectorstore_map[
-                entity.name] = resource_manager.init_vectorstore(entity)
+            vs = resource_manager.init_vectorstore(entity)
+            if vs is not None:
+                resource_manager.vectorstore_map[entity.name] = vs
         return id
 
-
+def del_vs(resource_manager: ResourceManager, name: str):
+    if name in resource_manager.vectorstore_map:
+        del resource_manager.vectorstore_map[name]
 async def update_vectorstore(
     vectorstore: VectorStoreParams, resource_manager: Optional[ResourceManager] = None
 ):
@@ -394,10 +397,13 @@ async def update_vectorstore(
         entity = session.scalars(stmt).first()
         if resource_manager is not None:
             if vectorstore.disabled is False:
-                resource_manager.vectorstore_map[
-                    entity.name] = resource_manager.init_vectorstore(entity)
+                vs = resource_manager.init_vectorstore(entity)
+                if vs is not None:
+                    resource_manager.vectorstore_map[entity.name] = vs
+                else:
+                    del_vs(resource_manager, entity.name)
             else:
-                del resource_manager.vectorstore_map[entity.name]
+                del_vs(resource_manager, entity.name)
         entity.name = vectorstore.name
         entity.disabled = vectorstore.disabled
         entity.type = vectorstore.type
@@ -414,8 +420,8 @@ def delete_vectorstore(id: str, resource_manager: Optional[ResourceManager] = No
     with get_session() as session:
         stmt = select(VectorStore).where(VectorStore.id == id)
         entity = session.scalars(stmt).first()
-        if resource_manager is not None and entity.disabled == False:
-            del resource_manager.vectorstore_map[entity.name]
+        if resource_manager is not None and entity.disabled is False:
+            del_vs(resource_manager, entity.name)
         session.delete(entity)
 
 

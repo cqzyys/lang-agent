@@ -9,8 +9,6 @@ import {
 } from "@heroui/react";
 import { Handle, NodeResizer, Position } from "@xyflow/react";
 
-import { VectorStoreConfig } from "./VectorStoreConfig";
-
 import {
   DEFAULT_HANDLE_STYLE,
   KeyInput,
@@ -18,9 +16,7 @@ import {
   NodeConfig,
   NodeProps,
 } from "@/components";
-import { useModelStore } from "@/store/model";
-
-const vs_types = ["postgress", "milvus"];
+import { useVsStore } from "@/store";
 
 const VectorRetrieverNodeConfig: NodeConfig<VectorRetrieverNodeData> = {
   type: "vector_retriever",
@@ -29,22 +25,16 @@ const VectorRetrieverNodeConfig: NodeConfig<VectorRetrieverNodeData> = {
     id: "",
     name: "vector_retriever",
     type: "vector_retriever",
-    vs_type: "postgress",
-    uri: "127.0.0.1:5432",
-    user: "",
-    password: "",
-    db_name: "postgres",
-    collection_name: "documents",
-    embedding_name: "",
+    vs_name: "",
     keywords: "",
   },
   component: VectorRetrieverNode,
 };
 
-export type VectorRetrieverNodeData = BaseNodeData &
-  VectorStoreConfig & {
-    keywords: string;
-  };
+export type VectorRetrieverNodeData = BaseNodeData & {
+  vs_name: string;
+  keywords: string;
+};
 export type VectorRetrieverNodeProps = NodeProps<VectorRetrieverNodeData>;
 
 export function VectorRetrieverNode({
@@ -52,7 +42,7 @@ export function VectorRetrieverNode({
   data,
   onDataChange,
 }: VectorRetrieverNodeProps) {
-  const { embeddings } = useModelStore();
+  const { vectorstores } = useVsStore();
 
   return (
     <>
@@ -84,98 +74,20 @@ export function VectorRetrieverNode({
             />
             <Select
               isRequired
-              className="max-w-xs nodrag"
-              label="类型"
-              placeholder="请选择向量数据库类型"
-              selectedKeys={new Set([data.vs_type])}
+              className="nodrag"
+              label="向量库"
+              placeholder="请选择向量库"
+              selectedKeys={new Set([data.vs_name])}
               selectionMode="single"
               size="sm"
               onSelectionChange={(keys) => {
                 const value = Array.from(keys)[0] as string;
 
-                onDataChange({ ...data, vs_type: value });
+                onDataChange({ ...data, vs_name: value });
               }}
             >
-              {vs_types.map((vs_type) => (
-                <SelectItem key={vs_type}>{vs_type}</SelectItem>
-              ))}
-            </Select>
-            <Input
-              isRequired
-              className="nodrag"
-              defaultValue={data.uri}
-              label="URI"
-              name="uri"
-              placeholder="请输入URI"
-              radius="sm"
-              size="sm"
-              onChange={(e) => onDataChange({ ...data, uri: e.target.value })}
-            />
-            <Input
-              className="nodrag"
-              defaultValue={data.user}
-              label="用户名"
-              name="user"
-              placeholder="请输入用户名"
-              radius="sm"
-              size="sm"
-              onChange={(e) => onDataChange({ ...data, user: e.target.value })}
-            />
-            <Input
-              className="nodrag"
-              defaultValue={data.password}
-              label="密码"
-              name="password"
-              placeholder="请输入密码"
-              radius="sm"
-              size="sm"
-              type="password"
-              onChange={(e) =>
-                onDataChange({ ...data, password: e.target.value })
-              }
-            />
-            <Input
-              isRequired
-              className="nodrag"
-              defaultValue={data.db_name}
-              label="数据库名"
-              name="db_name"
-              placeholder="请输入数据库名"
-              radius="sm"
-              size="sm"
-              onChange={(e) =>
-                onDataChange({ ...data, db_name: e.target.value })
-              }
-            />
-            <Input
-              isRequired
-              className="nodrag"
-              defaultValue={data.collection_name}
-              label="集合名"
-              name="collection_name"
-              placeholder="请输入集合名"
-              radius="sm"
-              size="sm"
-              onChange={(e) =>
-                onDataChange({ ...data, collection_name: e.target.value })
-              }
-            />
-            <Select
-              isRequired
-              className="nodrag"
-              label="嵌入模型"
-              placeholder="请选择嵌入模型"
-              selectedKeys={new Set([data.embedding_name])}
-              selectionMode="single"
-              size="sm"
-              onSelectionChange={(keys) => {
-                const value = Array.from(keys)[0] as string;
-
-                onDataChange({ ...data, embedding_name: value });
-              }}
-            >
-              {embeddings.map((embedding) => (
-                <SelectItem key={embedding}>{embedding}</SelectItem>
+              {vectorstores.map((vectorstore) => (
+                <SelectItem key={vectorstore}>{vectorstore}</SelectItem>
               ))}
             </Select>
             <Input

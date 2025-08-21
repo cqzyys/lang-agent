@@ -98,9 +98,11 @@ class ResourceManager:
         vectorstore_list: List[VectorStore] = list_available_vectorstores()
         for vectorstore in vectorstore_list:
             try:
-                self.vectorstore_map[vectorstore.name] = self.init_vectorstore(
-                    vectorstore
-                )
+                vs = self.init_vectorstore(
+                        vectorstore
+                    )
+                if vs is not None:
+                    self.vectorstore_map[vectorstore.name] = vs
             except ResourceInitializationError:
                 logger.error(
                     "Initialize VectorStore [%s] Failed: \n %s",
@@ -114,7 +116,7 @@ class ResourceManager:
             logger.error("Embedding Model Not Found: %s", vectorstore.embedding_name)
             return None
         match vectorstore.type:
-            case "postgress":
+            case "postgres":
                 from langchain_postgres import PGVector
                 try:
                     user = vectorstore.user or os.getenv("PGVECTOR_USER", "")
@@ -131,6 +133,7 @@ class ResourceManager:
                     )
                 except Exception as e:
                     logger.error("Failed To Initialize PGVector: %s", e)
+                    return None
                     #raise RuntimeError("Failed To Initialize PGVector") from e
             case "milvus":
                 from langchain_milvus import Milvus
@@ -150,12 +153,15 @@ class ResourceManager:
                             "db_name": vectorstore.db_name,
                         },
                         collection_name=vectorstore.collection_name,
+                        auto_id=True,
                     )
                 except MilvusException as e:
                     logger.error("Failed To Initialize Milvus: %s", e)
+                    return None
                     #raise RuntimeError("Failed To Initialize Milvus") from e
             case _:
                 logger.error("Unsupported Vector Store Type: %s", vectorstore.type)
+                return None
                 #raise RuntimeError(f"Unsupported Vector Store Type: {vectorstore.type}")
 
 resource_manager = ResourceManager()

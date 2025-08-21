@@ -6,17 +6,19 @@ from pydantic import Field, TypeAdapter
 
 from lang_agent.logger import get_logger
 from lang_agent.util import complete_content
+from lang_agent.setting import resource_manager
 
 from ..core import BaseNode, BaseNodeData, BaseNodeParam
-from .vector_store_provider import VectorStoreConfig, VectorStoreProvider
 
 logger = get_logger(__name__)
 
 __all__ = ["VectorIngestNode", "VectorIngestNodeParam"]
 
 
-class VectorIngestNodeData(BaseNodeData, VectorStoreConfig):
-    content: str = Field(..., description="文本内容")
+class VectorIngestNodeData(BaseNodeData):
+    vs_name: str = Field(..., description="向量库名称")
+    content: str = Field(..., description="文档内容")
+    description: str = Field(..., description="文档描述")
 
 
 class VectorIngestNodeParam(BaseNodeParam):
@@ -30,8 +32,10 @@ class VectorIngestNode(BaseNode):
         adapter = TypeAdapter(VectorIngestNodeParam)
         param = adapter.validate_python(param)
         super().__init__(param, state_schema)
+        self.vs_name: str = param.data.vs_name
         self.content: str = param.data.content
-        self.vs: VectorStore = VectorStoreProvider.init(param.data)
+        self.description: str = param.data.description
+        self.vs: VectorStore = resource_manager.vectorstore_map[self.vs_name]
         self.text_splitter = RecursiveCharacterTextSplitter(
             separators=["\n\n","\n","."," ","。"],
             chunk_size=1024,
@@ -41,7 +45,13 @@ class VectorIngestNode(BaseNode):
     def invoke(self, state: dict):
         content = complete_content(self.content, state)
         texts = self.text_splitter.split_text(content)
-        self.vs.add_texts(texts)
+        metadatas = [
+            {
+                "source": f"{self.description}_{i}"
+            }
+            for i in range(len(texts))
+        ]
+        self.vs.add_texts(texts=texts,metadatas=metadatas)
 
     async def ainvoke(self, state: dict):
         self.invoke(state)
