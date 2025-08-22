@@ -16,6 +16,10 @@ Lang-Agent的设计理念更接近于comfyUI，而不是dify和coze，鼓励使�
       <img src="documents/screenshot/screenshot2.png" width="300"/><br/>
       项目截图2
     </td>
+    <td align="center">
+      <img src="documents/screenshot/screenshot3.png" width="300"/><br/>
+      项目截图3
+    </td>
   </tr>
 </table>
 
