@@ -4,8 +4,6 @@ from lang_agent.api.v1.request_params import VectorStoreParams
 from lang_agent.api.v1.response_models import (
     ApiResponse,
     VectorStoreResponse,
-    orm_to_model,
-    orms_to_models,
 )
 from lang_agent.db.database import (
     VectorStore,
@@ -18,6 +16,10 @@ from lang_agent.db.database import (
 )
 from lang_agent.logger import get_logger
 from lang_agent.setting.manager import resource_manager
+from lang_agent.util import (
+    obj_to_model,
+    objs_to_models
+)
 
 VECTORSTORE_NOT_FOUND = "VectorStore Not Found"
 
@@ -67,7 +69,7 @@ async def select(id: str = Query(..., description="VectorStore ID")) -> ApiRespo
         raise HTTPException(status_code=404, detail=VECTORSTORE_NOT_FOUND)
     return ApiResponse(
         success=True,
-        data=orm_to_model(VectorStoreResponse, vectorstore)
+        data=obj_to_model(VectorStoreResponse, vectorstore)
     )
 
 
@@ -75,5 +77,5 @@ async def select(id: str = Query(..., description="VectorStore ID")) -> ApiRespo
 async def vectorstores() -> ApiResponse:
     return ApiResponse(
         success=True,
-        data=orms_to_models(VectorStoreResponse, list_vectorstores())
+        data=objs_to_models(VectorStoreResponse, list_vectorstores())
     )

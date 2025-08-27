@@ -16,7 +16,7 @@ from lang_agent.api.v1.response_models import ApiResponse
 from lang_agent.db import setup_database_connection
 from lang_agent.logger import get_logger
 from lang_agent.setting import async_checkpointer_shutdown, resource_manager
-from lang_agent.util.util import error_to_str
+from lang_agent.util import error_to_str
 
 logger = get_logger(__name__)
 

@@ -4,8 +4,6 @@ from lang_agent.api.v1.request_params import ModelParams
 from lang_agent.api.v1.response_models import (
     ApiResponse,
     ModelResponse,
-    orm_to_model,
-    orms_to_models,
 )
 from lang_agent.db.database import (
     Model,
@@ -20,6 +18,10 @@ from lang_agent.db.database import (
 )
 from lang_agent.logger import get_logger
 from lang_agent.setting.manager import resource_manager
+from lang_agent.util import (
+    obj_to_model,
+    objs_to_models
+)
 
 MODEL_NOT_FOUND = "Model Not Found"
 
@@ -58,12 +60,12 @@ async def select(id: str = Query(..., description="Model ID")) -> ApiResponse:
     if not model:
         logger.error("Model Not Found")
         raise HTTPException(status_code=404, detail=MODEL_NOT_FOUND)
-    return ApiResponse(success=True, data=orm_to_model(ModelResponse, model))
+    return ApiResponse(success=True, data=obj_to_model(ModelResponse, model))
 
 
 @router.get("/list", status_code=200)
 async def list() -> ApiResponse:
-    return ApiResponse(success=True, data=orms_to_models(ModelResponse, list_models()))
+    return ApiResponse(success=True, data=objs_to_models(ModelResponse, list_models()))
 
 
 @router.get("/cached_llm", status_code=200)
@@ -79,12 +81,12 @@ async def cached_embedding() -> ApiResponse:
 @router.get("/llm_models", status_code=200)
 async def llm_models() -> ApiResponse:
     return ApiResponse(
-        success=True, data=orms_to_models(ModelResponse, list_llm_models())
+        success=True, data=objs_to_models(ModelResponse, list_llm_models())
     )
 
 
 @router.get("/embedding_models", status_code=200)
 async def embedding_models() -> ApiResponse:
     return ApiResponse(
-        success=True, data=orms_to_models(ModelResponse, list_embedding_models())
+        success=True, data=objs_to_models(ModelResponse, list_embedding_models())
     )

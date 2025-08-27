@@ -1,9 +1,7 @@
-from typing import Optional, Type, TypeVar, Union
-
+from typing import Optional, TypeVar, Union
 from pydantic import BaseModel, Field
 
 T = TypeVar("T")
-
 
 class ApiResponse(BaseModel):
     success: bool
@@ -48,10 +46,3 @@ class VectorStoreResponse(BaseModel):
     collection_name: str = Field(..., description="集合名")
     embedding_name: str = Field(..., description="嵌入模型")
     disabled: Optional[bool] = Field(False, description="是否禁用")
-
-def orm_to_model(model_cls: Type[BaseModel], orm_obj) -> BaseModel:
-    return model_cls.model_validate(orm_obj, from_attributes=True).model_dump()
-
-
-def orms_to_models(model_cls: Type[BaseModel], orm_objs) -> list[BaseModel]:
-    return [orm_to_model(model_cls, orm_obj) for orm_obj in orm_objs]

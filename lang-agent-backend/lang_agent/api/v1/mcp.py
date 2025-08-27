@@ -4,8 +4,6 @@ from lang_agent.api.v1.request_params import MCPParams
 from lang_agent.api.v1.response_models import (
     ApiResponse,
     McpResponse,
-    orm_to_model,
-    orms_to_models,
 )
 from lang_agent.db.database import (
     Mcp,
@@ -18,6 +16,10 @@ from lang_agent.db.database import (
 )
 from lang_agent.logger import get_logger
 from lang_agent.setting.manager import resource_manager
+from lang_agent.util import (
+    obj_to_model,
+    objs_to_models
+)
 
 MCP_NOT_FOUND = "Mcp Not Found"
 
@@ -62,9 +64,9 @@ async def select(id: str = Query(..., description="MCP ID")) -> ApiResponse:
     if not mcp:
         logger.error("MCP Not Found")
         raise HTTPException(status_code=404, detail=MCP_NOT_FOUND)
-    return ApiResponse(success=True, data=orm_to_model(McpResponse, mcp))
+    return ApiResponse(success=True, data=obj_to_model(McpResponse, mcp))
 
 
 @router.get("/list", status_code=200)
 async def mcps() -> ApiResponse:
-    return ApiResponse(success=True, data=orms_to_models(McpResponse, list_mcps()))
+    return ApiResponse(success=True, data=objs_to_models(McpResponse, list_mcps()))

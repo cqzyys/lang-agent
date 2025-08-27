@@ -7,8 +7,6 @@ from lang_agent.api.v1.request_params import AgentParams, AgentRunParams
 from lang_agent.api.v1.response_models import (
     AgentResponse,
     ApiResponse,
-    orm_to_model,
-    orms_to_models,
 )
 from lang_agent.db.database import (
     Agent,
@@ -22,6 +20,10 @@ from lang_agent.db.database import (
 )
 from lang_agent.graph import GraphEngine
 from lang_agent.logger import get_logger
+from lang_agent.util import (
+    obj_to_model,
+    objs_to_models
+)
 
 AGENT_NOT_FOUND = "Agent Not Found"
 INVALID_AGENT_DATA = "Invalid Agent Data Format"
@@ -53,7 +55,7 @@ async def select(id: str = Query(..., description="Agent ID")) -> ApiResponse:
     if not agent:
         logger.error("Agent Not Found")
         raise HTTPException(status_code=404, detail=AGENT_NOT_FOUND)
-    return ApiResponse(success=True, data=orm_to_model(AgentResponse, agent))
+    return ApiResponse(success=True, data=obj_to_model(AgentResponse, agent))
 
 
 @router.post("/update", status_code=200)
@@ -74,7 +76,7 @@ async def delete(id: str) -> ApiResponse:
 
 @router.get("/list", status_code=200)
 async def list():
-    agents = orms_to_models(AgentResponse, list_agents())
+    agents = objs_to_models(AgentResponse, list_agents())
     for agent in agents:
         agent["data"] = json.loads(agent["data"])
     return ApiResponse(success=True, data=agents)
@@ -83,7 +85,7 @@ async def list():
 @router.get("/list_reuse", status_code=200)
 async def list_reuse():
     return ApiResponse(
-        success=True, data=orms_to_models(AgentResponse, list_reuse_agents())
+        success=True, data=objs_to_models(AgentResponse, list_reuse_agents())
     )
 
 

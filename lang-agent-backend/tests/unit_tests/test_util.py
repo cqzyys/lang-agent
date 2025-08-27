@@ -1,6 +1,6 @@
 from langchain_core.messages import HumanMessage
 
-from lang_agent.util.util import (
+from lang_agent.util import (
     async_run,
     complete_content,
     convert_str_to_type,
