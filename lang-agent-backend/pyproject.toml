@@ -79,3 +79,12 @@ ruff = "^0.5"
 
 [tool.poetry.group.typing.dependencies]
 mypy = "^1.10"
+
+
+[tool.poetry.group.pg.dependencies]
+psycopg-binary = "^3.2.9"
+
+[[tool.poetry.source]]
+name = "tsinghua"
+url = "https://pypi.tuna.tsinghua.edu.cn/simple/"
+
