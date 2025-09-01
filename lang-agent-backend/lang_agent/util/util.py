@@ -11,27 +11,34 @@ nest_asyncio.apply()
 def parse_args(content: str, state: dict):
     args = {}
     key_set: Set[str] = set(re.findall(r"{{(.+?)}}", content))
-    messages: List[BaseMessage] = state["messages"]
+    messages: List[BaseMessage] = list(reversed(state["messages"]))
+    remaining_keys = set(key_set)
     for key in key_set:
+        if not remaining_keys:
+            break
         # 如果key是messages['xxxx']这种形式，那么取messages列表里面对应的content
         if key.startswith("messages['") and key.endswith("']"):
             node_name = re.findall(r"\['(.+?)'\]", key)
             for message in messages:
                 if message.name == node_name[0]:
                     args[key] = message.content
+                    remaining_keys.discard(key)
+                    break
         else:
             args[key] = state[key]
+            remaining_keys.discard(key)
     return args
 
 def complete_content(content: str, state: dict) -> str:
     keys: List[str] = re.findall(r"{{(.+?)}}", content)
-    messages: List[BaseMessage] = state["messages"]
+    messages: List[BaseMessage] = list(reversed(state["messages"]))
     for key in keys:
         if key.startswith("messages['") and key.endswith("']"):
             node_name = re.findall(r"\['(.+?)'\]", key)
             for message in messages:
-                if message.name == node_name[0]:
+                if message.name and message.name == node_name[0]:
                     content = content.replace(f"{{{{{key}}}}}", message.content)
+                    return content
         else:
             content = content.replace(f"{{{{{key}}}}}", str(state[key]))
     return content
