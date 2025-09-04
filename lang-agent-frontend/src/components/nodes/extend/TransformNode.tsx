@@ -10,7 +10,8 @@ import {
 } from "@/components";
 
 export type TransformNodeData = BaseNodeData & {
-  state_field?: string;
+  origin_state_field?: string;
+  target_state_field?: string;
 };
 
 export type TransformNodeProps = NodeProps<TransformNodeData>;
@@ -22,7 +23,8 @@ const TransformNodeConfig: NodeConfig<TransformNodeData> = {
     id: "",
     type: "transform",
     name: "transform",
-    state_field: "",
+    origin_state_field: "",
+    target_state_field: "",
   },
   component: TransformNode,
 };
@@ -58,14 +60,26 @@ function TransformNode({ id, data, onDataChange }: TransformNodeProps) {
             />
             <Input
               className="nodrag"
-              defaultValue={data.state_field}
+              defaultValue={data.origin_state_field}
+              label="来源状态变量"
+              name="origin_state_field"
+              placeholder="请输入来源状态变量"
+              radius="sm"
+              size="sm"
+              onChange={(e) =>
+                onDataChange({ ...data, origin_state_field: e.target.value })
+              }
+            />
+            <Input
+              className="nodrag"
+              defaultValue={data.target_state_field}
               label="目标状态变量"
-              name="state_field"
+              name="target_state_field"
               placeholder="请输入目标状态变量"
               radius="sm"
               size="sm"
               onChange={(e) =>
-                onDataChange({ ...data, state_field: e.target.value })
+                onDataChange({ ...data, target_state_field: e.target.value })
               }
             />
           </Form>
