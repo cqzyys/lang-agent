@@ -16,7 +16,7 @@ __all__ = ["ReuseAgentNode", "ReuseAgentNodeParam"]
 
 
 class ReuseAgentNodeData(BaseNodeData):
-    data: Optional[dict] = Field(None, description="Agent数据")
+    data: Optional[str] = Field(None, description="Agent数据")
 
 
 class ReuseAgentNodeParam(BaseNodeParam):
