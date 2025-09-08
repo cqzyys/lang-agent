@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Query
 
-from lang_agent.api.v1.request_params import MCPParams
-from lang_agent.api.v1.response_models import (
+from lang_agent.data_schema.request_params import MCPParams
+from lang_agent.data_schema.response_models import (
     ApiResponse,
     McpResponse,
 )

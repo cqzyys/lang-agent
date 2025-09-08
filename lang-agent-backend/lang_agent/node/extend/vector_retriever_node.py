@@ -7,7 +7,7 @@ from pydantic import Field, TypeAdapter
 
 from lang_agent.logger import get_logger
 from lang_agent.util import complete_content
-from lang_agent.setting import resource_manager
+from lang_agent.setting.manager import resource_manager
 
 from ..core import BaseNode, BaseNodeData, BaseNodeParam
 

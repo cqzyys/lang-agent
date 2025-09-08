@@ -9,13 +9,13 @@ from sqlalchemy import create_engine, select
 from sqlalchemy.orm import sessionmaker
 from xid import XID
 
-from lang_agent.api.v1.request_params import (
+from lang_agent.data_schema.request_params import (
     AgentParams,
     MCPParams,
     ModelParams,
     VectorStoreParams
 )
-from lang_agent.setting import ResourceManager
+from lang_agent.setting.manager import ResourceManager
 
 from .models import Agent, Base, Mcp, Model, VectorStore
 

@@ -3,8 +3,8 @@ import traceback
 
 from fastapi import APIRouter, Body, HTTPException, Query
 
-from lang_agent.api.v1.request_params import AgentParams, AgentRunParams
-from lang_agent.api.v1.response_models import (
+from lang_agent.data_schema.request_params import AgentParams, AgentRunParams
+from lang_agent.data_schema.response_models import (
     AgentResponse,
     ApiResponse,
 )
@@ -94,7 +94,7 @@ async def arun(
     params: AgentRunParams = Body(...),
 ) -> dict:
     compiled_engine = await compile_engine(params.chat_id, params.agent_data)
-    return await compiled_engine.ainvoke(params.state)
+    return await compiled_engine.ainvoke(params.state,compiled_engine.subgraphs)
 
 
 @router.post("/arun_by_agent_id", status_code=200)

@@ -8,7 +8,7 @@ from langgraph.graph.message import MessagesState
 from pydantic import BaseModel, Field, TypeAdapter
 
 from lang_agent.db import Agent, select_agent_by_name
-from lang_agent.setting import resource_manager
+from lang_agent.setting.manager import resource_manager
 
 from ..core import BaseNodeData, BaseNodeParam
 from .base_agent import BaseAgentNode

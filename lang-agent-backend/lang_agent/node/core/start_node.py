@@ -1,12 +1,15 @@
+import traceback
 from typing import Optional, Union
 
 from langchain_core.messages import AIMessage
 from pydantic import Field, TypeAdapter
 
+from lang_agent.logger import get_logger
 from .base import BaseNode, BaseNodeData, BaseNodeParam
 
 __all__ = ["StartNode", "StartNodeParam"]
 
+logger = get_logger(__name__)
 
 class StartNodeData(BaseNodeData):
     guiding_words: Optional[str] = Field(default="", description="引导词")
@@ -26,9 +29,13 @@ class StartNode(BaseNode):
         self.guiding_words = param.data.guiding_words
 
     def invoke(self, state: dict):
-        if self.guiding_words:
-            state["messages"] = [AIMessage(content=self.guiding_words, name=self.name)]
-        return state
-
+        try:
+            if self.guiding_words:
+                state["messages"] = [AIMessage(content=self.guiding_words, name=self.name)]
+            return state
+        except Exception as e:
+            logger.info(traceback.format_exc())
+            raise e
+        
     async def ainvoke(self, state: dict):
         return self.invoke(state)

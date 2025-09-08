@@ -29,6 +29,7 @@ class GraphEngine:
         self.node_map = {}
         self.edge_map = {}
         self.graph = None
+        self.subgraphs = False
 
     async def compile(self):
         nodes: list[dict] = self.agent_data["nodes"]
@@ -60,7 +61,11 @@ class GraphEngine:
                 end_nodes.append(node.name)
             if node.__class__.type == "user_input":
                 input_nodes.append(node.name)
-            graph_builder.add_node(node.name, node.ainvoke)
+            if node.__class__.type == "reuse_agent":
+                graph_builder.add_node(node.name, node.agent)
+                self.subgraphs = True
+            else:
+                graph_builder.add_node(node.name, node.ainvoke)
             self.node_map[node.name] = node
         return start_node, end_nodes, input_nodes
 
@@ -110,32 +115,43 @@ class GraphEngine:
         for end_node in end_nodes:
             graph_builder.add_edge(end_node, END)
 
-    async def ainvoke(self, state: dict) -> dict:
+    async def ainvoke(self, state: dict, subgraphs: bool) -> dict:
         if "messages" not in state:
             state["messages"] = []
-        current_state: StateSnapshot = await self.graph.aget_state(
-            config=self.graph_config, subgraphs=False
+        snapshot: StateSnapshot = await self.graph.aget_state(
+            config=self.graph_config, subgraphs=subgraphs
         )
-        if current_state.next == ():
-            return await self.graph.ainvoke(input=state, config=self.graph_config)
-        return await self.aresume(state)
+        if snapshot.next == ():
+            result =  await self.graph.ainvoke(input=state, config=self.graph_config,subgraphs=subgraphs)
+            if subgraphs:
+                return result[1]
+            else:
+                return result
+        return await self.aresume(state,subgraphs)
 
-    async def aresume(self, state: dict) -> dict:
+
+    async def aresume(self, state: dict, subgraphs: bool) -> dict:
+        snapshot: StateSnapshot = await self.graph.aget_state(config=self.graph_config,subgraphs=subgraphs)
+        config = self._get_subgraphs_config(snapshot)
+        if config is None:
+            config = self.graph_config
         if state is not None:
-            await self.graph.aupdate_state(config=self.graph_config, values=state)
-        return await self.graph.ainvoke(input=None, config=self.graph_config)
-
-    def invoke(self, state: dict) -> dict:
-        if "messages" not in state:
-            state["messages"] = []
-        current_state: StateSnapshot = self.graph.get_state(
-            config=self.graph_config, subgraphs=False
-        )
-        if current_state.next == ():
-            return self.graph.invoke(input=state, config=self.graph_config)
-        return self.resume(state)
-
-    def resume(self, state: dict) -> dict:
-        if state is not None:
-            self.graph.update_state(config=self.graph_config, values=state)
-        return self.graph.invoke(input=None, config=self.graph_config)
+            await self.graph.aupdate_state(config=config, values=state)
+        result = await self.graph.ainvoke(input=None, config=self.graph_config,subgraphs=subgraphs)
+        if subgraphs:
+            return result[1]
+        return result
+    
+    
+    def _get_subgraphs_config(self,snapshot: StateSnapshot):
+        for task in snapshot.tasks:
+            if task.name == snapshot.next[0]:
+                sub_snapshot = task.state
+                if sub_snapshot:
+                    config = sub_snapshot.config
+                    sub_config = self._get_subgraphs_config(sub_snapshot)
+                    if sub_config is not None:
+                        config = sub_config
+                    return config
+                else:
+                    return None

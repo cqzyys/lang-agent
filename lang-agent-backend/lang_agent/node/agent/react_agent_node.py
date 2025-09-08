@@ -5,7 +5,7 @@ from langchain_core.tools import BaseTool
 from langgraph.prebuilt import create_react_agent
 from pydantic import Field, TypeAdapter
 
-from lang_agent.setting import resource_manager
+from lang_agent.setting.manager import resource_manager
 
 from ..core import BaseNodeData, BaseNodeParam
 from .base_agent import BaseAgentNode
