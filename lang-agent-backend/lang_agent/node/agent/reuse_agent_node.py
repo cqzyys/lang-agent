@@ -2,7 +2,6 @@ import asyncio
 from typing import Optional, Union
 
 import nest_asyncio
-from langchain_core.messages import AIMessage
 from pydantic import Field, TypeAdapter
 
 from lang_agent.logger import get_logger
@@ -37,47 +36,10 @@ class ReuseAgentNode(BaseAgentNode):
 
     async def compile(self, param: ReuseAgentNodeParam):
         from lang_agent.graph.engine import GraphEngine
-
         data = parse_json(param.data.data)
         self.engine = GraphEngine(data)
         await self.engine.compile()
         self.agent = self.engine.graph
-
-    def invoke(self, state: dict):
-        pass
-        '''
-        try:
-            agent_state_schema = parse_json(self.engine.state_schema)
-            agent_state = self._adapt_state_schema(state, agent_state_schema)
-            response = self.agent.invoke(agent_state)
-            if "messages" in response and len(response["messages"]) > 0:
-                last_message = AIMessage(
-                    content=response["messages"][-1].content, name=self.name
-                )
-            else:
-                last_message = AIMessage(content="返回消息错误", name=self.name)
-            return {"messages": [last_message]}
-        except Exception as e:
-            logger.error(e)
-            return {"messages": [AIMessage(content=f"Error: {str(e)}", name=self.name)]}
-        '''
-
-    async def ainvoke(self, state: dict):
-        pass
-        '''
-        try:
-            response = await self.agent.ainvoke(state)
-            if "messages" in response and len(response["messages"]) > 0:
-                last_message = AIMessage(
-                    content=response["messages"][-1].content, name=self.name
-                )
-            else:
-                last_message = AIMessage(content="返回消息错误", name=self.name)
-            return {"messages": [last_message]}
-        except Exception as e:
-            logger.error(e)
-            raise
-        '''
     def _adapt_state_schema(self, state: dict, agent_state_schema: dict) -> dict:
         """
         根据agent_state_schema构建新的状态字典
@@ -91,7 +53,6 @@ class ReuseAgentNode(BaseAgentNode):
         agent_state = {}
         agent_schema_keys = set(agent_state_schema.keys())
         state_keys = set(state.keys())
-        
         # 复制在agent_state_schema中存在的键值对
         for key in agent_schema_keys:
             if key in state:
@@ -99,5 +60,4 @@ class ReuseAgentNode(BaseAgentNode):
             else:
                 # agent_state[key] = None
                 pass
-                
         return agent_state

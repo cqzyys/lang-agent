@@ -12,6 +12,7 @@ from langgraph.types import StateSnapshot
 from lang_agent.edge import ConditionEdge
 from lang_agent.edge.util import EdgeData, Target
 from lang_agent.node import BaseNode
+from lang_agent.node.agent import BaseAgentNode
 from lang_agent.node.node_factory import NodeFactory
 from lang_agent.setting import async_checkpointer
 from lang_agent.util import parse_type
@@ -61,7 +62,7 @@ class GraphEngine:
                 end_nodes.append(node.name)
             if node.__class__.type == "user_input":
                 input_nodes.append(node.name)
-            if node.__class__.type == "reuse_agent":
+            if isinstance(node, BaseAgentNode):
                 graph_builder.add_node(node.name, node.agent)
                 self.subgraphs = True
             else:
@@ -115,34 +116,54 @@ class GraphEngine:
         for end_node in end_nodes:
             graph_builder.add_edge(end_node, END)
 
-    async def ainvoke(self, state: dict, subgraphs: bool) -> dict:
+    async def ainvoke(self, state: dict, subgraphs: bool = False) -> dict:
         if "messages" not in state:
             state["messages"] = []
         snapshot: StateSnapshot = await self.graph.aget_state(
             config=self.graph_config, subgraphs=subgraphs
         )
         if snapshot.next == ():
-            result =  await self.graph.ainvoke(input=state, config=self.graph_config,subgraphs=subgraphs)
+            result = await self.graph.ainvoke(
+                input=state,
+                config=self.graph_config,
+                subgraphs=subgraphs
+            )
             if subgraphs:
                 return result[1]
-            else:
-                return result
+            return result
         return await self.aresume(state,subgraphs)
 
 
-    async def aresume(self, state: dict, subgraphs: bool) -> dict:
-        snapshot: StateSnapshot = await self.graph.aget_state(config=self.graph_config,subgraphs=subgraphs)
-        config = self._get_subgraphs_config(snapshot)
-        if config is None:
-            config = self.graph_config
+    async def aresume(self, state: dict, subgraphs: bool = False) -> dict:
+        def _get_config(snapshot: StateSnapshot):
+            if subgraphs:
+                subgraphs_config = self._get_subgraphs_config(snapshot)
+                if subgraphs_config is not None:
+                    return subgraphs_config
+            return snapshot.config
+
+        snapshot: StateSnapshot = await self.graph.aget_state(
+            config=self.graph_config,
+            subgraphs=subgraphs
+        )
+        config = _get_config(snapshot)
         if state is not None:
             await self.graph.aupdate_state(config=config, values=state)
-        result = await self.graph.ainvoke(input=None, config=self.graph_config,subgraphs=subgraphs)
+            snapshot: StateSnapshot = await self.graph.aget_state(
+                config=self.graph_config,
+                subgraphs=subgraphs
+            )
+            config = _get_config(snapshot)            
+        result = await self.graph.ainvoke(
+            input=None,
+            config=config,
+            subgraphs=subgraphs
+        )
         if subgraphs:
             return result[1]
         return result
-    
-    
+
+
     def _get_subgraphs_config(self,snapshot: StateSnapshot):
         for task in snapshot.tasks:
             if task.name == snapshot.next[0]:
@@ -153,5 +174,5 @@ class GraphEngine:
                     if sub_config is not None:
                         config = sub_config
                     return config
-                else:
-                    return None
+                return None
+            return None
