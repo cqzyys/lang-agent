@@ -123,14 +123,11 @@ class GraphEngine:
             config=self.graph_config, subgraphs=subgraphs
         )
         if snapshot.next == ():
-            result = await self.graph.ainvoke(
+            return await self.graph.ainvoke(
                 input=state,
                 config=self.graph_config,
                 subgraphs=subgraphs
             )
-            if subgraphs:
-                return result[1]
-            return result
         return await self.aresume(state,subgraphs)
 
 
@@ -154,14 +151,11 @@ class GraphEngine:
                 subgraphs=subgraphs
             )
             config = _get_config(snapshot)            
-        result = await self.graph.ainvoke(
+        return await self.graph.ainvoke(
             input=None,
             config=config,
             subgraphs=subgraphs
         )
-        if subgraphs:
-            return result[1]
-        return result
 
 
     def _get_subgraphs_config(self,snapshot: StateSnapshot):

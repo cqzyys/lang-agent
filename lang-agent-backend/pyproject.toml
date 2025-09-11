@@ -21,7 +21,6 @@ disallow_untyped_defs = "True"
 [tool.poetry.dependencies]
 python = ">=3.11,<4.0"
 langchain-core = "^0.3.15"
-langgraph = "^0.3.5"
 langchain-openai = "^0.3.8"
 langchain-milvus = "^0.1.8"
 sqlalchemy = "^2.0.39"
@@ -40,6 +39,7 @@ unstructured = {extras = ["docx", "md"], version = "^0.18.9"}
 langchain-postgres = "^0.0.15"
 langchain-experimental = "^0.3.4"
 colorlog = "^6.9.0"
+langgraph = "^0.6.7"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "T201"]
