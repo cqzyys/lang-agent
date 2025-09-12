@@ -1,3 +1,4 @@
+import traceback
 from typing import Optional, Union
 
 from langchain_core.vectorstores import VectorStore
@@ -43,15 +44,19 @@ class VectorIngestNode(BaseNode):
         )
 
     def invoke(self, state: dict):
-        content = complete_content(self.content, state)
-        texts = self.text_splitter.split_text(content)
-        metadatas = [
-            {
-                "source": f"{self.description}_{i}"
-            }
-            for i in range(len(texts))
-        ]
-        self.vs.add_texts(texts=texts,metadatas=metadatas)
+        try:
+            content = complete_content(self.content, state)
+            texts = self.text_splitter.split_text(content)
+            metadatas = [
+                {
+                    "source": f"{self.description}_{i}"
+                }
+                for i in range(len(texts))
+            ]
+            self.vs.add_texts(texts=texts,metadatas=metadatas)
+        except Exception as e:
+            logger.info(traceback.format_exc())
+            raise e
 
     async def ainvoke(self, state: dict):
         self.invoke(state)

@@ -1,9 +1,13 @@
+import traceback
 from typing import Optional, Union
 
 from langchain_core.messages import HumanMessage
 from pydantic import Field, TypeAdapter
 
+from lang_agent.logger import get_logger
 from .base import BaseNode, BaseNodeData, BaseNodeParam
+
+logger = get_logger(__name__)
 
 __all__ = ["InputNode", "InputNodeParam"]
 
@@ -26,11 +30,15 @@ class InputNode(BaseNode):
         self.state_field = param.data.state_field
 
     def invoke(self, state: dict):
-        if self.state_field == "messages":
-            message: HumanMessage = state["messages"][-1]
-            message.name = self.name
-            return state
-        return {self.state_field: state[self.state_field]}
+        try:
+            if self.state_field == "messages":
+                message: HumanMessage = state["messages"][-1]
+                message.name = self.name
+                return state
+            return {self.state_field: state[self.state_field]}
+        except Exception as e:
+            logger.info(traceback.format_exc())
+            raise e
 
     async def ainvoke(self, state: dict):
         return self.invoke(state)

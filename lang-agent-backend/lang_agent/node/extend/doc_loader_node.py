@@ -1,3 +1,4 @@
+import traceback
 import base64
 import os
 import shutil
@@ -9,7 +10,10 @@ from langchain_core.messages import AIMessage
 from pydantic import Field, TypeAdapter
 from xid import XID
 
+from lang_agent.logger import get_logger
 from ..core import BaseNode, BaseNodeData, BaseNodeParam
+
+logger = get_logger(__name__)
 
 __all__ = ["DocLoaderNode", "DocLoaderNodeParam"]
 
@@ -38,27 +42,31 @@ class DocLoaderNode(BaseNode):
         self.file_path = PROJECT_ROOT / "tmp" / XID().string() / self.file_name
 
     def invoke(self, state: dict):
-        os.makedirs(self.file_path.parent, exist_ok=True)
-        _, encoded = self.file_content.split(";base64,", 1)
-        file_data = base64.b64decode(encoded)
-        with open(self.file_path, "wb") as f:
-            f.write(file_data)
-        match self.file_type:
-            case "pdf":
-                from langchain_community.document_loaders import PyPDFLoader
+        try:
+            os.makedirs(self.file_path.parent, exist_ok=True)
+            _, encoded = self.file_content.split(";base64,", 1)
+            file_data = base64.b64decode(encoded)
+            with open(self.file_path, "wb") as f:
+                f.write(file_data)
+            match self.file_type:
+                case "pdf":
+                    from langchain_community.document_loaders import PyPDFLoader
 
-                loader = PyPDFLoader(self.file_path)
-            case "txt":
-                from langchain.document_loaders import TextLoader
+                    loader = PyPDFLoader(self.file_path)
+                case "txt":
+                    from langchain.document_loaders import TextLoader
 
-                loader = TextLoader(self.file_path, encoding="utf-8")
-            case "docx" | "md":
-                from langchain_unstructured import UnstructuredLoader
+                    loader = TextLoader(self.file_path, encoding="utf-8")
+                case "docx" | "md":
+                    from langchain_unstructured import UnstructuredLoader
 
-                loader = UnstructuredLoader(self.file_path)
-            case _:
-                raise ValueError("Unsupported File Type")
-        return self.load(loader)
+                    loader = UnstructuredLoader(self.file_path)
+                case _:
+                    raise ValueError("Unsupported File Type")
+            return self.load(loader)
+        except Exception as e:
+            logger.info(traceback.format_exc())
+            raise e
 
     def load(self, loader: BaseLoader):
         content = "\n".join([page.page_content for page in loader.load()])

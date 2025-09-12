@@ -1,3 +1,4 @@
+import traceback
 from typing import Optional, Union
 
 from langchain_core.messages import AIMessage
@@ -41,10 +42,13 @@ class VectorRetrieverNode(BaseNode):
         self.vs: VectorStore = resource_manager.vectorstore_map[self.vs_name]
 
     def invoke(self, state: dict):
-        keywords = complete_content(self.keywords, state)
-        docs: list[Document] = self.vs.similarity_search(keywords)
-        content = "\n".join([doc.page_content for doc in docs])
-        return {"messages": [AIMessage(content=content, name=self.name)]}
-
+        try:
+            keywords = complete_content(self.keywords, state)
+            docs: list[Document] = self.vs.similarity_search(keywords)
+            content = "\n".join([doc.page_content for doc in docs])
+            return {"messages": [AIMessage(content=content, name=self.name)]}
+        except Exception as e:
+            logger.info(traceback.format_exc())
+            raise e
     async def ainvoke(self, state: dict):
         return self.invoke(state)

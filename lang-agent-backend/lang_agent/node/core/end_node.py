@@ -1,9 +1,13 @@
+import traceback
 from typing import Union
 
 from pydantic import TypeAdapter
 from langchain_core.messages import AIMessage, BaseMessage
 
+from lang_agent.logger import get_logger
 from .base import BaseNode, BaseNodeParam
+
+logger = get_logger(__name__)
 
 __all__ = ["EndNode", "EndNodeParam"]
 
@@ -21,14 +25,18 @@ class EndNode(BaseNode):
         super().__init__(param, **kwargs)
 
     def invoke(self, state: dict):
-        subgraph = self.kwargs.get("subgraph",False)
-        agent_name = self.kwargs.get("agent_name")
-        messages: list[BaseMessage] = state.get("messages")
-        # 如果是子图，则在子图结束后补充一个以子图名为name的消息
-        if subgraph:
-            message = AIMessage(content=messages[-1].content,name=agent_name)
-            messages.append(message)
-        return state
+        try:
+            subgraph = self.kwargs.get("subgraph",False)
+            agent_name = self.kwargs.get("agent_name")
+            messages: list[BaseMessage] = state.get("messages")
+            # 如果是子图，则在子图结束后补充一个以子图名为name的消息
+            if subgraph:
+                message = AIMessage(content=messages[-1].content,name=agent_name)
+                messages.append(message)
+            return state
+        except Exception as e:
+            logger.info(traceback.format_exc())
+            raise e
 
     async def ainvoke(self, state: dict):
         return self.invoke(state)

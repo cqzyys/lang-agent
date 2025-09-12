@@ -1,6 +1,6 @@
+import traceback
 import json
 import os
-import traceback
 from typing import Any, Dict, List
 
 from langchain_core.tools import BaseTool
@@ -162,6 +162,5 @@ class ResourceManager:
             case _:
                 logger.error("Unsupported Vector Store Type: %s", vectorstore.type)
                 return None
-                #raise RuntimeError(f"Unsupported Vector Store Type: {vectorstore.type}")
 
 resource_manager = ResourceManager()

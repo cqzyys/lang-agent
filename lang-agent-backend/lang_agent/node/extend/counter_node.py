@@ -1,8 +1,13 @@
+import traceback
 from typing import Optional, Union
 
 from pydantic import Field, TypeAdapter
 
+from lang_agent.logger import get_logger
 from ..core import BaseNode, BaseNodeData, BaseNodeParam
+
+
+logger = get_logger(__name__)
 
 __all__ = ["CounterNode", "CounterNodeParam"]
 
@@ -25,8 +30,12 @@ class CounterNode(BaseNode):
         self.state_field = param.data.state_field
 
     def invoke(self, state: dict):
-        count = state.get(self.state_field, 1)
-        return {self.state_field: count + 1}
+        try:
+            count = state.get(self.state_field, 1)
+            return {self.state_field: count + 1}
+        except Exception as e:
+            logger.info(traceback.format_exc())
+            raise e
 
     async def ainvoke(self, state: dict):
         return self.invoke(state)

@@ -1,3 +1,4 @@
+import traceback
 from typing import Optional, Union
 
 from langchain_core.language_models.base import BaseLanguageModel
@@ -5,10 +6,13 @@ from langchain_core.messages import BaseMessage
 from langchain_core.prompts import ChatPromptTemplate
 from pydantic import Field, TypeAdapter
 
+from lang_agent.logger import get_logger
 from lang_agent.setting.manager import resource_manager
 from lang_agent.util import parse_args
 
 from .base import BaseNode, BaseNodeData, BaseNodeParam
+
+logger = get_logger(__name__)
 
 __all__ = ["LLMNode", "LLMNodeParam"]
 
@@ -35,29 +39,37 @@ class LLMNode(BaseNode):
         self.user_prompt = param.data.user_prompt
 
     def invoke(self, state: dict):
-        template = ChatPromptTemplate.from_messages(
-            [
-                ("system", self.system_prompt),
-                ("human", self.user_prompt),
-            ],
-            template_format="mustache",
-        )
-        chain = template | self.model
-        args = parse_args(self.system_prompt + self.user_prompt, state)
-        message: BaseMessage = chain.invoke(args)
-        message.name = self.name
-        return {"messages": [message]}
+        try:
+            template = ChatPromptTemplate.from_messages(
+                [
+                    ("system", self.system_prompt),
+                    ("human", self.user_prompt),
+                ],
+                template_format="mustache",
+            )
+            chain = template | self.model
+            args = parse_args(self.system_prompt + self.user_prompt, state)
+            message: BaseMessage = chain.invoke(args)
+            message.name = self.name
+            return {"messages": [message]}
+        except Exception as e:
+            logger.info(traceback.format_exc())
+            raise e
 
     async def ainvoke(self, state: dict):
-        template = ChatPromptTemplate.from_messages(
-            [
-                ("system", self.system_prompt),
-                ("human", self.user_prompt),
-            ],
-            template_format="mustache",
-        )
-        chain = template | self.model
-        args = parse_args(self.system_prompt + self.user_prompt, state)
-        message: BaseMessage = await chain.ainvoke(args)
-        message.name = self.name
-        return {"messages": [message]}
+        try:
+            template = ChatPromptTemplate.from_messages(
+                [
+                    ("system", self.system_prompt),
+                    ("human", self.user_prompt),
+                ],
+                template_format="mustache",
+            )
+            chain = template | self.model
+            args = parse_args(self.system_prompt + self.user_prompt, state)
+            message: BaseMessage = await chain.ainvoke(args)
+            message.name = self.name
+            return {"messages": [message]}
+        except Exception as e:
+            logger.info(traceback.format_exc())
+            raise e

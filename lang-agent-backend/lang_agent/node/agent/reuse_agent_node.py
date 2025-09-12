@@ -1,3 +1,4 @@
+import traceback
 import asyncio
 from typing import Optional, Union
 
@@ -35,33 +36,16 @@ class ReuseAgentNode(BaseAgentNode):
         asyncio.run(self.compile(param))
 
     async def compile(self, param: ReuseAgentNodeParam):
-        from lang_agent.graph.engine import GraphEngine
-        data = parse_json(param.data.data)
-        self.engine = GraphEngine(
-            agent_data = data,
-            subgraph = True,
-            agent_name = self.name
-        )
-        await self.engine.compile()
-        self.agent = self.engine.graph
-    def _adapt_state_schema(self, state: dict, agent_state_schema: dict) -> dict:
-        """
-        根据agent_state_schema构建新的状态字典
-        Args:
-            state: 原始状态字典
-            agent_state_schema: agent的状态模式定义
-            
-        Returns:
-            构建后的新状态字典
-        """
-        agent_state = {}
-        agent_schema_keys = set(agent_state_schema.keys())
-        state_keys = set(state.keys())
-        # 复制在agent_state_schema中存在的键值对
-        for key in agent_schema_keys:
-            if key in state:
-                agent_state[key] = state[key]
-            else:
-                # agent_state[key] = None
-                pass
-        return agent_state
+        try:
+            from lang_agent.graph.engine import GraphEngine
+            data = parse_json(param.data.data)
+            self.engine = GraphEngine(
+                agent_data = data,
+                subgraph = True,
+                agent_name = self.name
+            )
+            await self.engine.compile()
+            self.agent = self.engine.graph
+        except Exception as e:
+            logger.info(traceback.format_exc())
+            raise e
