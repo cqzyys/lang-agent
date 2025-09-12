@@ -23,14 +23,22 @@ class DynamicState(MessagesState):
 
 
 class GraphEngine:
-    def __init__(self, agent_data: dict, config: Optional[Type[Any]] = None):
+    def __init__(
+            self,
+            agent_data: dict,
+            config: Optional[Type[Any]] = None,
+            subgraph: bool = False,
+            agent_name: str = None,
+        ):
         self.agent_data = agent_data
         self.state_schema = agent_data["state_schema"]
         self.graph_config = config
         self.node_map = {}
         self.edge_map = {}
         self.graph = None
-        self.subgraphs = False
+        self.has_subgraphs = False  # 是否包含子图
+        self.subgraph = subgraph    # 是否为子图
+        self.agent_name = agent_name
 
     async def compile(self):
         nodes: list[dict] = self.agent_data["nodes"]
@@ -55,7 +63,13 @@ class GraphEngine:
         end_nodes: list[str] = []
         input_nodes: list[str] = []
         for param in nodes:
-            node: BaseNode = NodeFactory.instance(param, state_schema=self.state_schema)
+            node: BaseNode = NodeFactory.instance(
+                param,
+                state_schema = self.state_schema,
+                subgraph=self.subgraph,
+                has_subgraphs=self.has_subgraphs,
+                agent_name = self.agent_name,
+            )
             if node.__class__.type == "start":
                 start_node = node.name
             if node.__class__.type == "end":
@@ -64,7 +78,7 @@ class GraphEngine:
                 input_nodes.append(node.name)
             if isinstance(node, BaseAgentNode):
                 graph_builder.add_node(node.name, node.agent)
-                self.subgraphs = True
+                self.has_subgraphs = True
             else:
                 graph_builder.add_node(node.name, node.ainvoke)
             self.node_map[node.name] = node
@@ -116,24 +130,24 @@ class GraphEngine:
         for end_node in end_nodes:
             graph_builder.add_edge(end_node, END)
 
-    async def ainvoke(self, state: dict, subgraphs: bool = False) -> dict:
+    async def ainvoke(self, state: dict, has_subgraphs: bool = False) -> dict:
         if "messages" not in state:
             state["messages"] = []
         snapshot: StateSnapshot = await self.graph.aget_state(
-            config=self.graph_config, subgraphs=subgraphs
+            config=self.graph_config, subgraphs=has_subgraphs
         )
         if snapshot.next == ():
             return await self.graph.ainvoke(
                 input=state,
                 config=self.graph_config,
-                subgraphs=subgraphs
+                subgraphs=has_subgraphs
             )
-        return await self.aresume(state,subgraphs)
+        return await self.aresume(state,has_subgraphs)
 
 
-    async def aresume(self, state: dict, subgraphs: bool = False) -> dict:
+    async def aresume(self, state: dict, has_subgraphs: bool = False) -> dict:
         def _get_config(snapshot: StateSnapshot):
-            if subgraphs:
+            if has_subgraphs:
                 subgraphs_config = self._get_subgraphs_config(snapshot)
                 if subgraphs_config is not None:
                     return subgraphs_config
@@ -141,20 +155,20 @@ class GraphEngine:
 
         snapshot: StateSnapshot = await self.graph.aget_state(
             config=self.graph_config,
-            subgraphs=subgraphs
+            subgraphs=has_subgraphs
         )
         config = _get_config(snapshot)
         if state is not None:
             await self.graph.aupdate_state(config=config, values=state)
             snapshot: StateSnapshot = await self.graph.aget_state(
                 config=self.graph_config,
-                subgraphs=subgraphs
+                subgraphs=has_subgraphs
             )
             config = _get_config(snapshot)            
         return await self.graph.ainvoke(
             input=None,
             config=config,
-            subgraphs=subgraphs
+            subgraphs=has_subgraphs
         )
 
 

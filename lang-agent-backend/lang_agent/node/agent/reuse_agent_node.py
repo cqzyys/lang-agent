@@ -37,7 +37,11 @@ class ReuseAgentNode(BaseAgentNode):
     async def compile(self, param: ReuseAgentNodeParam):
         from lang_agent.graph.engine import GraphEngine
         data = parse_json(param.data.data)
-        self.engine = GraphEngine(data)
+        self.engine = GraphEngine(
+            agent_data = data,
+            subgraph = True,
+            agent_name = self.name
+        )
         await self.engine.compile()
         self.agent = self.engine.graph
     def _adapt_state_schema(self, state: dict, agent_state_schema: dict) -> dict:

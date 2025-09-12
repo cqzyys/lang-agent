@@ -93,8 +93,12 @@ async def list_reuse():
 async def arun(
     params: AgentRunParams = Body(...),
 ) -> dict:
-    compiled_engine = await compile_engine(params.chat_id, params.agent_data)
-    return await compiled_engine.ainvoke(params.state,compiled_engine.subgraphs)
+    compiled_engine = await compile_engine(
+        params.chat_id,
+        params.agent_data,
+        params.agent_name
+    )
+    return await compiled_engine.ainvoke(params.state,compiled_engine.has_subgraphs)
 
 
 @router.post("/arun_by_agent_id", status_code=200)
@@ -113,13 +117,26 @@ async def arun_by_agent_id(
         logger.error("Invalid agent data format: %s (Raw data: %s)", e, agent.data)
         raise HTTPException(status_code=400, detail=INVALID_AGENT_DATA) from e
     return await arun(
-        params=AgentRunParams(chat_id=chat_id, agent_data=agent_data, state=state)
+        params=AgentRunParams(
+            chat_id=chat_id,
+            agent_data=agent_data,
+            state=state,
+            agent_name=agent.name
+        )
     )
 
 
-async def compile_engine(chat_id: str, agent_data: dict) -> GraphEngine:
+async def compile_engine(
+        chat_id: str,
+        agent_data: dict,
+        agent_name: str = None
+) -> GraphEngine:
     config = {"configurable": {"thread_id": chat_id}, "recursion_limit": 50}
-    graph_engine = GraphEngine(agent_data, config)
+    graph_engine = GraphEngine(
+        agent_data = agent_data,
+        config = config,
+        agent_name = agent_name
+    )
     try:
         await graph_engine.compile()
     except Exception as e:

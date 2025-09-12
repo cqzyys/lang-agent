@@ -25,6 +25,7 @@ class AgentRunParams(BaseModel):
     chat_id: str = Field(..., description="会话ID")
     agent_data: dict = Field(..., description="Agent数据")
     state: dict = Field(..., description="状态变量")
+    agent_name: Optional[str] = Field(default=None, description="Agent名称")
 
 
 class MCPParams(BaseModel):
