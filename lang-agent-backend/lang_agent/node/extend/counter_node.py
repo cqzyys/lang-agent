@@ -18,10 +18,10 @@ class CounterNodeParam(BaseNodeParam):
 class CounterNode(BaseNode):
     type = "counter"
 
-    def __init__(self, param: Union[CounterNodeParam, dict], state_schema: dict):
+    def __init__(self, param: Union[CounterNodeParam, dict], **kwargs):
         adapter = TypeAdapter(CounterNodeParam)
         param = adapter.validate_python(param)
-        super().__init__(param, state_schema)
+        super().__init__(param, **kwargs)
         self.state_field = param.data.state_field
 
     def invoke(self, state: dict):

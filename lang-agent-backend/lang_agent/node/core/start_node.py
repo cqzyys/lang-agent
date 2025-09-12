@@ -22,20 +22,22 @@ class StartNodeParam(BaseNodeParam):
 class StartNode(BaseNode):
     type = "start"
 
-    def __init__(self, param: Union[StartNodeParam, dict], state_schema: dict):
+    def __init__(self, param: Union[StartNodeParam, dict], **kwargs):
         adapter = TypeAdapter(StartNodeParam)
         param = adapter.validate_python(param)
-        super().__init__(param, state_schema)
+        super().__init__(param, **kwargs)
         self.guiding_words = param.data.guiding_words
 
     def invoke(self, state: dict):
         try:
             if self.guiding_words:
-                state["messages"] = [AIMessage(content=self.guiding_words, name=self.name)]
+                state["messages"] = [
+                    AIMessage(content=self.guiding_words, name=self.name)
+                ]
             return state
         except Exception as e:
             logger.info(traceback.format_exc())
             raise e
-        
+
     async def ainvoke(self, state: dict):
         return self.invoke(state)

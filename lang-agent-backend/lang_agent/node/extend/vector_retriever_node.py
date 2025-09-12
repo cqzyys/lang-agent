@@ -31,11 +31,11 @@ class VectorRetrieverNode(BaseNode):
     def __init__(
         self,
         param: Union[VectorRetrieverNodeParam, dict],
-        state_schema: dict
+        **kwargs
     ):
         adapter = TypeAdapter(VectorRetrieverNodeParam)
         param = adapter.validate_python(param)
-        super().__init__(param, state_schema)
+        super().__init__(param, **kwargs)
         self.vs_name: str = param.data.vs_name
         self.keywords: str = param.data.keywords
         self.vs: VectorStore = resource_manager.vectorstore_map[self.vs_name]

@@ -28,10 +28,10 @@ class VectorIngestNodeParam(BaseNodeParam):
 class VectorIngestNode(BaseNode):
     type = "vector_ingest"
 
-    def __init__(self, param: Union[VectorIngestNodeParam, dict], state_schema: dict):
+    def __init__(self, param: Union[VectorIngestNodeParam, dict], **kwargs):
         adapter = TypeAdapter(VectorIngestNodeParam)
         param = adapter.validate_python(param)
-        super().__init__(param, state_schema)
+        super().__init__(param, **kwargs)
         self.vs_name: str = param.data.vs_name
         self.content: str = param.data.content
         self.description: str = param.data.description

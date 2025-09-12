@@ -25,10 +25,10 @@ class ReactAgentNodeParam(BaseNodeParam):
 class ReactAgentNode(BaseAgentNode):
     type = "react_agent"
 
-    def __init__(self, param: Union[ReactAgentNodeParam, dict], state_schema: dict):
+    def __init__(self, param: Union[ReactAgentNodeParam, dict], **kwargs):
         adapter = TypeAdapter(ReactAgentNodeParam)
         param = adapter.validate_python(param)
-        super().__init__(param, state_schema)
+        super().__init__(param, **kwargs)
         self.model: BaseLanguageModel = resource_manager.models["llm"][param.data.model]
         self.tools: list[BaseTool] = self.get_tools(param.data.tools)
         self.agent = create_react_agent(

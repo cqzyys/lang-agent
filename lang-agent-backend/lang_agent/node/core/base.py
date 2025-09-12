@@ -20,12 +20,12 @@ class BaseNode(ABC):
     type: str = "base"
     category: str = "node"
 
-    def __init__(self, param: Union[BaseNodeParam, dict], state_schema):
+    def __init__(self, param: Union[BaseNodeParam, dict], **kwargs):
         adapter = TypeAdapter(BaseNodeParam)
         param = adapter.validate_python(param)
         self.id = param.id
         self.name = param.data.name
-        self.state_schema = state_schema
+        self.kwargs = kwargs
 
     @abstractmethod
     def invoke(self, state: MessagesState):

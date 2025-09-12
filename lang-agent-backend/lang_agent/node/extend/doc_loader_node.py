@@ -28,10 +28,10 @@ class DocLoaderNodeParam(BaseNodeParam):
 class DocLoaderNode(BaseNode):
     type = "doc_loader"
 
-    def __init__(self, param: Union[DocLoaderNodeParam, dict], state_schema: dict):
+    def __init__(self, param: Union[DocLoaderNodeParam, dict], **kwargs):
         adapter = TypeAdapter(DocLoaderNodeParam)
         param = adapter.validate_python(param)
-        super().__init__(param, state_schema)
+        super().__init__(param, **kwargs)
         self.file_name = param.data.file_name
         self.file_content = param.data.file_content
         self.file_type = self.file_name.split(".")[-1].lower()

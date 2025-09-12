@@ -18,10 +18,10 @@ class ExecutorNodeParam(BaseNodeParam):
 class ExecutorNode(BaseNode):
     type = "executor"
 
-    def __init__(self, param: Union[ExecutorNodeParam, dict], state_schema: dict):
+    def __init__(self, param: Union[ExecutorNodeParam, dict], **kwargs):
         adapter = TypeAdapter(ExecutorNodeParam)
         param = adapter.validate_python(param)
-        super().__init__(param, state_schema)
+        super().__init__(param, **kwargs)
         self.code = param.data.code
 
     def invoke(self, state: dict):

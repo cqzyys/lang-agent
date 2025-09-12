@@ -402,10 +402,10 @@ class XXXNodeParam(BaseNodeParam):
 class XXXNode(BaseNode):
     type = "xxx"
 
-    def __init__(self, param: Union[XXXNodeParam, dict], state_schema: dict):
+    def __init__(self, param: Union[XXXNodeParam, dict], **kwargs):
         adapter = TypeAdapter(XXXNodeParam)
         param = adapter.validate_python(param)
-        super().__init__(param, state_schema)
+        super().__init__(param, **kwargs)
 
     async def invoke(self, state: dict):
         '''Sync Business Processing Logic'''

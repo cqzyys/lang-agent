@@ -19,10 +19,10 @@ class InputNodeParam(BaseNodeParam):
 class InputNode(BaseNode):
     type = "user_input"
 
-    def __init__(self, param: Union[InputNodeParam, dict], state_schema: dict):
+    def __init__(self, param: Union[InputNodeParam, dict], **kwargs):
         adapter = TypeAdapter(InputNodeParam)
         param = adapter.validate_python(param)
-        super().__init__(param, state_schema)
+        super().__init__(param, **kwargs)
         self.state_field = param.data.state_field
 
     def invoke(self, state: dict):

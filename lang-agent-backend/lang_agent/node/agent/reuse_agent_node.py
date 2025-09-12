@@ -28,10 +28,10 @@ class ReuseAgentNodeParam(BaseNodeParam):
 class ReuseAgentNode(BaseAgentNode):
     type = "reuse_agent"
 
-    def __init__(self, param: Union[ReuseAgentNodeParam, dict], state_schema: dict):
+    def __init__(self, param: Union[ReuseAgentNodeParam, dict], **kwargs):
         adapter = TypeAdapter(ReuseAgentNodeParam)
         param = adapter.validate_python(param)
-        super().__init__(param, state_schema)
+        super().__init__(param, **kwargs)
         asyncio.run(self.compile(param))
 
     async def compile(self, param: ReuseAgentNodeParam):

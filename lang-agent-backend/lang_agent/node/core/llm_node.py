@@ -26,10 +26,10 @@ class LLMNodeParam(BaseNodeParam):
 class LLMNode(BaseNode):
     type = "llm"
 
-    def __init__(self, param: Union[LLMNodeParam, dict], state_schema: dict):
+    def __init__(self, param: Union[LLMNodeParam, dict], **kwargs):
         adapter = TypeAdapter(LLMNodeParam)
         param = adapter.validate_python(param)
-        super().__init__(param, state_schema)
+        super().__init__(param, **kwargs)
         self.model: BaseLanguageModel = resource_manager.models["llm"][param.data.model]
         self.system_prompt = param.data.system_prompt
         self.user_prompt = param.data.user_prompt

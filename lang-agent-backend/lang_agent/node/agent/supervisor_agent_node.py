@@ -41,11 +41,11 @@ class SupervisorAgentNode(BaseAgentNode):
     type = "supervisor_agent"
 
     def __init__(
-        self, param: Union[SupervisorAgentNodeParam, dict], state_schema: dict
+        self, param: Union[SupervisorAgentNodeParam, dict], **kwargs
     ):
         adapter = TypeAdapter(SupervisorAgentNodeParam)
         param = adapter.validate_python(param)
-        super().__init__(param, state_schema)
+        super().__init__(param, **kwargs)
         self.max_steps = 5
         self.model: BaseLanguageModel = resource_manager.models["llm"][param.data.model]
         self.agents: list[Agent] = self.get_agents(param.data.agents)
@@ -106,7 +106,10 @@ class SupervisorAgentNode(BaseAgentNode):
             agent_data = json.loads(agent.data)
             param: ReuseAgentNodeParam = ReuseAgentNodeParam(id=agent.id)
             param.data = ReuseAgentNodeData(name=agent.name, data=agent_data)
-            reuse_agent = ReuseAgentNode(param, agent_data["state_schema"])
+            reuse_agent = ReuseAgentNode(
+                param,
+                state_schema = agent_data["state_schema"]
+            )
             graph_builder.add_node(agent.name, reuse_agent.ainvoke)
         graph_builder.add_edge(START, "Supervisor")
         route = {agent.name: agent.name for agent in self.agents}

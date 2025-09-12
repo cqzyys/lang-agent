@@ -10,8 +10,8 @@ class BaseAgentNode(BaseNode):
     category: str = "agent"
     agent: CompiledStateGraph
 
-    def __init__(self, param: dict, state_schema: dict):
-        super().__init__(param, state_schema)
+    def __init__(self, param: dict, **kwargs):
+        super().__init__(param, **kwargs)
 
     def invoke(self, state: dict):
         return self.agent.invoke(state)

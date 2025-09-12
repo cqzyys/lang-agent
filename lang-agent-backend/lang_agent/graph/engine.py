@@ -55,7 +55,7 @@ class GraphEngine:
         end_nodes: list[str] = []
         input_nodes: list[str] = []
         for param in nodes:
-            node: BaseNode = NodeFactory.instance(param, self.state_schema)
+            node: BaseNode = NodeFactory.instance(param, state_schema=self.state_schema)
             if node.__class__.type == "start":
                 start_node = node.name
             if node.__class__.type == "end":

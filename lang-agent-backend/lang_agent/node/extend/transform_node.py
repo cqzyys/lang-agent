@@ -22,13 +22,13 @@ class TransformNodeParam(BaseNodeParam):
 class TransformNode(BaseNode):
     type = "transform"
 
-    def __init__(self, param: Union[TransformNodeParam, dict], state_schema: dict):
+    def __init__(self, param: Union[TransformNodeParam, dict], **kwargs):
         adapter = TypeAdapter(TransformNodeParam)
         param = adapter.validate_python(param)
-        super().__init__(param, state_schema)
+        super().__init__(param, **kwargs)
         self.origin_state_field = param.data.origin_state_field
         self.target_state_field = param.data.target_state_field
-        
+
 
     def invoke(self, state: dict):
         if self.origin_state_field:
@@ -37,7 +37,7 @@ class TransformNode(BaseNode):
             content = state["messages"][-1].content
         if not self.target_state_field or self.target_state_field == "messages":
             return {"messages": [AIMessage(content=content, name=self.name)]}
-        filed_type: str = self.state_schema.get(self.target_state_field)
+        filed_type: str = self.kwargs.get("state_schema").get(self.target_state_field)
         return {self.target_state_field: convert_str_to_type(content, filed_type)}
 
     async def ainvoke(self, state: dict):

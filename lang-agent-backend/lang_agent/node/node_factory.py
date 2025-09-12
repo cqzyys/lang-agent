@@ -10,9 +10,9 @@ node_map = {}
 
 class NodeFactory:
     @classmethod
-    def instance(cls, param: dict, state_schema: dict) -> BaseNode:
+    def instance(cls, param: dict, **kwargs) -> BaseNode:
         if node_map[param["type"]] is not None:
-            return node_map[param["type"]](param, state_schema)
+            return node_map[param["type"]](param, **kwargs)
         raise ValueError(f'Unsupported Node Type: {param["type"]}')
 
 
