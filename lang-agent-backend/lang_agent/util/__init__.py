@@ -3,6 +3,7 @@ from .util import (
     complete_content,
     parse_args,
     sync_wrapper,
+    merge_json,
 )
 
 from .convert import (

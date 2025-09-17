@@ -17,7 +17,7 @@ from lang_agent.node import BaseNode
 from lang_agent.node.agent import BaseAgentNode
 from lang_agent.node.node_factory import NodeFactory
 from lang_agent.setting import async_checkpointer
-from lang_agent.util import parse_type
+from lang_agent.util import parse_type,merge_json
 
 logger = get_logger(__name__)
 
@@ -161,8 +161,8 @@ class GraphEngine:
             if has_subgraphs:
                 subgraphs_config = self._get_subgraphs_config(snapshot)
                 if subgraphs_config is not None:
-                    return subgraphs_config
-            return snapshot.config
+                    return merge_json(subgraphs_config,self.graph_config)
+            return merge_json(snapshot.config,self.graph_config)
         try:
             snapshot: StateSnapshot = await self.graph.aget_state(
                 config=self.graph_config,
@@ -175,7 +175,7 @@ class GraphEngine:
                     config=self.graph_config,
                     subgraphs=has_subgraphs
                 )
-                config = _get_config(snapshot)            
+                config = _get_config(snapshot)
             return await self.graph.ainvoke(
                 input=None,
                 config=config,

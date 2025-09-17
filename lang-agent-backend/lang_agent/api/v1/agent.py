@@ -131,7 +131,13 @@ async def compile_engine(
         agent_data: dict,
         agent_name: str = None
 ) -> GraphEngine:
-    config = {"configurable": {"thread_id": chat_id}, "recursion_limit": 50}
+    from lang_agent.graph.callback import LoggerOutputCallback
+    callbacks = [LoggerOutputCallback()]
+    config = {
+        "configurable": {"thread_id": chat_id},
+        "recursion_limit": 50,
+        "callbacks": callbacks
+    }
     graph_engine = GraphEngine(
         agent_data = agent_data,
         config = config,
