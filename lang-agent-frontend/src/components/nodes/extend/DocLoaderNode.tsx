@@ -16,15 +16,16 @@ const DocLoaderNodeConfig: NodeConfig<DocLoaderNodeData> = {
     id: "",
     type: "doc_loader",
     name: "doc_loader",
-    file_name: "",
-    file_content: "",
+    files: [],
   },
   component: DocLoaderNode,
 };
 
 export type DocLoaderNodeData = BaseNodeData & {
-  file_name: string;
-  file_content: string;
+  files: Array<{
+    file_name: string;
+    file_content: string;
+  }>;
 };
 
 export type DocLoaderNodeProps = NodeProps<DocLoaderNodeData>;
@@ -59,6 +60,7 @@ function DocLoaderNode({ id, data, onDataChange }: DocLoaderNodeProps) {
               onChange={(e) => onDataChange({ ...data, name: e.target.value })}
             />
             <Input
+              multiple
               className="nodrag"
               label="上传文档"
               name="files"
@@ -66,20 +68,40 @@ function DocLoaderNode({ id, data, onDataChange }: DocLoaderNodeProps) {
               size="sm"
               type="file"
               onChange={(e) => {
+                onDataChange({
+                  ...data,
+                  files: [],
+                });
                 const files = e.target.files;
 
                 if (files && files.length > 0) {
-                  const file = files[0];
-                  const reader = new FileReader();
+                  const newFiles: Array<{
+                    file_name: string;
+                    file_content: string;
+                  }> = [];
+                  let processedFiles = 0;
 
-                  reader.onload = () => {
-                    onDataChange({
-                      ...data,
-                      file_name: file.name,
-                      file_content: reader.result as string,
-                    });
-                  };
-                  reader.readAsDataURL(file);
+                  Array.from(files).forEach((file) => {
+                    const reader = new FileReader();
+
+                    reader.onload = () => {
+                      newFiles.push({
+                        file_name: file.name,
+                        file_content: reader.result as string,
+                      });
+
+                      processedFiles++;
+                      // 当所有文件都处理完毕时更新状态
+                      if (processedFiles === files.length) {
+                        onDataChange({
+                          ...data,
+                          files: [...(data.files || []), ...newFiles],
+                        });
+                      }
+                    };
+
+                    reader.readAsDataURL(file);
+                  });
                 }
               }}
             />
