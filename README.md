@@ -3,7 +3,7 @@
 本项目是以LangGraph为底层技术来实现的一个可有限编程的Agent配置平台。
 传统的类WorkFlow项目一般只会将上一个节点的输出作为下一个节点的输入，Lang-Agent允许自定义[状态变量](#state)，可以作用于[节点](#节点)以及[条件边](#条件边)的输入和输出，从而实现更精准的控制。
 
-Lang-Agent的设计理念更接近于comfyUI，而不是dify和coze，鼓励使用者开发适应自身业务的节点。Lang-Agent具有良好的可扩展性，其扩展节点的开发可参考[自定义节点](#自定义节点)
+Lang-Agent的设计理念更接近于comfyUI而不是dify和coze，鼓励使用者开发适应自身业务的节点。Lang-Agent具有良好的可扩展性，其扩展节点的开发可参考[自定义节点](#自定义节点)
 
 
 <table>
@@ -407,7 +407,7 @@ class XXXNode(BaseNode):
         param = adapter.validate_python(param)
         super().__init__(param, **kwargs)
 
-    async def invoke(self, state: dict):
+    def invoke(self, state: dict):
         '''Sync Business Processing Logic'''
 
     async def ainvoke(self, state: dict):
