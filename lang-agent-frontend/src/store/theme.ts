@@ -12,8 +12,8 @@ type ThemeState = {
 };
 
 export const useThemeStore = create<ThemeState>((set) => ({
-  dark: true,
-  color: "black",
+  dark: false,
+  color: "white",
   toggleDark: () =>
     set((state) => ({
       dark: !state.dark,
