@@ -69,7 +69,7 @@ async def select(id: str = Query(..., description="VectorStore ID")) -> ApiRespo
         raise HTTPException(status_code=404, detail=VECTORSTORE_NOT_FOUND)
     return ApiResponse(
         success=True,
-        data=obj_to_model(VectorStoreResponse, vectorstore)
+        data=obj_to_model(vectorstore,VectorStoreResponse)
     )
 
 
@@ -77,5 +77,5 @@ async def select(id: str = Query(..., description="VectorStore ID")) -> ApiRespo
 async def vectorstores() -> ApiResponse:
     return ApiResponse(
         success=True,
-        data=objs_to_models(VectorStoreResponse, list_vectorstores())
+        data=objs_to_models(list_vectorstores(),VectorStoreResponse)
     )

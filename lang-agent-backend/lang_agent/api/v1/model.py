@@ -60,12 +60,12 @@ async def select(id: str = Query(..., description="Model ID")) -> ApiResponse:
     if not model:
         logger.error("Model Not Found")
         raise HTTPException(status_code=404, detail=MODEL_NOT_FOUND)
-    return ApiResponse(success=True, data=obj_to_model(ModelResponse, model))
+    return ApiResponse(success=True, data=obj_to_model(model,ModelResponse))
 
 
 @router.get("/list", status_code=200)
 async def list() -> ApiResponse:
-    return ApiResponse(success=True, data=objs_to_models(ModelResponse, list_models()))
+    return ApiResponse(success=True, data=objs_to_models(list_models(),ModelResponse))
 
 
 @router.get("/cached_llm", status_code=200)
@@ -81,12 +81,12 @@ async def cached_embedding() -> ApiResponse:
 @router.get("/llm_models", status_code=200)
 async def llm_models() -> ApiResponse:
     return ApiResponse(
-        success=True, data=objs_to_models(ModelResponse, list_llm_models())
+        success=True, data=objs_to_models(list_llm_models(),ModelResponse)
     )
 
 
 @router.get("/embedding_models", status_code=200)
 async def embedding_models() -> ApiResponse:
     return ApiResponse(
-        success=True, data=objs_to_models(ModelResponse, list_embedding_models())
+        success=True, data=objs_to_models(list_embedding_models(),ModelResponse)
     )

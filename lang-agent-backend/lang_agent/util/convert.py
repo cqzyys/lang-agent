@@ -61,9 +61,12 @@ def error_to_str(error):
         case _:
             return f"{type(error).__name__}: {str(error)}"
 
-def obj_to_model(model_cls: Type[BaseModel], orm_obj) -> BaseModel:
-    return model_cls.model_validate(orm_obj, from_attributes=True).model_dump()
+def obj_to_model(source_instance,target_cls: Type[BaseModel]) -> BaseModel:
+    return target_cls.model_validate(source_instance, from_attributes=True).model_dump()
 
-
-def objs_to_models(model_cls: Type[BaseModel], orm_objs) -> list[BaseModel]:
-    return [obj_to_model(model_cls, orm_obj) for orm_obj in orm_objs]
+def objs_to_models(source_instances,target_cls: Type[BaseModel]) -> list[BaseModel]:
+    return [
+        obj_to_model(
+            source_instance,target_cls
+        ) for source_instance in source_instances
+    ]
