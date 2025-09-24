@@ -157,7 +157,7 @@ def select_model_by_name(name: str) -> Model:
 
 def list_models() -> list[Model]:
     with get_session() as session:
-        stmt = select(Model)
+        stmt = select(Model).order_by(Model.name)
         entities = session.scalars(stmt).all()
         return entities
 
@@ -171,7 +171,7 @@ def list_available_models() -> list[Model]:
 
 def list_llm_models() -> list[Model]:
     with get_session() as session:
-        stmt = select(Model).where(Model.type == "llm" and Model.disabled == False)
+        stmt = select(Model).where(Model.type == "llm" and Model.disabled == False).order_by(Model.name)
         entities = session.scalars(stmt).all()
         return entities
 
@@ -180,7 +180,7 @@ def list_embedding_models() -> list[Model]:
     with get_session() as session:
         stmt = select(Model).where(
             Model.type == "embedding" and Model.disabled == False
-        )
+        ).order_by(Model.name)
         entities = session.scalars(stmt).all()
         return entities
 
@@ -228,21 +228,21 @@ def delete_agent(id: str):
 
 def list_agents() -> list[Agent]:
     with get_session() as session:
-        stmt = select(Agent)
+        stmt = select(Agent).order_by(Agent.name)
         entities = session.scalars(stmt).all()
         return entities
 
 
 def list_available_agents() -> list[Agent]:
     with get_session() as session:
-        stmt = select(Agent).where(Agent.disabled == False)
+        stmt = select(Agent).where(Agent.disabled == False).order_by(Agent.name)
         entities = session.scalars(stmt).all()
         return entities
 
 
 def list_reuse_agents() -> list[Agent]:
     with get_session() as session:
-        stmt = select(Agent).where(Agent.reuse_flag == True and Agent.disabled == False)
+        stmt = select(Agent).where(Agent.reuse_flag == True and Agent.disabled == False).order_by(Agent.name)
         entities = session.scalars(stmt).all()
         return entities
 
@@ -335,14 +335,14 @@ def select_mcp_by_name(name: str) -> Mcp:
 
 def list_mcps() -> list[Mcp]:
     with get_session() as session:
-        stmt = select(Mcp)
+        stmt = select(Mcp).order_by(Mcp.name)
         entities = session.scalars(stmt).all()
         return entities
 
 
 def list_available_mcps() -> list[Mcp]:
     with get_session() as session:
-        stmt = select(Mcp).where(Mcp.disabled == False)
+        stmt = select(Mcp).where(Mcp.disabled == False).order_by(Mcp.name)
         entities = session.scalars(stmt).all()
         return entities
 
@@ -441,7 +441,7 @@ def select_vectorstore_by_name(name: str) -> VectorStore:
 
 def list_vectorstores() -> list[VectorStore]:
     with get_session() as session:
-        stmt = select(VectorStore)
+        stmt = select(VectorStore).order_by(VectorStore.name)
         entities = session.scalars(stmt).all()
         return entities
 
@@ -450,6 +450,6 @@ def list_available_vectorstores() -> list[VectorStore]:
     with get_session() as session:
         stmt = select(VectorStore).where(
             VectorStore.disabled == False
-        )
+        ).order_by(VectorStore.name)
         entities = session.scalars(stmt).all()
         return entities
