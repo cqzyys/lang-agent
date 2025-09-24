@@ -40,6 +40,7 @@ interface DroppableReactFlowProps {
   setNodes: React.Dispatch<React.SetStateAction<Node[]>>;
   setEdges: React.Dispatch<React.SetStateAction<Edge[]>>;
   selectedEdgeType: string;
+  setResult: React.Dispatch<React.SetStateAction<string>>;
 }
 export default function DroppableReactFlow({
   agent,
@@ -53,6 +54,7 @@ export default function DroppableReactFlow({
   setNodes,
   setEdges,
   selectedEdgeType,
+  setResult,
 }: DroppableReactFlowProps) {
   const { screenToFlowPosition } = useReactFlow();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -297,6 +299,7 @@ export default function DroppableReactFlow({
         </Panel>
         <CustomChatBotProvider
           agent_data={getAgentData(nodes, edges)}
+          setResult={setResult}
           setRunning={setRunning}
         />
         {running && (

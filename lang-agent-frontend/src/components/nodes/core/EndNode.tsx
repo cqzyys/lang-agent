@@ -4,7 +4,11 @@ import { Card, CardHeader } from "@heroui/react";
 
 import { DEFAULT_HANDLE_STYLE } from "../..";
 
-function EndNode() {
+export type EndNodeProps = {
+  onDrawerOpen: () => void;
+};
+
+function EndNode({ onDrawerOpen }: EndNodeProps) {
   return (
     <>
       <NodeResizer isVisible={false} />
@@ -15,7 +19,11 @@ function EndNode() {
         type="target"
       />
       <Card className="m-1 bg-red-200">
-        <CardHeader>
+        <CardHeader
+          onClick={() => {
+            onDrawerOpen();
+          }}
+        >
           <div className="font-black text-center w-full m-1">结束</div>
         </CardHeader>
       </Card>

@@ -27,9 +27,14 @@ import {
   Accordion,
   AccordionItem,
   addToast,
+  Drawer,
+  DrawerBody,
+  DrawerContent,
+  DrawerHeader,
   Radio,
   RadioGroup,
   Switch,
+  useDisclosure,
 } from "@heroui/react";
 import { useLocation, useNavigate } from "react-router-dom";
 
@@ -81,6 +86,12 @@ export default function FlowPage() {
   const [extendNodes, setExtendNodes] = useState<
     Array<{ type: string; description: string; data: any }>
   >([]);
+  const [result, setResult] = useState("");
+  const {
+    isOpen: isDrawerOpen,
+    onOpen: onDrawerOpen,
+    onOpenChange: onDrawerOpenChange,
+  } = useDisclosure();
 
   useEffect(() => {
     useModelStore.getState().fetchModels();
@@ -184,7 +195,7 @@ export default function FlowPage() {
           onDataChange={(newData) => updateNodeData(id, newData)}
         />
       ),
-      end: EndNode,
+      end: () => <EndNode onDrawerOpen={onDrawerOpen} />,
       user_input: ({ data, id }: { data: UserInputNodeData; id: string }) => (
         <UserInputNode
           data={data}
@@ -442,11 +453,31 @@ export default function FlowPage() {
               setAgent={setAgent}
               setEdges={setEdges}
               setNodes={setNodes}
+              setResult={setResult}
               onEdgesChange={onEdgesChange}
               onNodesChange={onNodesChange}
             />
           </div>
         </ReactFlowProvider>
+
+        <Drawer
+          isOpen={isDrawerOpen}
+          size="sm"
+          onOpenChange={onDrawerOpenChange}
+        >
+          <DrawerContent>
+            {(onClose) => (
+              <>
+                <DrawerHeader className="flex flex-col gap-1 bg-cyan-200">
+                  执行结果
+                </DrawerHeader>
+                <DrawerBody className="bg-slate-100">
+                  <p>{result}</p>
+                </DrawerBody>
+              </>
+            )}
+          </DrawerContent>
+        </Drawer>
       </div>
     </div>
   );

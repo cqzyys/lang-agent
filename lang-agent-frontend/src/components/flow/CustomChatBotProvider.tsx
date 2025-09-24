@@ -14,9 +14,14 @@ import { AgentData } from "@/types";
 interface ChatBotWrapperProps {
   agent_data: AgentData;
   setRunning: (running: boolean) => void;
+  setResult: React.Dispatch<React.SetStateAction<string>>;
 }
 
-function CustomChatBotWrapper({ agent_data, setRunning }: ChatBotWrapperProps) {
+function CustomChatBotWrapper({
+  agent_data,
+  setRunning,
+  setResult,
+}: ChatBotWrapperProps) {
   const { messages, injectMessage, removeMessage } = useMessages();
   const chatId = useRef("");
   //执行Agent
@@ -35,14 +40,16 @@ function CustomChatBotWrapper({ agent_data, setRunning }: ChatBotWrapperProps) {
           removeMessage(message.id);
         });
         //重新写入messages
-        response.data.messages.forEach((message: any) => {
+        response.data.messages.forEach((message: any, index: number) => {
           if (message.type === "ai") {
             injectMessage(message.content);
           } else {
             injectMessage(message.content, "user");
           }
+          if (index === response.data.messages.length - 1) {
+            setResult(message.content);
+          }
         });
-        //injectMessage(response.data.messages.at(-1).content);
       })
       .catch((error) => {
         addToast({
@@ -70,7 +77,11 @@ function CustomChatBotWrapper({ agent_data, setRunning }: ChatBotWrapperProps) {
           运行
         </Button>
       </Panel>
-      <EmbeddedChatbot agent_data={agent_data} chatId={chatId.current} />
+      <EmbeddedChatbot
+        agent_data={agent_data}
+        chatId={chatId.current}
+        setResult={setResult}
+      />
     </>
   );
 }
@@ -78,10 +89,15 @@ function CustomChatBotWrapper({ agent_data, setRunning }: ChatBotWrapperProps) {
 function CustomChatBotProvider({
   agent_data,
   setRunning,
+  setResult,
 }: ChatBotWrapperProps) {
   return (
     <ChatBotProvider>
-      <CustomChatBotWrapper agent_data={agent_data} setRunning={setRunning} />
+      <CustomChatBotWrapper
+        agent_data={agent_data}
+        setResult={setResult}
+        setRunning={setRunning}
+      />
     </ChatBotProvider>
   );
 }

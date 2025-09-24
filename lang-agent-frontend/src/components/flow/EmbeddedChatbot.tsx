@@ -40,9 +40,14 @@ const styles: Styles = {
 interface EmbeddedChatbotProps {
   chatId: string;
   agent_data: AgentData;
+  setResult: React.Dispatch<React.SetStateAction<string>>;
 }
 
-function EmbeddedChatbot({ chatId, agent_data }: EmbeddedChatbotProps) {
+function EmbeddedChatbot({
+  chatId,
+  agent_data,
+  setResult,
+}: EmbeddedChatbotProps) {
   const flow = {
     start: {
       message: "",
@@ -59,7 +64,10 @@ function EmbeddedChatbot({ chatId, agent_data }: EmbeddedChatbotProps) {
             state: { messages: params.userInput },
           })
           .then((response) => {
-            params.injectMessage(response.data.messages.at(-1).content);
+            let last_message = response.data.messages.at(-1);
+
+            params.injectMessage(last_message.content);
+            setResult(last_message.content);
           })
           .catch((error) => {
             addToast({
