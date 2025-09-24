@@ -16,12 +16,14 @@ const DocSaveNodeConfig: NodeConfig<DocSaveNodeData> = {
     id: "",
     type: "doc_save",
     name: "doc_save",
+    content: "",
     save_path: "",
   },
   component: DocSaveNode,
 };
 
 export type DocSaveNodeData = BaseNodeData & {
+  content: string;
   save_path: string;
 };
 
@@ -55,6 +57,20 @@ function DocSaveNode({ id, data, onDataChange }: DocSaveNodeProps) {
               size="sm"
               value={data.name}
               onChange={(e) => onDataChange({ ...data, name: e.target.value })}
+            />
+            <Input
+              isRequired
+              className="nodrag"
+              errorMessage="请输入文档内容"
+              label="文档内容"
+              name="content"
+              placeholder="请输入文档内容"
+              radius="sm"
+              size="sm"
+              value={data.content}
+              onChange={(e) =>
+                onDataChange({ ...data, content: e.target.value })
+              }
             />
             <Input
               isRequired
