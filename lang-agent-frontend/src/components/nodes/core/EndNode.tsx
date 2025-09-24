@@ -20,7 +20,7 @@ function EndNode({ onDrawerOpen }: EndNodeProps) {
       />
       <Card className="m-1 bg-red-200">
         <CardHeader
-          onClick={() => {
+          onDoubleClick={() => {
             onDrawerOpen();
           }}
         >
