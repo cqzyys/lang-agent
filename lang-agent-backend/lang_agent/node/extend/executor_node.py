@@ -14,7 +14,7 @@ logger = get_logger(__name__)
 
 class ExecutorNodeData(BaseNodeData):
     code: str = Field(..., description="Python代码")
-
+    message_show: Optional[bool] = Field(default=True, description="是否显示消息")
 
 class ExecutorNodeParam(BaseNodeParam):
     data: Optional[ExecutorNodeData] = Field(default=None, description="节点数据")
@@ -28,6 +28,7 @@ class ExecutorNode(BaseNode):
         param = adapter.validate_python(param)
         super().__init__(param, **kwargs)
         self.code = param.data.code
+        self.message_show = param.data.message_show
 
     async def ainvoke(self, state: dict):
         try:
@@ -39,12 +40,19 @@ class ExecutorNode(BaseNode):
             else:
                 return {
                     "messages": AIMessage(
-                        content="Error: Invalid code block",
-                        name=self.name
+                        content = "Error: Invalid code block",
+                        name = self.name,
+                        message_show = self.message_show
                     )
                 }
-            result =  PythonREPL().run(self.code)
-            return {"messages": AIMessage(content=result, name=self.name)}
+            result = PythonREPL().run(self.code)
+            return {
+                "messages": AIMessage(
+                    content = result,
+                    name = self.name,
+                    message_show = self.message_show
+                )
+            }
         except Exception as e:
             logger.info(traceback.format_exc())
             raise e

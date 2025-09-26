@@ -13,6 +13,7 @@ logger = get_logger(__name__)
 
 class StartNodeData(BaseNodeData):
     guiding_words: Optional[str] = Field(default="", description="引导词")
+    message_show: Optional[bool] = Field(default=True, description="是否显示消息")
 
 
 class StartNodeParam(BaseNodeParam):
@@ -27,12 +28,17 @@ class StartNode(BaseNode):
         param = adapter.validate_python(param)
         super().__init__(param, **kwargs)
         self.guiding_words = param.data.guiding_words
+        self.message_show = param.data.message_show
 
     async def ainvoke(self, state: dict):
         try:
             if self.guiding_words:
                 state["messages"] = [
-                    AIMessage(content=self.guiding_words, name=self.name)
+                    AIMessage(
+                        content=self.guiding_words,
+                        name=self.name,
+                        message_show = self.message_show,
+                    )
                 ]
             return state
         except Exception as e:

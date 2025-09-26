@@ -46,8 +46,8 @@ class DocLoaderNode(BaseNode):
     async def ainvoke(self, state: dict):
         try:
             resume_state: dict = interrupt({
-                "interrupt_type": self.type,
-                "messages": self.guiding_words
+                "type": self.type,
+                "message": self.guiding_words
             })
             files: list[FileData] = resume_state.get("files", [])
             contents: list[str] = []

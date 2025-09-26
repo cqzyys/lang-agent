@@ -47,3 +47,19 @@ export type VectorStore = {
 };
 
 export type McpMap = Record<string, string[]>;
+
+export type Message = {
+  id: string;
+  content: string;
+  type: "ai" | "human";
+  message_show: boolean;
+};
+
+export type InterruptValue = {
+  type: string;
+  message: string;
+};
+
+export type Interrupt = {
+  value: InterruptValue;
+};

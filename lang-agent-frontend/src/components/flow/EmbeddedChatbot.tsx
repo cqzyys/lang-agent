@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { memo, useState } from "react";
 import ChatBot, {
   Settings,
   Styles,
@@ -8,7 +8,7 @@ import ChatBot, {
 import { addToast } from "@heroui/react";
 
 import apiClient from "@/hooks";
-import { AgentData } from "@/types";
+import { AgentData, Message, Interrupt } from "@/types";
 
 const settings: Settings = {
   tooltip: {
@@ -66,25 +66,33 @@ function EmbeddedChatbot({
 }: EmbeddedChatbotProps) {
   const { goToPath } = usePaths();
   const { injectMessage, removeMessage } = useMessages();
+  const [messageMap, setMessageMap] = useState<Record<string, string>>({});
 
   // 消息处理函数
-  const handleMessages = (messages: any[]) => {
-    const last_message = messages.at(-1);
-
-    if (last_message) {
-      injectMessage(last_message.content);
-      setResult(last_message.content);
-    }
+  const handleMessages = (messages: Message[]) => {
+    messages.forEach((message: Message, index: number) => {
+      if (!(message.id in messageMap) && message.message_show) {
+        if (message.type === "ai") {
+          injectMessage(message.content);
+        } else {
+          injectMessage(message.content, "user");
+        }
+        setMessageMap({ ...messageMap, [message.id]: message.content });
+      }
+      if (index === messages.length - 1) {
+        setResult(message.content);
+      }
+    });
   };
 
   // 中断处理函数
-  const handleInterrupts = (interrupts: any[]) => {
+  const handleInterrupts = (interrupts: Interrupt[]) => {
     if (interrupts && interrupts.length > 0) {
       const interrupt = interrupts[0];
 
-      if (interrupt && interrupt.value && interrupt.value.messages) {
-        injectMessage(interrupt.value.messages);
-        goToPath(path_map[interrupt.value.interrupt_type] || "blank");
+      if (interrupt && interrupt.value && interrupt.value.message) {
+        injectMessage(interrupt.value.message);
+        goToPath(path_map[interrupt.value.type] || "blank");
       } else {
         goToPath("blank");
       }

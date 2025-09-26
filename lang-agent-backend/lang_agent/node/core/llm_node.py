@@ -2,7 +2,7 @@ import traceback
 from typing import Optional, Union
 
 from langchain_core.language_models.base import BaseLanguageModel
-from langchain_core.messages import BaseMessage
+from langchain_core.messages import BaseMessage, AIMessage
 from langchain_core.prompts import ChatPromptTemplate
 from pydantic import Field, TypeAdapter
 
@@ -21,6 +21,7 @@ class LLMNodeData(BaseNodeData):
     model: str = Field(..., description="模型名称")
     system_prompt: Optional[str] = Field(default="", description="系统提示词")
     user_prompt: Optional[str] = Field(default="", description="用户提示词")
+    message_show: Optional[bool] = Field(default=True, description="是否显示消息")
 
 
 class LLMNodeParam(BaseNodeParam):
@@ -37,6 +38,7 @@ class LLMNode(BaseNode):
         self.model: BaseLanguageModel = resource_manager.models["llm"][param.data.model]
         self.system_prompt = param.data.system_prompt
         self.user_prompt = param.data.user_prompt
+        self.message_show = param.data.message_show
 
     async def ainvoke(self, state: dict):
         try:
@@ -49,8 +51,12 @@ class LLMNode(BaseNode):
             )
             chain = template | self.model
             args = parse_args(self.system_prompt + self.user_prompt, state)
-            message: BaseMessage = await chain.ainvoke(args)
-            message.name = self.name
+            raw_message: BaseMessage = await chain.ainvoke(args)
+            message: AIMessage = AIMessage(
+                content = raw_message.content,
+                name = self.name,
+                message_show = self.message_show
+            )
             return {"messages": [message]}
         except Exception as e:
             logger.info(traceback.format_exc())
