@@ -1,5 +1,10 @@
 import { memo } from "react";
-import ChatBot, { Settings, Styles, usePaths } from "react-chatbotify";
+import ChatBot, {
+  Settings,
+  Styles,
+  usePaths,
+  useMessages,
+} from "react-chatbotify";
 import { addToast } from "@heroui/react";
 
 import apiClient from "@/hooks";
@@ -60,10 +65,50 @@ function EmbeddedChatbot({
   setRunning,
 }: EmbeddedChatbotProps) {
   const { goToPath } = usePaths();
+  const { injectMessage, removeMessage } = useMessages();
+
+  // 消息处理函数
+  const handleMessages = (messages: any[]) => {
+    const last_message = messages.at(-1);
+
+    if (last_message) {
+      injectMessage(last_message.content);
+      setResult(last_message.content);
+    }
+  };
+
+  // 中断处理函数
+  const handleInterrupts = (interrupts: any[]) => {
+    if (interrupts && interrupts.length > 0) {
+      const interrupt = interrupts[0];
+
+      if (interrupt && interrupt.value && interrupt.value.messages) {
+        injectMessage(interrupt.value.messages);
+        goToPath(path_map[interrupt.value.interrupt_type] || "blank");
+      } else {
+        goToPath("blank");
+      }
+    } else {
+      goToPath("blank");
+    }
+  };
+
+  // 错误处理函数
+  const handleError = (error: any, titlePrefix: string = "请求失败:") => {
+    const errorMessage =
+      error.response?.data?.error || error.response?.data?.detail || "未知错误";
+
+    addToast({
+      title: titlePrefix + errorMessage,
+      timeout: 1000,
+      shouldShowTimeoutProgress: true,
+      color: "danger",
+    });
+  };
 
   const flow = {
     start: {
-      message: async (params: any) => {
+      message: async () => {
         if (chatId) {
           apiClient
             .post("/v1/agent/arun", {
@@ -72,30 +117,11 @@ function EmbeddedChatbot({
               state: {},
             })
             .then((response) => {
-              let last_message = response.data.messages.at(-1);
-
-              params.injectMessage(last_message.content);
-              setResult(last_message.content);
-              //如果返回状态有__interrupt__代表graph执行中断
-              const interrupts = response.data.__interrupt__;
-
-              if (interrupts) {
-                params.injectMessage(interrupts[0]["value"]["messages"]);
-
-                goToPath(
-                  path_map[interrupts[0]["value"]["interrupt_type"]] || "blank",
-                );
-              } else {
-                goToPath("blank");
-              }
+              handleMessages(response.data.messages);
+              handleInterrupts(response.data.__interrupt__);
             })
             .catch((error) => {
-              addToast({
-                title: "请求失败:" + error.response.data.error,
-                timeout: 1000,
-                shouldShowTimeoutProgress: true,
-                color: "danger",
-              });
+              handleError(error);
             })
             .finally(() => {
               setRunning(false);
@@ -112,7 +138,7 @@ function EmbeddedChatbot({
     },
     chat: {
       message: async (params: any) => {
-        const loadingMsg = await params.injectMessage("⏳ 正在思考中...");
+        const loadingMsg = await injectMessage("⏳ 正在思考中...");
 
         apiClient
           .post("/v1/agent/arun", {
@@ -121,37 +147,23 @@ function EmbeddedChatbot({
             state: { messages: params.userInput },
           })
           .then((response) => {
-            let last_message = response.data.messages.at(-1);
-
-            params.injectMessage(last_message.content);
-            setResult(last_message.content);
-            const interrupts = response.data.__interrupt__;
-
-            if (interrupts) {
-              goToPath(
-                path_map[interrupts[0]["value"]["interrupt_type"]] || "blank",
-              );
-            } else {
-              goToPath("blank");
-            }
+            handleMessages(response.data.messages);
+            handleInterrupts(response.data.__interrupt__);
           })
           .catch((error) => {
-            addToast({
-              title: "请求失败:" + error.response.data.detail,
-              timeout: 1000,
-              shouldShowTimeoutProgress: true,
-              color: "danger",
-            });
+            handleError(error);
           })
           .finally(() => {
-            params.removeMessage(loadingMsg.id);
+            if (loadingMsg) {
+              removeMessage(loadingMsg.id);
+            }
           });
       },
     },
     upload: {
       chatDisabled: true,
       file: async (params: any) => {
-        const uploadingMsg = await params.injectMessage("⏳ 文档上传中...");
+        const uploadingMsg = await injectMessage("⏳ 文档上传中...");
         const files: FileList = params.files;
 
         if (files && files.length > 0) {
@@ -180,31 +192,16 @@ function EmbeddedChatbot({
                     state: { files: newFiles },
                   })
                   .then((response) => {
-                    let last_message = response.data.messages.at(-1);
-
-                    params.injectMessage(last_message.content);
-                    setResult(last_message.content);
-                    const interrupts = response.data.__interrupt__;
-
-                    if (interrupts) {
-                      goToPath(
-                        path_map[interrupts[0]["value"]["interrupt_type"]] ||
-                          "blank",
-                      );
-                    } else {
-                      goToPath("blank");
-                    }
+                    handleMessages(response.data.messages);
+                    handleInterrupts(response.data.__interrupt__);
                   })
                   .catch((error) => {
-                    addToast({
-                      title: "请求失败:" + error.response.data.detail,
-                      timeout: 1000,
-                      shouldShowTimeoutProgress: true,
-                      color: "danger",
-                    });
+                    handleError(error);
                   })
                   .finally(() => {
-                    params.removeMessage(uploadingMsg.id);
+                    if (uploadingMsg) {
+                      removeMessage(uploadingMsg.id);
+                    }
                   });
               }
             };
