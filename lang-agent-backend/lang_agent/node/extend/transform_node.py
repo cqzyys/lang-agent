@@ -32,8 +32,7 @@ class TransformNode(BaseNode):
         self.origin_state_field = param.data.origin_state_field
         self.target_state_field = param.data.target_state_field
 
-
-    def invoke(self, state: dict):
+    async def ainvoke(self, state: dict):
         try:
             if self.origin_state_field:
                 content = complete_content(self.origin_state_field, state)
@@ -48,6 +47,3 @@ class TransformNode(BaseNode):
         except Exception as e:
             logger.info(traceback.format_exc())
             raise e
-
-    async def ainvoke(self, state: dict):
-        return self.invoke(state)

@@ -38,24 +38,6 @@ class LLMNode(BaseNode):
         self.system_prompt = param.data.system_prompt
         self.user_prompt = param.data.user_prompt
 
-    def invoke(self, state: dict):
-        try:
-            template = ChatPromptTemplate.from_messages(
-                [
-                    ("system", self.system_prompt),
-                    ("human", self.user_prompt),
-                ],
-                template_format="mustache",
-            )
-            chain = template | self.model
-            args = parse_args(self.system_prompt + self.user_prompt, state)
-            message: BaseMessage = chain.invoke(args)
-            message.name = self.name
-            return {"messages": [message]}
-        except Exception as e:
-            logger.info(traceback.format_exc())
-            raise e
-
     async def ainvoke(self, state: dict):
         try:
             template = ChatPromptTemplate.from_messages(

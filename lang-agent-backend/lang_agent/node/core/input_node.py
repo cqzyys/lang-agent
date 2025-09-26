@@ -30,7 +30,7 @@ class InputNode(BaseNode):
         super().__init__(param, **kwargs)
         self.state_field = param.data.state_field
 
-    def invoke(self, state: dict):
+    async def ainvoke(self, state: dict):
         try:
             resume_state: dict = interrupt({"interrupt_type": self.type})
             if self.state_field == "messages":
@@ -43,6 +43,3 @@ class InputNode(BaseNode):
         except Exception as e:
             logger.info(traceback.format_exc())
             raise e
-
-    async def ainvoke(self, state: dict):
-        return self.invoke(state)

@@ -24,7 +24,7 @@ class EndNode(BaseNode):
         param = adapter.validate_python(param)
         super().__init__(param, **kwargs)
 
-    def invoke(self, state: dict):
+    async def ainvoke(self, state: dict):
         try:
             subgraph = self.kwargs.get("subgraph",False)
             agent_name = self.kwargs.get("agent_name")
@@ -37,6 +37,3 @@ class EndNode(BaseNode):
         except Exception as e:
             logger.info(traceback.format_exc())
             raise e
-
-    async def ainvoke(self, state: dict):
-        return self.invoke(state)

@@ -41,7 +41,7 @@ class VectorRetrieverNode(BaseNode):
         self.keywords: str = param.data.keywords
         self.vs: VectorStore = resource_manager.vectorstore_map[self.vs_name]
 
-    def invoke(self, state: dict):
+    async def ainvoke(self, state: dict):
         try:
             keywords = complete_content(self.keywords, state)
             docs: list[Document] = self.vs.similarity_search(keywords)
@@ -50,5 +50,3 @@ class VectorRetrieverNode(BaseNode):
         except Exception as e:
             logger.info(traceback.format_exc())
             raise e
-    async def ainvoke(self, state: dict):
-        return self.invoke(state)

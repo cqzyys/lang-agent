@@ -163,7 +163,7 @@ function EmbeddedChatbot({
     upload: {
       chatDisabled: true,
       file: async (params: any) => {
-        const uploadingMsg = await injectMessage("⏳ 文档上传中...");
+        const loadingMsg = await injectMessage("⏳ 正在思考中...");
         const files: FileList = params.files;
 
         if (files && files.length > 0) {
@@ -199,8 +199,8 @@ function EmbeddedChatbot({
                     handleError(error);
                   })
                   .finally(() => {
-                    if (uploadingMsg) {
-                      removeMessage(uploadingMsg.id);
+                    if (loadingMsg) {
+                      removeMessage(loadingMsg.id);
                     }
                   });
               }

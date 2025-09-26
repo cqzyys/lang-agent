@@ -28,12 +28,6 @@ class BaseNode(ABC):
         self.kwargs = kwargs
 
     @abstractmethod
-    def invoke(self, state: MessagesState):
-        """
-        Subclass needs to implement methods
-        """
-
-    @abstractmethod
     async def ainvoke(self, state: MessagesState):
         """
         Subclass needs to implement methods

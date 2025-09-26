@@ -28,7 +28,7 @@ class StartNode(BaseNode):
         super().__init__(param, **kwargs)
         self.guiding_words = param.data.guiding_words
 
-    def invoke(self, state: dict):
+    async def ainvoke(self, state: dict):
         try:
             if self.guiding_words:
                 state["messages"] = [
@@ -38,6 +38,3 @@ class StartNode(BaseNode):
         except Exception as e:
             logger.info(traceback.format_exc())
             raise e
-
-    async def ainvoke(self, state: dict):
-        return self.invoke(state)

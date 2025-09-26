@@ -43,44 +43,6 @@ class DocLoaderNode(BaseNode):
         self.dir_path = PROJECT_ROOT / "tmp" / XID().string()
         os.makedirs(self.dir_path, exist_ok=True)
 
-    def invoke(self, state: dict):
-        try:
-            resume_state: dict = interrupt({
-                "interrupt_type": self.type,
-                "messages":self.guiding_words
-            })
-            files: list[FileData] = resume_state.get("files", [])
-            contents: list[str] = []
-            for file in files:
-                _, encoded = file["file_content"].split(";base64,", 1)
-                file_data = base64.b64decode(encoded)
-                file_path = self.dir_path / file["file_name"]
-                with open(file_path, "wb") as f:
-                    f.write(file_data)
-                file_type = file["file_name"].split(".")[-1].lower()
-                match file_type:
-                    case "pdf":
-                        from langchain_community.document_loaders import PyPDFLoader
-                        loader = PyPDFLoader(file_path)
-                    case "txt":
-                        from langchain_community.document_loaders import TextLoader
-                        loader = TextLoader(file_path, encoding="utf-8")
-                    case "docx" | "md":
-                        from langchain_unstructured import UnstructuredLoader
-                        loader = UnstructuredLoader(file_path)
-                    case _:
-                        raise ValueError("Unsupported File Type")
-                contents.append(
-                    "\n".join([page.page_content for page in loader.load()])
-                )
-            shutil.rmtree(self.dir_path)
-            return {"messages": [
-                AIMessage(content="\n\n".join(contents), name=self.name)
-            ]}
-        except Exception as e:
-            logger.info(traceback.format_exc())
-            raise e
-
     async def ainvoke(self, state: dict):
         try:
             resume_state: dict = interrupt({

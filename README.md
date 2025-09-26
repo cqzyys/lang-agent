@@ -415,9 +415,6 @@ class XXXNode(BaseNode):
         param = adapter.validate_python(param)
         super().__init__(param, **kwargs)
 
-    def invoke(self, state: dict):
-        '''Sync Business Processing Logic'''
-
     async def ainvoke(self, state: dict):
         '''ASync Business Processing Logic'''
 

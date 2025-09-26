@@ -43,7 +43,7 @@ class VectorIngestNode(BaseNode):
             chunk_overlap=50,
         )
 
-    def invoke(self, state: dict):
+    async def ainvoke(self, state: dict):
         try:
             content = complete_content(self.content, state)
             texts = self.text_splitter.split_text(content)
@@ -57,6 +57,3 @@ class VectorIngestNode(BaseNode):
         except Exception as e:
             logger.info(traceback.format_exc())
             raise e
-
-    async def ainvoke(self, state: dict):
-        self.invoke(state)

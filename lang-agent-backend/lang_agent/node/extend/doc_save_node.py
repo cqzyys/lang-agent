@@ -28,14 +28,12 @@ class DocSaveNode(BaseNode):
         self.save_path = param.data.save_path
         super().__init__(param, **kwargs)
 
-    def invoke(self, state: dict):
+    async def ainvoke(self, state: dict):
         try:
             content = complete_content(self.content, state)
             with open(self.save_path, "w", encoding="utf-8") as f:
                 f.write(content)
+            return state
         except Exception as e:
             logger.info(traceback.format_exc())
             raise e
-    async def ainvoke(self, state: dict):
-        self.invoke(state)
-        return state

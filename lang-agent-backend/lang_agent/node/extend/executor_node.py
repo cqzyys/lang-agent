@@ -29,7 +29,7 @@ class ExecutorNode(BaseNode):
         super().__init__(param, **kwargs)
         self.code = param.data.code
 
-    def invoke(self, state: dict):
+    async def ainvoke(self, state: dict):
         try:
             self.code = complete_content(self.code, state)
             pattern = r'```python\s*(.*?)\s*```'
@@ -48,7 +48,4 @@ class ExecutorNode(BaseNode):
         except Exception as e:
             logger.info(traceback.format_exc())
             raise e
-
-    async def ainvoke(self, state: dict):
-        return self.invoke(state)
     

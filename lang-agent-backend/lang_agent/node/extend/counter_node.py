@@ -29,13 +29,10 @@ class CounterNode(BaseNode):
         super().__init__(param, **kwargs)
         self.state_field = param.data.state_field
 
-    def invoke(self, state: dict):
+    async def ainvoke(self, state: dict):
         try:
             count = state.get(self.state_field, 1)
             return {self.state_field: count + 1}
         except Exception as e:
             logger.info(traceback.format_exc())
             raise e
-
-    async def ainvoke(self, state: dict):
-        return self.invoke(state)
