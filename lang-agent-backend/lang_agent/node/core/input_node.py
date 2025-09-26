@@ -1,8 +1,9 @@
 import traceback
 from typing import Optional, Union
+from pydantic import Field, TypeAdapter
 
 from langchain_core.messages import HumanMessage
-from pydantic import Field, TypeAdapter
+from langgraph.types import interrupt
 
 from lang_agent.logger import get_logger
 from .base import BaseNode, BaseNodeData, BaseNodeParam
@@ -31,11 +32,14 @@ class InputNode(BaseNode):
 
     def invoke(self, state: dict):
         try:
+            resume_state: dict = interrupt({"interrupt_type": self.type})
             if self.state_field == "messages":
-                message: HumanMessage = state["messages"][-1]
-                message.name = self.name
-                return state
-            return {self.state_field: state[self.state_field]}
+                message: HumanMessage = HumanMessage(
+                    content=resume_state.get("messages",""),
+                    name=self.name
+                )
+                return {"messages": [message]}
+            return {self.state_field: resume_state[self.state_field]}
         except Exception as e:
             logger.info(traceback.format_exc())
             raise e

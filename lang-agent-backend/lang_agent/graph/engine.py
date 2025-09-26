@@ -4,13 +4,11 @@ from typing import (
     Optional,
     Type,
 )
-
 from langgraph.graph import END, START, StateGraph
 from langgraph.graph.message import MessagesState
 from langgraph.graph.state import CompiledStateGraph
-from langgraph.types import StateSnapshot
+from langgraph.types import Command,StateSnapshot
 
-from lang_agent.logger import get_logger
 from lang_agent.edge import ConditionEdge
 from lang_agent.edge.util import EdgeData, Target
 from lang_agent.node import BaseNode
@@ -18,6 +16,7 @@ from lang_agent.node.agent import BaseAgentNode
 from lang_agent.node.node_factory import NodeFactory
 from lang_agent.setting import async_checkpointer
 from lang_agent.util import parse_type,merge_json
+from lang_agent.logger import get_logger
 
 logger = get_logger(__name__)
 
@@ -52,12 +51,12 @@ class GraphEngine:
                     continue
                 DynamicState.__annotations__[key] = parse_type(value)
             graph_builder = StateGraph(DynamicState)
-            start_node, end_nodes, input_nodes = await self._init_nodes(
+            start_node, end_nodes = await self._init_nodes(
                 graph_builder, nodes
             )
             await self._init_edges(graph_builder, edges, start_node, end_nodes)
             graph: CompiledStateGraph = graph_builder.compile(
-                checkpointer=await async_checkpointer(), interrupt_before=input_nodes
+                checkpointer=await async_checkpointer()
             )
             graph.get_graph().print_ascii()
             self.graph = graph
@@ -68,7 +67,6 @@ class GraphEngine:
     async def _init_nodes(self, graph_builder: StateGraph, nodes: list[dict]):
         start_node: str = None
         end_nodes: list[str] = []
-        input_nodes: list[str] = []
         for param in nodes:
             node: BaseNode = NodeFactory.instance(
                 param,
@@ -81,15 +79,13 @@ class GraphEngine:
                 start_node = node.name
             if node.__class__.type == "end":
                 end_nodes.append(node.name)
-            if node.__class__.type == "user_input":
-                input_nodes.append(node.name)
             if isinstance(node, BaseAgentNode):
                 graph_builder.add_node(node.name, node.agent)
                 self.has_subgraphs = True
             else:
                 graph_builder.add_node(node.name, node.ainvoke)
             self.node_map[node.name] = node
-        return start_node, end_nodes, input_nodes
+        return start_node, end_nodes
 
     async def _init_edges(
         self, graph_builder: StateGraph, edges, start_node: str, end_nodes: list[str]
@@ -145,16 +141,16 @@ class GraphEngine:
                 config=self.graph_config, subgraphs=has_subgraphs
             )
             if snapshot.next == ():
-                return await self.graph.ainvoke(
+                result = await self.graph.ainvoke(
                     input=state,
                     config=self.graph_config,
                     subgraphs=has_subgraphs
                 )
+                return result
             return await self.aresume(state,has_subgraphs)
         except Exception as e:
             logger.info(traceback.format_exc())
             raise e
-
 
     async def aresume(self, state: dict, has_subgraphs: bool = False) -> dict:
         def _get_config(snapshot: StateSnapshot):
@@ -170,21 +166,14 @@ class GraphEngine:
             )
             config = _get_config(snapshot)
             if state is not None:
-                await self.graph.aupdate_state(config=config, values=state)
-                snapshot: StateSnapshot = await self.graph.aget_state(
-                    config=self.graph_config,
+                return await self.graph.ainvoke(
+                    input=Command(resume=state),
+                    config=config,
                     subgraphs=has_subgraphs
                 )
-                config = _get_config(snapshot)
-            return await self.graph.ainvoke(
-                input=None,
-                config=config,
-                subgraphs=has_subgraphs
-            )
         except Exception as e:
             logger.info(traceback.format_exc())
             raise e
-
 
     def _get_subgraphs_config(self,snapshot: StateSnapshot):
         for task in snapshot.tasks:

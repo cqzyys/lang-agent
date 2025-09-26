@@ -1,14 +1,12 @@
-import { ChatBotProvider, useMessages } from "react-chatbotify";
+import { ChatBotProvider, useFlow } from "react-chatbotify";
 import { Panel } from "@xyflow/react";
 import { Button } from "@heroui/button";
 import { nanoid } from "nanoid";
-import { addToast } from "@heroui/react";
-import { useRef } from "react";
+import { useState } from "react";
 
 import EmbeddedChatbot from "./EmbeddedChatbot";
 
 import { Icon } from "@/components";
-import apiClient from "@/hooks";
 import { AgentData } from "@/types";
 
 interface ChatBotWrapperProps {
@@ -22,46 +20,14 @@ function CustomChatBotWrapper({
   setRunning,
   setResult,
 }: ChatBotWrapperProps) {
-  const { messages, injectMessage, removeMessage } = useMessages();
-  const chatId = useRef("");
+  const [chatId, setChatId] = useState("");
+  const { restartFlow } = useFlow();
+
   //执行Agent
   const onRun = () => {
     setRunning(true);
-    chatId.current = nanoid(8);
-    apiClient
-      .post("/v1/agent/arun", {
-        chat_id: chatId.current,
-        agent_data: agent_data,
-        state: {},
-      })
-      .then((response) => {
-        //清除原来的messages
-        messages.forEach((message: any) => {
-          removeMessage(message.id);
-        });
-        //重新写入messages
-        response.data.messages.forEach((message: any, index: number) => {
-          if (message.type === "ai") {
-            injectMessage(message.content);
-          } else {
-            injectMessage(message.content, "user");
-          }
-          if (index === response.data.messages.length - 1) {
-            setResult(message.content);
-          }
-        });
-      })
-      .catch((error) => {
-        addToast({
-          title: "请求失败:" + error.response.data.error,
-          timeout: 1000,
-          shouldShowTimeoutProgress: true,
-          color: "danger",
-        });
-      })
-      .finally(() => {
-        setRunning(false);
-      });
+    setChatId(nanoid(8));
+    Promise.resolve().then(() => restartFlow());
   };
 
   return (
@@ -79,8 +45,9 @@ function CustomChatBotWrapper({
       </Panel>
       <EmbeddedChatbot
         agent_data={agent_data}
-        chatId={chatId.current}
+        chatId={chatId}
         setResult={setResult}
+        setRunning={setRunning}
       />
     </>
   );

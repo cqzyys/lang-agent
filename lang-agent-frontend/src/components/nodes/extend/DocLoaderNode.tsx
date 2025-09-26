@@ -16,16 +16,13 @@ const DocLoaderNodeConfig: NodeConfig<DocLoaderNodeData> = {
     id: "",
     type: "doc_loader",
     name: "doc_loader",
-    files: [],
+    guiding_words: "请上传文件",
   },
   component: DocLoaderNode,
 };
 
 export type DocLoaderNodeData = BaseNodeData & {
-  files: Array<{
-    file_name: string;
-    file_content: string;
-  }>;
+  guiding_words: string;
 };
 
 export type DocLoaderNodeProps = NodeProps<DocLoaderNodeData>;
@@ -60,50 +57,18 @@ function DocLoaderNode({ id, data, onDataChange }: DocLoaderNodeProps) {
               onChange={(e) => onDataChange({ ...data, name: e.target.value })}
             />
             <Input
-              multiple
+              isRequired
               className="nodrag"
-              label="上传文档"
-              name="files"
+              errorMessage="请输入引导词"
+              label="引导词"
+              name="guiding_words"
+              placeholder="请输入引导词"
               radius="sm"
               size="sm"
-              type="file"
-              onChange={(e) => {
-                onDataChange({
-                  ...data,
-                  files: [],
-                });
-                const files = e.target.files;
-
-                if (files && files.length > 0) {
-                  const newFiles: Array<{
-                    file_name: string;
-                    file_content: string;
-                  }> = [];
-                  let processedFiles = 0;
-
-                  Array.from(files).forEach((file) => {
-                    const reader = new FileReader();
-
-                    reader.onload = () => {
-                      newFiles.push({
-                        file_name: file.name,
-                        file_content: reader.result as string,
-                      });
-
-                      processedFiles++;
-                      // 当所有文件都处理完毕时更新状态
-                      if (processedFiles === files.length) {
-                        onDataChange({
-                          ...data,
-                          files: [...(data.files || []), ...newFiles],
-                        });
-                      }
-                    };
-
-                    reader.readAsDataURL(file);
-                  });
-                }
-              }}
+              value={data.guiding_words}
+              onChange={(e) =>
+                onDataChange({ ...data, guiding_words: e.target.value })
+              }
             />
           </Form>
         </CardBody>
