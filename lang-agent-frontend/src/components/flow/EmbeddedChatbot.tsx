@@ -6,6 +6,9 @@ import ChatBot, {
   useMessages,
 } from "react-chatbotify";
 import { addToast } from "@heroui/react";
+import MarkdownRenderer, {
+  MarkdownRendererBlock,
+} from "@rcb-plugins/markdown-renderer";
 
 import apiClient from "@/hooks";
 import { AgentData, Message, Interrupt } from "@/types";
@@ -136,14 +139,20 @@ function EmbeddedChatbot({
             });
         }
       },
-    },
+      renderMarkdown: ["BOT", "USER"],
+    } as MarkdownRendererBlock,
     blank: {
-      message: "",
+      message: async () => {
+        return "";
+      },
       chatDisabled: async () => {
         return false;
       },
-      path: "chat",
-    },
+      path: async () => {
+        return "chat";
+      },
+      renderMarkdown: ["BOT", "USER"],
+    } as MarkdownRendererBlock,
     chat: {
       message: async (params: any) => {
         const loadingMsg = await injectMessage("⏳ 正在思考中...");
@@ -167,7 +176,8 @@ function EmbeddedChatbot({
             }
           });
       },
-    },
+      renderMarkdown: ["BOT", "USER"],
+    } as MarkdownRendererBlock,
     upload: {
       chatDisabled: true,
       file: async (params: any) => {
@@ -199,8 +209,9 @@ function EmbeddedChatbot({
                     agent_data: agent_data,
                     state: { files: newFiles },
                   })
-                  .then((response) => {
+                  .then(async (response) => {
                     handleMessages(response.data.messages);
+                    //await new Promise((resolve) => setTimeout(resolve, 1000));
                     handleInterrupts(response.data.__interrupt__);
                   })
                   .catch((error) => {
@@ -218,11 +229,20 @@ function EmbeddedChatbot({
           });
         }
       },
-    },
+      renderMarkdown: ["BOT", "USER"],
+    } as MarkdownRendererBlock,
   };
 
+  const plugins = [MarkdownRenderer()];
+
   return (
-    <ChatBot flow={flow} id={chatId} settings={settings} styles={styles} />
+    <ChatBot
+      flow={flow}
+      id={chatId}
+      plugins={plugins}
+      settings={settings}
+      styles={styles}
+    />
   );
 }
 

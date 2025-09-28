@@ -23,6 +23,7 @@
     "@heroui/system": "2.4.15",
     "@heroui/theme": "2.4.15",
     "@heroui/use-theme": "2.1.8",
+    "@rcb-plugins/markdown-renderer": "^0.3.1",
     "@react-aria/visually-hidden": "3.8.22",
     "@react-types/shared": "3.29.0",
     "@xyflow/react": "^12.6.4",
