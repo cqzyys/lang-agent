@@ -15,7 +15,7 @@ import React from "react";
 import log from "loglevel";
 import { Key } from "@react-types/shared";
 
-import apiClient from "@/hooks";
+import { apiClient } from "@/util";
 import { Mcp } from "@/types";
 import { Icon, McpSaveModal } from "@/components";
 

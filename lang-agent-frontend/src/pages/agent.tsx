@@ -1,7 +1,7 @@
 import { addToast } from "@heroui/react";
 import { useEffect, useState } from "react";
 
-import apiClient from "@/hooks";
+import { apiClient } from "@/util";
 import { Agent } from "@/types";
 import { AgentCard, InitCard } from "@/components";
 

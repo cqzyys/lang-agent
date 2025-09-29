@@ -22,7 +22,7 @@ import AgentSaveModal from "./AgentSaveModal";
 import CustomChatBotProvider from "./CustomChatBotProvider";
 
 import { Agent } from "@/types";
-import apiClient from "@/hooks";
+import { apiClient } from "@/util";
 import { Icon, DEFAULT_EDGE_MARKER_STYLE } from "@/components";
 import { getAgentData } from "@/util";
 
