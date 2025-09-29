@@ -14,7 +14,7 @@ import {
 import React from "react";
 import { Key } from "@react-types/shared";
 
-import apiClient from "@/hooks";
+import { apiClient } from "@/util";
 import { VectorStore } from "@/types";
 import { Icon, VectorStoreSaveModal } from "@/components";
 

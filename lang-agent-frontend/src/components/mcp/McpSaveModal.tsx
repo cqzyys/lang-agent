@@ -12,7 +12,7 @@ import {
   Textarea,
 } from "@heroui/react";
 
-import apiClient from "@/hooks";
+import { apiClient } from "@/util";
 import { Mcp } from "@/types";
 
 type McpProps = {

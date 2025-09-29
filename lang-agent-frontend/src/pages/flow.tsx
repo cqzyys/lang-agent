@@ -52,7 +52,7 @@ import {
   NodeConfig,
   Icon,
 } from "@/components";
-import apiClient from "@/hooks";
+import { apiClient } from "@/util";
 import {
   useModelStore,
   useAgentStore,

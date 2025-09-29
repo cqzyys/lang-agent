@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-import apiClient from "@/hooks";
+import { apiClient } from "@/util";
 
 type ModelStore = {
   llms: string[];

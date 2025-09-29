@@ -2,7 +2,7 @@ import { memo } from "react";
 import { addToast, Card, CardBody, CardHeader, Switch } from "@heroui/react";
 import { useNavigate } from "react-router-dom";
 
-import apiClient from "@/hooks";
+import { apiClient } from "@/util";
 import { Agent } from "@/types";
 import { Icon } from "@/components";
 

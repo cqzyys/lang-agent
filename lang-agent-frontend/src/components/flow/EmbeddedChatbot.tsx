@@ -10,7 +10,7 @@ import MarkdownRenderer, {
   MarkdownRendererBlock,
 } from "@rcb-plugins/markdown-renderer";
 
-import apiClient from "@/hooks";
+import { apiClient } from "@/util";
 import { AgentData, Message, Interrupt } from "@/types";
 
 const settings: Settings = {

@@ -4,6 +4,8 @@ import log from "loglevel";
 
 import { AgentData } from "@/types";
 
+export { apiClient } from "./http";
+
 log.setLevel("debug");
 
 export const getAgentData = (nodes: Node[], edges: Edge[]) => {

@@ -14,7 +14,7 @@ import {
   Switch,
 } from "@heroui/react";
 
-import apiClient from "@/hooks";
+import { apiClient } from "@/util";
 import { VectorStore } from "@/types";
 import { useModelStore } from "@/store/model";
 

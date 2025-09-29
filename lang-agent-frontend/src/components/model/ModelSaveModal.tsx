@@ -15,7 +15,7 @@ import {
   Textarea,
 } from "@heroui/react";
 
-import apiClient from "@/hooks";
+import { apiClient } from "@/util";
 import { Model } from "@/types";
 
 const types = [

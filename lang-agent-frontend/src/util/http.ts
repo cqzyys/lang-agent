@@ -5,4 +5,5 @@ const apiClient = axios.create({
   timeout: 1000000, // 超时时间
 });
 
+export { apiClient };
 export default apiClient;

@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-import apiClient from "@/hooks";
+import { apiClient } from "@/util";
 import { Agent } from "@/types";
 
 type AgentStore = {
