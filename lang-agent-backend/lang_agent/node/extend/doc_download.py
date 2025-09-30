@@ -1,10 +1,8 @@
-import os
 import traceback
 from typing import Optional, Union
 from pathlib import Path
 
 from pydantic import Field, TypeAdapter
-from xid import XID
 from langchain_core.messages import AIMessage
 
 from lang_agent.util.util import complete_content
@@ -16,7 +14,6 @@ logger = get_logger(__name__)
 
 PROJECT_ROOT = Path(__file__).parent.parent.parent.parent.resolve()
 DIR_PATH = PROJECT_ROOT / "tmp/download"
-os.makedirs(DIR_PATH, exist_ok=True)
 
 class DocDowloadNodeData(BaseNodeData):
     content: str = Field(..., description="文档内容")
@@ -41,12 +38,13 @@ class DocDowloadNode(BaseNode):
     async def ainvoke(self, state: dict):
         try:
             content = complete_content(self.content, state)
-            file_name = f"{XID().string()}.md"
+            file_name = f"{self.name}.md"
             file_path = DIR_PATH / file_name
+            DIR_PATH.mkdir(parents=True, exist_ok=True)
             with open(file_path, "w", encoding="utf-8") as f:
                 f.write(content)
             message = AIMessage(
-                content = f"[{self.name}](http://127.0.0.1:8810/api/v1/file/download/{file_name})",
+                content = f"📥 [{self.name}](http://127.0.0.1:8810/api/v1/file/download/{file_name})",
                 name = self.name,
                 message_show = self.message_show,
             )
