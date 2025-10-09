@@ -4,11 +4,16 @@ import {
   Card,
   CardBody,
   CardHeader,
+  Drawer,
+  DrawerBody,
+  DrawerContent,
+  DrawerHeader,
   Form,
   Input,
   Select,
   SelectItem,
   Textarea,
+  useDisclosure,
 } from "@heroui/react";
 
 import {
@@ -16,6 +21,7 @@ import {
   BaseNodeData,
   DEFAULT_HANDLE_STYLE,
   NodeProps,
+  Icon,
 } from "@/components";
 import { useModelStore } from "@/store/model";
 
@@ -29,6 +35,7 @@ export type LLMNodeProps = NodeProps<LLMNodeData>;
 
 function LLMNode({ id, data, onDataChange }: LLMNodeProps) {
   const { llms } = useModelStore();
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   return (
     <>
@@ -36,6 +43,7 @@ function LLMNode({ id, data, onDataChange }: LLMNodeProps) {
       <Card className="m-1 bg-slate-50">
         <CardHeader className="bg-yellow-200">
           <div className="font-black ml-2 w-full">LLM</div>
+          <Icon type="setting" onClick={onOpen} />
         </CardHeader>
         <CardBody>
           <Form className="w-full max-w-xs">
@@ -55,6 +63,7 @@ function LLMNode({ id, data, onDataChange }: LLMNodeProps) {
             <Select
               className="max-w-xs nodrag"
               label="模型"
+              name="model"
               placeholder="请选择模型"
               selectedKeys={new Set([data.model])}
               selectionMode="single"
@@ -72,13 +81,13 @@ function LLMNode({ id, data, onDataChange }: LLMNodeProps) {
             <Textarea
               disableAutosize
               className="nodrag"
-              defaultValue={data.system_prompt}
               label="系统提示词"
               maxRows={3}
               name="system_prompt"
               placeholder="请输入系统提示词"
               radius="sm"
               size="sm"
+              value={data.system_prompt || ""}
               onChange={(e) =>
                 onDataChange({ ...data, system_prompt: e.target.value })
               }
@@ -86,13 +95,13 @@ function LLMNode({ id, data, onDataChange }: LLMNodeProps) {
             <Textarea
               disableAutosize
               className="nodrag"
-              defaultValue={data.user_prompt}
               label="用户提示词"
               maxRows={3}
               name="user_prompt"
               placeholder="请输入用户提示词"
               radius="sm"
               size="sm"
+              value={data.user_prompt || ""}
               onChange={(e) =>
                 onDataChange({ ...data, user_prompt: e.target.value })
               }
@@ -112,6 +121,82 @@ function LLMNode({ id, data, onDataChange }: LLMNodeProps) {
         style={DEFAULT_HANDLE_STYLE}
         type="source"
       />
+
+      <Drawer isOpen={isOpen} size="sm" onOpenChange={onOpenChange}>
+        <DrawerContent>
+          {() => (
+            <>
+              <DrawerHeader className="flex flex-col gap-1 bg-gray-200">
+                详情
+              </DrawerHeader>
+              <DrawerBody className="bg-slate-100">
+                <Form className="w-full max-w-xs">
+                  <Input
+                    isRequired
+                    className="nodrag"
+                    errorMessage="请输入名称"
+                    label="名称"
+                    name="name"
+                    placeholder="请输入名称"
+                    radius="sm"
+                    size="sm"
+                    value={data.name}
+                    onChange={(e) =>
+                      onDataChange({ ...data, name: e.target.value })
+                    }
+                  />
+                  <Select
+                    className="max-w-xs nodrag"
+                    label="模型"
+                    name="model"
+                    placeholder="请选择模型"
+                    selectedKeys={new Set([data.model])}
+                    selectionMode="single"
+                    size="sm"
+                    onSelectionChange={(keys) => {
+                      const value = Array.from(keys)[0] as string;
+
+                      onDataChange({ ...data, model: value });
+                    }}
+                  >
+                    {llms.map((llm) => (
+                      <SelectItem key={llm}>{llm}</SelectItem>
+                    ))}
+                  </Select>
+                  <Textarea
+                    className="nodrag"
+                    label="系统提示词"
+                    maxRows={8}
+                    minRows={8}
+                    name="system_prompt"
+                    placeholder="请输入系统提示词"
+                    radius="sm"
+                    size="sm"
+                    value={data.system_prompt || ""}
+                    onChange={(e) =>
+                      onDataChange({ ...data, system_prompt: e.target.value })
+                    }
+                  />
+                  <Textarea
+                    className="nodrag"
+                    label="用户提示词"
+                    maxRows={8}
+                    minRows={8}
+                    name="user_prompt"
+                    placeholder="请输入用户提示词"
+                    radius="sm"
+                    size="sm"
+                    value={data.user_prompt || ""}
+                    onChange={(e) =>
+                      onDataChange({ ...data, user_prompt: e.target.value })
+                    }
+                  />
+                </Form>
+              </DrawerBody>
+            </>
+          )}
+        </DrawerContent>
+      </Drawer>
     </>
   );
 }
