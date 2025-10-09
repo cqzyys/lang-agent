@@ -3,7 +3,7 @@
 本项目是以LangGraph为底层技术来实现的一个可有限编程的Agent配置平台。
 传统的类WorkFlow项目一般只会将上一个节点的输出作为下一个节点的输入，Lang-Agent允许自定义[状态变量](#state)，可以作用于[节点](#节点)以及[条件边](#条件边)的输入和输出，从而实现更精准的控制。
 
-Lang-Agent的设计理念更接近于comfyUI而不是dify和coze，鼓励使用者开发适应自身业务的节点。Lang-Agent具有良好的可扩展性，其扩展节点的开发可参考[自定义节点](#自定义节点)
+Lang-Agent的设计理念更接近于comfyUI而不是dify和coze，鼓励使用者开发适应自身业务的节点。Lang-Agent具有良好的可扩展性，其自定义节点的开发可参考[自定义节点](#自定义节点)
 
 
 <table>
@@ -319,11 +319,11 @@ Agent也可以看作是特殊的节点，有**预制Agent**和**可复用Agent**
 
 ## 自定义节点
 
-本项目可以非常方便的自定义节点，开发者只需要专注于节点本身的实现逻辑，而不需要修改项目的执行代码。
+本项目可以非常方便的开发自定义节点，开发者只需要专注于节点本身的实现逻辑，而不需要修改除自定义节点外的其它任何代码。
 
 ### 前端代码的实现
 
-在前端项目的扩展节点目录`lang-agent-frontend/src/components/nodes/extend`下创建一个名为`XXXNode.tsx`的文件，伪代码如下：
+在前端项目的自定义节点目录`lang-agent-frontend/src/components/nodes/custom`下创建一个名为`XXXNode.tsx`的文件，伪代码如下：
 ```tsx
 import { Handle, Position, NodeResizer } from "@xyflow/react";
 import { Card, CardBody, CardHeader, Form } from "@heroui/react";
@@ -391,7 +391,7 @@ export default XXXNodeConfig;
 
 ### 后端代码的实现
 
-在后端项目的扩展节点目录`lang-agent-backend/lang-agent/node/extend`下创建一个名为`XXX_node.py`的文件，伪代码如下：
+在后端项目的自定义节点目录`lang-agent-backend/lang-agent/node/custom`下创建一个名为`XXX_node.py`的文件，伪代码如下：
 
 ```python
 from typing import Optional, Union

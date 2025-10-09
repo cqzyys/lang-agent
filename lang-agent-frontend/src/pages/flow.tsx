@@ -143,7 +143,14 @@ export default function FlowPage() {
 
   useEffect(() => {
     const loadNodeModules = async () => {
-      const nodeModules = import.meta.glob("../components/nodes/extend/*.tsx");
+      const extendNodeModules = import.meta.glob(
+        "../components/nodes/extend/*.tsx",
+      );
+      const customNodeModules = import.meta.glob(
+        "../components/nodes/custom/*.tsx",
+      );
+      const nodeModules = { ...extendNodeModules, ...customNodeModules };
+      //const nodeModules = import.meta.glob("../components/nodes/extend/*.tsx");
       const types: Record<string, any> = {};
       const extendNodes: Array<{
         type: string;
