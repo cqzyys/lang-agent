@@ -1,5 +1,5 @@
 import json
-from typing import Type
+from typing import Type, TypeVar
 from pydantic import BaseModel
 
 type_map = {
@@ -61,10 +61,12 @@ def error_to_str(error):
         case _:
             return f"{type(error).__name__}: {str(error)}"
 
-def obj_to_model(source_instance,target_cls: Type[BaseModel]) -> BaseModel:
-    return target_cls.model_validate(source_instance, from_attributes=True).model_dump()
+T = TypeVar('T', bound=BaseModel)
 
-def objs_to_models(source_instances,target_cls: Type[BaseModel]) -> list[BaseModel]:
+def obj_to_model(source_instance,target_cls: Type[T]) -> T:
+    return target_cls.model_validate(source_instance, from_attributes=True)
+
+def objs_to_models(source_instances,target_cls: Type[T]) -> list[T]:
     return [
         obj_to_model(
             source_instance,target_cls
