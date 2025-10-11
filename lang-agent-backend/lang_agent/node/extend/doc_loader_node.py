@@ -13,6 +13,7 @@ from langchain_core.messages import AIMessage
 from langgraph.types import interrupt
 
 from lang_agent.logger import get_logger
+from lang_agent.util.convert import objs_to_models
 from ..core import BaseNode, BaseNodeData, BaseNodeParam
 
 logger = get_logger(__name__)
@@ -49,15 +50,18 @@ class DocLoaderNode(BaseNode):
                 "type": self.type,
                 "message": self.guiding_words
             })
-            files: list[FileData] = resume_state.get("files", [])
+            files: list[FileData] = objs_to_models(
+                resume_state.get("files", []),
+                FileData
+            )
             contents: list[str] = []
             for file in files:
-                _, encoded = file["file_content"].split(";base64,", 1)
+                _, encoded = file.file_content.split(";base64,", 1)
                 file_data = base64.b64decode(encoded)
-                file_path = self.dir_path / file["file_name"]
+                file_path = self.dir_path / file.file_name
                 async with aiofiles.open(file_path, "wb") as f:
                     await f.write(file_data)
-                file_type = file["file_name"].split(".")[-1].lower()
+                file_type = file.file_name.split(".")[-1].lower()
                 match file_type:
                     case "pdf":
                         from langchain_community.document_loaders import PyPDFLoader
