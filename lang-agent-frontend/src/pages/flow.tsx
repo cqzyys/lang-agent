@@ -69,7 +69,16 @@ export default function FlowPage() {
   let init_edges = [];
 
   if (init_agent && init_agent.data) {
-    const agent_data = init_agent.data;
+    let agent_data = init_agent.data;
+
+    if (typeof agent_data === "string") {
+      try {
+        agent_data = JSON.parse(agent_data);
+      } catch (error) {
+        log.error("Failed to parse agent_data as JSON:", error);
+        agent_data = {};
+      }
+    }
 
     init_nodes = agent_data.nodes || [];
     init_edges = agent_data.edges || [];
@@ -473,7 +482,7 @@ export default function FlowPage() {
           onOpenChange={onDrawerOpenChange}
         >
           <DrawerContent>
-            {(onClose) => (
+            {() => (
               <>
                 <DrawerHeader className="flex flex-col gap-1 bg-cyan-200">
                   执行结果
