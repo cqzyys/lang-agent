@@ -40,6 +40,7 @@ langchain-postgres = "^0.0.15"
 langchain-experimental = "^0.3.4"
 colorlog = "^6.9.0"
 langgraph = "^0.6.7"
+patool = "^4.0.1"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "T201"]
