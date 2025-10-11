@@ -3064,6 +3064,26 @@ url = "https://pypi.tuna.tsinghua.edu.cn/simple"
 reference = "tsinghua"
 
 [[package]]
+name = "patool"
+version = "4.0.1"
+description = "portable archive file manager"
+optional = false
+python-versions = ">=3.10"
+groups = ["main"]
+files = [
+    {file = "patool-4.0.1-py2.py3-none-any.whl", hash = "sha256:a7430eb08edcbd71feaf9c40f55c46f6a0ac385dc68dd0f5010cfa4ad2e9341a"},
+    {file = "patool-4.0.1.tar.gz", hash = "sha256:41f7ee21be337a5baf07b2cb4796e9d94397ab741d2379c622f98fc001099802"},
+]
+
+[package.extras]
+argcompletion = ["argcomplete (==3.6.2)"]
+
+[package.source]
+type = "legacy"
+url = "https://pypi.tuna.tsinghua.edu.cn/simple"
+reference = "tsinghua"
+
+[[package]]
 name = "pgvector"
 version = "0.3.6"
 description = "pgvector support for Python"
@@ -5962,4 +5982,4 @@ reference = "tsinghua"
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11,<4.0"
-content-hash = "bb6f7d68f356cbeb98280c3f72b8f7cae5b84f55ebe74fa63f9d721285ef9800"
+content-hash = "233affb574cf8400e2be75aa2ad3ebc882def5676578473c16902da981622808"
