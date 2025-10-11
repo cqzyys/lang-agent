@@ -14,3 +14,7 @@ from .convert import (
     obj_to_model,
     objs_to_models,
 )
+
+from .document import (
+    load_document,
+)
