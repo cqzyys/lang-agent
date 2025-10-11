@@ -6,6 +6,7 @@ import shutil
 from typing import Optional, Union
 from pathlib import Path
 
+from lang_agent.util.convert import objs_to_models
 from xid import XID
 from pydantic import BaseModel, Field, TypeAdapter
 import aiofiles
@@ -48,14 +49,18 @@ class DocSummaryNode(BaseNode):
                 "type": "doc_loader",
                 "message": self.guiding_words
             })
-            files: list[FileData] = resume_state.get("files", [])
+            files: list[FileData] = objs_to_models(
+                resume_state.get("files", []),FileData
+            )
             for file in files:
-                _, encoded = file["file_content"].split(";base64,", 1)
+                _, encoded = file.file_content.split(";base64,", 1)
                 file_data = base64.b64decode(encoded)
-                file_path = self.dir_path / file["file_name"]
+                file_path = self.dir_path / file.file_name
                 async with aiofiles.open(file_path, "wb") as f:
                     await f.write(file_data)
                 file_type: str = file.file_name.split(".")[-1].lower()
+                logger.info("file_type: %s",file_type)
+            return state
         except Exception as e:
             logger.info(traceback.format_exc())
             raise e

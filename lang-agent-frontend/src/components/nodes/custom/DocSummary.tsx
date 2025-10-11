@@ -11,7 +11,7 @@ import {
 
 const DocSummaryNodeConfig: NodeConfig<DocSummaryNodeData> = {
   type: "doc_summary",
-  description: "doc_summary",
+  description: "文献综述",
   data: {
     id: "",
     type: "doc_summary",
@@ -39,7 +39,7 @@ function DocSummaryNode({ id, data, onDataChange }: DocSummaryNodeProps) {
       />
       <Card className="m-1 bg-slate-50">
         <CardHeader className="bg-slate-200">
-          <div className="font-black ml-2 w-full">DocSummary</div>
+          <div className="font-black ml-2 w-full">文献综述</div>
         </CardHeader>
         <CardBody>
           <Form className="w-full max-w-xs">
