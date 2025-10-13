@@ -13,7 +13,7 @@ import aiofiles
 
 from langchain_core.language_models.base import BaseLanguageModel
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.messages import BaseMessage
+from langchain_core.messages import BaseMessage, AIMessage
 from langgraph.types import interrupt
 
 from lang_agent.logger import get_logger
@@ -22,6 +22,8 @@ from lang_agent.util import objs_to_models,load_document
 from ..core import BaseNode, BaseNodeData, BaseNodeParam
 
 PROJECT_ROOT = Path(__file__).parent.parent.parent.parent.resolve()
+DIR_PATH = PROJECT_ROOT / "tmp/download"
+
 logger = get_logger(__name__)
 
 REVIEW_PROMPT = """
@@ -58,9 +60,20 @@ RESEARCH_PROMPT = """
 1、内容需按照现有核心概念、理论基础、研究方法、创新点、以及时间发展线等逻辑线进行阐述
 2、阐述时不只是文献的堆叠和罗列，需要提出批判性思维，夹叙夹议的方式
 3、用一句话指出已有研究的不足与空白，自然的引出本研究的必要性
-4、引用文献格式，并按照顺序标注尾注，最后按照以下参考格式引用顺序给出参考文献：[1]陈佳. 互动健康教育护理模式对小儿肺炎症状缓解时间及睡眠质量的影响[J]. 中国医药指南, 2024, 22(22): 111-114.
 """
 
+SUMMARY_PROMPT = """
+## 角色
+你是论文写作专家
+
+## 任务
+1、将各个主题的研究综述进行合并
+2、核实上下文是否有重复叙述的内容以及长冗杂的描述，如果有请删除润色，同时各个主题要素之间的论述要给出逻辑关联及过渡衔接。
+
+## 研究综述
+{{content}}
+
+"""
 
 try:
     import patoolib
@@ -109,6 +122,7 @@ class DocSummaryNode(BaseNode):
             tmp_extract_path = tmp_dir_path / "extracted"
             os.makedirs(tmp_dir_path, exist_ok=True)
             os.makedirs(tmp_extract_path, exist_ok=True)
+            research_dict: dict = {}
             for file in files:
                 _, encoded = file.file_content.split(";base64,", 1)
                 file_data = base64.b64decode(encoded)
@@ -138,9 +152,25 @@ class DocSummaryNode(BaseNode):
                             research_content
                         )
                         logger.debug("####################")
+                        research_dict[file_name] = research_content
                     else:
                         logger.warning("Failed to extract %s",file.file_name)
-            return state
+            summary_content = await self._summary(str(research_dict))
+            logger.debug(
+                "summary_content: \n %s",
+                summary_content
+            )
+            file_name = f"{self.name}.md"
+            file_path = DIR_PATH / file_name
+            DIR_PATH.mkdir(parents=True, exist_ok=True)
+            with open(file_path, "w", encoding="utf-8") as f:
+                f.write(summary_content)
+            message = AIMessage(
+                content = f"📥 [{self.name}](http://127.0.0.1:8810/api/v1/file/download/{file_name})",
+                name = self.name,
+                message_show = self.message_show,
+            )
+            return {"messages": message}
         except Exception as e:
             logger.info(traceback.format_exc())
             raise e
@@ -181,6 +211,17 @@ class DocSummaryNode(BaseNode):
             "count": 3000
         })
         return research_message.content
+
+    async def _summary(self, content: str) -> str:
+        summary_template = ChatPromptTemplate.from_messages(
+            [
+                ("human", SUMMARY_PROMPT),
+            ],
+            template_format="mustache",
+        )
+        summary_chain = summary_template | self.model
+        summary_message: BaseMessage = await summary_chain.ainvoke({"content": content})
+        return summary_message.content
 
     def _extract_archive(self, file_path: Path, extract_path: Path) -> bool:
         if not PATOOL_AVAILABLE:
