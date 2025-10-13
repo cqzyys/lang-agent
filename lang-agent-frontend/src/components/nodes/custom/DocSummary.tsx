@@ -1,5 +1,13 @@
 import { Handle, Position, NodeResizer } from "@xyflow/react";
-import { Card, CardBody, CardHeader, Form, Input } from "@heroui/react";
+import {
+  Card,
+  CardBody,
+  CardHeader,
+  Form,
+  Input,
+  Select,
+  SelectItem,
+} from "@heroui/react";
 
 import {
   KeyInput,
@@ -8,6 +16,7 @@ import {
   NodeProps,
   NodeConfig,
 } from "@/components";
+import { useModelStore } from "@/store/model";
 
 const DocSummaryNodeConfig: NodeConfig<DocSummaryNodeData> = {
   type: "doc_summary",
@@ -17,17 +26,21 @@ const DocSummaryNodeConfig: NodeConfig<DocSummaryNodeData> = {
     type: "doc_summary",
     name: "doc_summary",
     guiding_words: "",
+    model: "qwen2.5-instruct",
   },
   component: DocSummaryNode,
 };
 
 export type DocSummaryNodeData = BaseNodeData & {
   guiding_words: string;
+  model: string;
 };
 
 export type DocSummaryNodeProps = NodeProps<DocSummaryNodeData>;
 
 function DocSummaryNode({ id, data, onDataChange }: DocSummaryNodeProps) {
+  const { llms } = useModelStore();
+
   return (
     <>
       <NodeResizer isVisible={false} />
@@ -70,6 +83,24 @@ function DocSummaryNode({ id, data, onDataChange }: DocSummaryNodeProps) {
                 onDataChange({ ...data, guiding_words: e.target.value })
               }
             />
+            <Select
+              className="max-w-xs nodrag"
+              label="模型"
+              name="model"
+              placeholder="请选择模型"
+              selectedKeys={new Set([data.model])}
+              selectionMode="single"
+              size="sm"
+              onSelectionChange={(keys) => {
+                const value = Array.from(keys)[0] as string;
+
+                onDataChange({ ...data, model: value });
+              }}
+            >
+              {llms.map((llm) => (
+                <SelectItem key={llm}>{llm}</SelectItem>
+              ))}
+            </Select>
           </Form>
         </CardBody>
       </Card>

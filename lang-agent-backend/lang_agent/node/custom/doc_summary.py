@@ -11,14 +11,55 @@ from xid import XID
 from pydantic import BaseModel, Field, TypeAdapter
 import aiofiles
 
+from langchain_core.language_models.base import BaseLanguageModel
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.messages import BaseMessage
 from langgraph.types import interrupt
 
 from lang_agent.logger import get_logger
-from lang_agent.util.convert import objs_to_models
+from lang_agent.setting.manager import resource_manager
+from lang_agent.util import objs_to_models,load_document
 from ..core import BaseNode, BaseNodeData, BaseNodeParam
 
 PROJECT_ROOT = Path(__file__).parent.parent.parent.parent.resolve()
 logger = get_logger(__name__)
+
+REVIEW_PROMPT = """
+## 角色
+你是文献阅读信息萃取研究专家
+
+## 任务
+从**输入文献**中提取主要研究内容、研究方法、研究创新点以及结论，并与引用格式一一对应
+
+## 注意事项
+给出最后的内容再次核实是否与文献一一对应。
+
+## 输入文献
+{{content}}
+
+## 输出格式
+主要研究内容:
+研究方法:
+研究创新点:
+结论:
+"""
+
+RESEARCH_PROMPT = """
+## 任务
+基于**主题**以及**文献概要**，以'研究现状->研究评述->本研究的研究价值及贡献'的逻辑，撰写一篇{{count}}字左右的文献综述
+
+## 主题
+{{theme}}
+
+## 文献概要
+{{review}}
+
+## 具体要求
+1、内容需按照现有核心概念、理论基础、研究方法、创新点、以及时间发展线等逻辑线进行阐述
+2、阐述时不只是文献的堆叠和罗列，需要提出批判性思维，夹叙夹议的方式
+3、用一句话指出已有研究的不足与空白，自然的引出本研究的必要性
+4、引用文献格式，并按照顺序标注尾注，最后按照以下参考格式引用顺序给出参考文献：[1]陈佳. 互动健康教育护理模式对小儿肺炎症状缓解时间及睡眠质量的影响[J]. 中国医药指南, 2024, 22(22): 111-114.
+"""
 
 
 try:
@@ -36,6 +77,8 @@ class FileData(BaseModel):
 
 class DocSummaryNodeData(BaseNodeData):
     guiding_words: Optional[str] = Field(default="", description="引导词")
+    model: str = Field(..., description="模型名称")
+    message_show: Optional[bool] = Field(default=True, description="是否显示消息")
 
 
 class DocSummaryNodeParam(BaseNodeParam):
@@ -50,6 +93,8 @@ class DocSummaryNode(BaseNode):
         param = adapter.validate_python(param)
         super().__init__(param, **kwargs)
         self.guiding_words = param.data.guiding_words
+        self.model: BaseLanguageModel = resource_manager.models["llm"][param.data.model]
+        self.message_show = param.data.message_show
 
     async def ainvoke(self, state: dict):
         try:
@@ -76,9 +121,23 @@ class DocSummaryNode(BaseNode):
                 if file_extension in compressed_extensions:
                     if self._extract_archive(tmp_file_path,tmp_extract_path):
                         dir_path = tmp_extract_path / file_name
-                        #读取dir_path下的所有文件
-                        for f in dir_path.iterdir():
-                            logger.info("file: %s",f.name)
+                        review_content = await self._review_summary(dir_path)
+                        logger.debug("####################")
+                        logger.debug(
+                            "%s review_content: \n %s",
+                            file_name,
+                            review_content
+                        )
+                        research_content = await self._research(
+                            file_name,review_content
+                        )
+                        logger.debug("####################")
+                        logger.debug(
+                            "%s research_content: \n %s",
+                            file_name,
+                            research_content
+                        )
+                        logger.debug("####################")
                     else:
                         logger.warning("Failed to extract %s",file.file_name)
             return state
@@ -86,6 +145,42 @@ class DocSummaryNode(BaseNode):
             logger.info(traceback.format_exc())
             raise e
 
+    async def _review_summary(self, dir_path: Path) -> str:
+        review_list: list[str] = []
+        for f in dir_path.iterdir():
+            #logger.info("file: %s",f.name)
+            docs = await load_document(str(dir_path/f.name))
+            content = "\n".join([doc.page_content for doc in docs])
+            #logger.info("content: %s",content)
+            review_message = await self._review(content)
+            review_list.append(review_message)
+        return "\n".join(review_list)
+
+    async def _review(self, content: str) -> str:
+        review_template = ChatPromptTemplate.from_messages(
+            [
+                ("human", REVIEW_PROMPT),
+            ],
+            template_format="mustache",
+        )
+        review_chain = review_template | self.model
+        review_message: BaseMessage = await review_chain.ainvoke({"content": content})
+        return review_message.content
+
+    async def _research(self, theme: str, review: str) -> str:
+        research_template = ChatPromptTemplate.from_messages(
+            [
+                ("human", RESEARCH_PROMPT),
+            ],
+            template_format="mustache",
+        )
+        research_chain = research_template | self.model
+        research_message: BaseMessage = await research_chain.ainvoke({
+            "theme": theme,
+            "review": review,
+            "count": 3000
+        })
+        return research_message.content
 
     def _extract_archive(self, file_path: Path, extract_path: Path) -> bool:
         if not PATOOL_AVAILABLE:
