@@ -223,6 +223,7 @@ export default function FlowPage() {
         <LLMNode
           data={data}
           id={id}
+          nodes={nodes}
           onDataChange={(newData) => updateNodeData(id, newData)}
         />
       ),

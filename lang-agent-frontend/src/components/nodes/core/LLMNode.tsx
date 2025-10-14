@@ -1,5 +1,5 @@
-import { memo } from "react";
-import { Handle, Position, NodeResizer } from "@xyflow/react";
+import { memo, useState } from "react";
+import { Handle, Position, NodeResizer, Node } from "@xyflow/react";
 import {
   Card,
   CardBody,
@@ -22,6 +22,7 @@ import {
   DEFAULT_HANDLE_STYLE,
   NodeProps,
   Icon,
+  StateList,
 } from "@/components";
 import { useModelStore } from "@/store/model";
 
@@ -33,9 +34,17 @@ export type LLMNodeData = BaseNodeData & {
 
 export type LLMNodeProps = NodeProps<LLMNodeData>;
 
-function LLMNode({ id, data, onDataChange }: LLMNodeProps) {
+export type ExtendLLMNodeProps = LLMNodeProps & {
+  nodes: Node[];
+};
+
+function LLMNode({ id, data, onDataChange, nodes }: ExtendLLMNodeProps) {
   const { llms } = useModelStore();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [activeTriggerRef, setActiveTriggerRef] = useState<{
+    current: HTMLInputElement;
+  }>();
+  const [activeValue, setActiveValue] = useState<string | undefined>(undefined);
 
   return (
     <>
@@ -80,6 +89,7 @@ function LLMNode({ id, data, onDataChange }: LLMNodeProps) {
             </Select>
             <Textarea
               disableAutosize
+              autoComplete="off"
               className="nodrag"
               label="系统提示词"
               maxRows={3}
@@ -88,12 +98,15 @@ function LLMNode({ id, data, onDataChange }: LLMNodeProps) {
               radius="sm"
               size="sm"
               value={data.system_prompt || ""}
-              onChange={(e) =>
-                onDataChange({ ...data, system_prompt: e.target.value })
-              }
+              onChange={(e) => {
+                onDataChange({ ...data, system_prompt: e.target.value });
+                setActiveTriggerRef({ current: e.target as HTMLInputElement });
+                setActiveValue(e.target.value);
+              }}
             />
             <Textarea
               disableAutosize
+              autoComplete="off"
               className="nodrag"
               label="用户提示词"
               maxRows={3}
@@ -102,9 +115,11 @@ function LLMNode({ id, data, onDataChange }: LLMNodeProps) {
               radius="sm"
               size="sm"
               value={data.user_prompt || ""}
-              onChange={(e) =>
-                onDataChange({ ...data, user_prompt: e.target.value })
-              }
+              onChange={(e) => {
+                onDataChange({ ...data, user_prompt: e.target.value });
+                setActiveTriggerRef({ current: e.target as HTMLInputElement });
+                setActiveValue(e.target.value);
+              }}
             />
           </Form>
         </CardBody>
@@ -173,9 +188,9 @@ function LLMNode({ id, data, onDataChange }: LLMNodeProps) {
                     radius="sm"
                     size="sm"
                     value={data.system_prompt || ""}
-                    onChange={(e) =>
-                      onDataChange({ ...data, system_prompt: e.target.value })
-                    }
+                    onChange={(e) => {
+                      onDataChange({ ...data, system_prompt: e.target.value });
+                    }}
                   />
                   <Textarea
                     className="nodrag"
@@ -187,9 +202,9 @@ function LLMNode({ id, data, onDataChange }: LLMNodeProps) {
                     radius="sm"
                     size="sm"
                     value={data.user_prompt || ""}
-                    onChange={(e) =>
-                      onDataChange({ ...data, user_prompt: e.target.value })
-                    }
+                    onChange={(e) => {
+                      onDataChange({ ...data, user_prompt: e.target.value });
+                    }}
                   />
                 </Form>
               </DrawerBody>
@@ -197,6 +212,14 @@ function LLMNode({ id, data, onDataChange }: LLMNodeProps) {
           )}
         </DrawerContent>
       </Drawer>
+
+      <StateList
+        data={data}
+        nodes={nodes}
+        triggerRef={activeTriggerRef}
+        value={activeValue}
+        onDataChange={onDataChange}
+      />
     </>
   );
 }
