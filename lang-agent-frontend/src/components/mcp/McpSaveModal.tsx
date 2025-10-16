@@ -40,25 +40,20 @@ function McpSaveModal({
   const [mcp, setMcp] = useState<Mcp>(init_mcp);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await apiClient.get(`/v1/mcp/select?id=${id}`);
-
-        setMcp(response.data.data);
-      } catch (error) {
-        if (error instanceof Error) {
+    if (id) {
+      apiClient
+        .get(`/v1/mcp/select?id=${id}`)
+        .then((response) => {
+          setMcp(response.data.data);
+        })
+        .catch((error) => {
           addToast({
-            title: "获取MCP数据失败:" + error.message,
+            title: "获取MCP数据失败:" + error.response.data.error,
             timeout: 1000,
             shouldShowTimeoutProgress: true,
             color: "danger",
           });
-        }
-      }
-    };
-
-    if (id) {
-      fetchData();
+        });
     } else {
       setMcp(init_mcp);
     }

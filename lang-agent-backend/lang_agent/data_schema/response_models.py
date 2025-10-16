@@ -5,7 +5,7 @@ T = TypeVar("T")
 
 class ApiResponse(BaseModel):
     success: bool
-    data: str | dict | list[T] | None = None
+    data: Optional[T] = None
     error: Union[str, list, dict, None] = None
     status_code: int = 200
 

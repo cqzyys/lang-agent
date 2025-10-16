@@ -52,7 +52,7 @@ function ModelSaveModal({
   const [model, setModel] = useState<Model>(init_model);
 
   useEffect(() => {
-    const fetchData = async () => {
+    if (id) {
       apiClient
         .get(`/v1/model/select?id=${id}`)
         .then((response) => {
@@ -66,10 +66,6 @@ function ModelSaveModal({
             color: "danger",
           });
         });
-    };
-
-    if (id) {
-      fetchData();
     } else {
       setModel(init_model);
     }
