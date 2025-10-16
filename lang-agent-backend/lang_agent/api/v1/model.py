@@ -64,18 +64,21 @@ async def select(id: str = Query(..., description="Model ID")) -> ApiResponse:
 
 
 @router.get("/list", status_code=200)
-async def list() -> ApiResponse:
+async def models() -> ApiResponse:
     return ApiResponse(success=True, data=objs_to_models(list_models(),ModelResponse))
 
 
 @router.get("/cached_llm", status_code=200)
 async def cached_llm() -> ApiResponse:
-    return ApiResponse(success=True, data=resource_manager.models["llm"].keys())
+    return ApiResponse(success=True, data=list(resource_manager.models['llm'].keys()))
 
 
 @router.get("/cached_embedding", status_code=200)
 async def cached_embedding() -> ApiResponse:
-    return ApiResponse(success=True, data=resource_manager.models["embedding"].keys())
+    return ApiResponse(
+        success=True,
+        data=list(resource_manager.models["embedding"].keys())
+    )
 
 
 @router.get("/llm_models", status_code=200)
