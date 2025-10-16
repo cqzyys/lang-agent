@@ -29,8 +29,7 @@ logger = get_logger(__name__)
 
 @router.get("/cached_vectorstores", status_code=200)
 async def cached_vectorstores():
-    data = resource_manager.vectorstore_map.keys()
-    return ApiResponse(success=True, data=data)
+    return ApiResponse(success=True, data=list(resource_manager.vectorstore_map.keys()))
 
 
 @router.post("/save", status_code=200)
