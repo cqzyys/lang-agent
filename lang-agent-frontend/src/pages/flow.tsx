@@ -58,6 +58,7 @@ import {
   useAgentStore,
   useMcpStore,
   useThemeStore,
+  useFlowStore,
 } from "@/store";
 import "@xyflow/react/dist/style.css";
 
@@ -107,6 +108,10 @@ export default function FlowPage() {
     useAgentStore.getState().fetchReuseAgents();
     useMcpStore.getState().fetchMcpMap();
   }, []);
+
+  useEffect(() => {
+    useFlowStore.getState().setNodes(nodes);
+  }, [nodes]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -223,7 +228,6 @@ export default function FlowPage() {
         <LLMNode
           data={data}
           id={id}
-          nodes={nodes}
           onDataChange={(newData) => updateNodeData(id, newData)}
         />
       ),
@@ -276,10 +280,7 @@ export default function FlowPage() {
     [],
   );
   const onNodesChange = useCallback((changes: NodeChange[]) => {
-    if (!Array.isArray(changes)) {
-      //console.warn("Expected changes to be an array, got:", changes);
-      return;
-    }
+    if (!Array.isArray(changes)) return;
     setNodes((nds) => applyNodeChanges(changes, nds));
   }, []);
   const onEdgesChange = useCallback((changes: EdgeChange[]) => {
