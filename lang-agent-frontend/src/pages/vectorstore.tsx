@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Table,
   TableHeader,
@@ -45,7 +45,7 @@ export default function VectorStorePage() {
   const [vectorstores, setVectorStores] = useState<VectorStore[]>([]);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [running, setRunning] = useState<boolean>(false);
-  const id = useRef<string>();
+  const [id, setId] = useState<string>();
   const fetchData = async () => {
     apiClient
       .get("/v1/vectorstore/list")
@@ -96,7 +96,7 @@ export default function VectorStorePage() {
               size={18}
               type="edit"
               onClick={() => {
-                id.current = data.id;
+                setId(data.id);
                 onOpen();
               }}
             />
@@ -118,7 +118,7 @@ export default function VectorStorePage() {
           size={18}
           type="add"
           onClick={() => {
-            id.current = "";
+            setId(undefined);
             onOpen();
           }}
         />
@@ -160,7 +160,7 @@ export default function VectorStorePage() {
         <Spinner className="absolute top-1/4 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50" />
       )}
       <VectorStoreSaveModal
-        id={id.current}
+        id={id}
         isOpen={isOpen}
         setRunning={setRunning}
         onOpenChange={onOpenChange}

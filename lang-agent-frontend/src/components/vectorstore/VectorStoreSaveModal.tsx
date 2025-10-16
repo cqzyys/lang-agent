@@ -54,7 +54,7 @@ function VectorStoreSaveModal({
   const [vectorstore, setVectorStore] = useState<VectorStore>(init_vectorstore);
 
   useEffect(() => {
-    const fetchData = async () => {
+    if (id) {
       apiClient
         .get(`/v1/vectorstore/select?id=${id}`)
         .then((response) => {
@@ -68,10 +68,6 @@ function VectorStoreSaveModal({
             color: "danger",
           });
         });
-    };
-
-    if (id) {
-      fetchData();
     } else {
       setVectorStore(init_vectorstore);
     }

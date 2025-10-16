@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Table,
   TableHeader,
@@ -48,7 +48,7 @@ export default function McpPage() {
   const [mcps, setMcps] = useState<Mcp[]>([]);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [running, setRunning] = useState<boolean>(false);
-  const id = useRef<string>();
+  const [id, setId] = useState<string>();
   const fetchData = async () => {
     apiClient
       .get("/v1/mcp/list")
@@ -99,7 +99,7 @@ export default function McpPage() {
               size={18}
               type="edit"
               onClick={() => {
-                id.current = data.id;
+                setId(data.id);
                 onOpen();
               }}
             />
@@ -121,7 +121,7 @@ export default function McpPage() {
           size={18}
           type="add"
           onClick={() => {
-            id.current = "";
+            setId(undefined);
             onOpen();
           }}
         />
@@ -163,7 +163,7 @@ export default function McpPage() {
         <Spinner className="absolute top-1/4 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50" />
       )}
       <McpSaveModal
-        id={id.current}
+        id={id}
         isOpen={isOpen}
         setRunning={setRunning}
         onOpenChange={onOpenChange}
