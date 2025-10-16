@@ -1,5 +1,5 @@
 import { memo, useState } from "react";
-import { Handle, Position, NodeResizer, Node } from "@xyflow/react";
+import { Handle, Position, NodeResizer } from "@xyflow/react";
 import {
   Card,
   CardBody,
@@ -24,7 +24,7 @@ import {
   Icon,
   StateList,
 } from "@/components";
-import { useModelStore } from "@/store/model";
+import { useModelStore, useFlowStore } from "@/store";
 
 export type LLMNodeData = BaseNodeData & {
   model: string;
@@ -34,17 +34,14 @@ export type LLMNodeData = BaseNodeData & {
 
 export type LLMNodeProps = NodeProps<LLMNodeData>;
 
-export type ExtendLLMNodeProps = LLMNodeProps & {
-  nodes: Node[];
-};
-
-function LLMNode({ id, data, onDataChange, nodes }: ExtendLLMNodeProps) {
+function LLMNode({ id, data, onDataChange }: LLMNodeProps) {
   const { llms } = useModelStore();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [activeTriggerRef, setActiveTriggerRef] = useState<{
     current: HTMLInputElement;
   }>();
   const [activeValue, setActiveValue] = useState<string | undefined>(undefined);
+  const nodes = useFlowStore((state) => state.nodes);
 
   return (
     <>
