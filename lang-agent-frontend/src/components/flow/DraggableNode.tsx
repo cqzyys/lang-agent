@@ -1,3 +1,5 @@
+import { memo } from "react";
+
 import { Icon } from "@/components";
 
 interface DraggableNodeProps {
@@ -9,7 +11,7 @@ interface DraggableNodeProps {
   onDoubleClick?: (e: React.MouseEvent<HTMLDivElement>, node: any) => void;
 }
 
-const DraggableNode: React.FC<DraggableNodeProps> = ({
+const App: React.FC<DraggableNodeProps> = ({
   node,
   onDragStart,
   onDoubleClick,
@@ -27,4 +29,4 @@ const DraggableNode: React.FC<DraggableNodeProps> = ({
   );
 };
 
-export default DraggableNode;
+export default memo(App);

@@ -31,13 +31,13 @@ type ModalProps = {
   setRunning: (running: boolean) => void;
 };
 
-function VectorStoreSaveModal({
+const App: React.FC<ModalProps> = ({
   id,
   isOpen,
   onOpenChange,
   onRefresh,
   setRunning,
-}: ModalProps) {
+}) => {
   const { embeddings } = useModelStore();
   const init_vectorstore: VectorStore = {
     id: "",
@@ -247,6 +247,6 @@ function VectorStoreSaveModal({
       </Modal>
     </>
   );
-}
+};
 
-export default memo(VectorStoreSaveModal);
+export default memo(App);

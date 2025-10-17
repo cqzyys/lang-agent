@@ -49,6 +49,11 @@ const styles: Styles = {
   },
 };
 
+const path_map: Record<string, string> = {
+  doc_loader: "upload",
+  user_input: "blank",
+};
+
 interface EmbeddedChatbotProps {
   chatId: string;
   agent_data: AgentData;
@@ -56,17 +61,12 @@ interface EmbeddedChatbotProps {
   setRunning: (running: boolean) => void;
 }
 
-const path_map: Record<string, string> = {
-  doc_loader: "upload",
-  user_input: "blank",
-};
-
-function EmbeddedChatbot({
+const App: React.FC<EmbeddedChatbotProps> = ({
   chatId,
   agent_data,
   setResult,
   setRunning,
-}: EmbeddedChatbotProps) {
+}) => {
   const { goToPath } = usePaths();
   const { injectMessage, removeMessage } = useMessages();
   const [messageMap, setMessageMap] = useState<Record<string, string>>({});
@@ -244,6 +244,6 @@ function EmbeddedChatbot({
       styles={styles}
     />
   );
-}
+};
 
-export default memo(EmbeddedChatbot);
+export default memo(App);

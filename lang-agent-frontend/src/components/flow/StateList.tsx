@@ -27,11 +27,11 @@ type ListboxWrapperProps = {
   position: { x: number; y: number };
 };
 
-export const ListboxWrapper = ({
+const ListboxWrapper: React.FC<ListboxWrapperProps> = ({
   children,
   isShown,
   position,
-}: ListboxWrapperProps) => {
+}) => {
   const [portalElement, setPortalElement] = useState<HTMLElement | null>(null);
 
   useEffect(() => {
@@ -62,13 +62,13 @@ export const ListboxWrapper = ({
   return createPortal(element, portalElement);
 };
 
-function StateList({
+const App: React.FC<StateListProps> = ({
   value,
   triggerRef,
   nodes,
   data,
   onDataChange,
-}: StateListProps) {
+}) => {
   const [isShown, setIsShown] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const states = genStateList(nodes);
@@ -145,6 +145,6 @@ function StateList({
       </Listbox>
     </ListboxWrapper>
   );
-}
+};
 
-export default memo(StateList);
+export default memo(App);

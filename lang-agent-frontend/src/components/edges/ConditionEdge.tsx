@@ -9,7 +9,7 @@ import {
 } from "@xyflow/react";
 import { Input } from "@heroui/react";
 
-function ConditionEdge({
+const App: React.FC<ConditionEdgeProps> = ({
   id,
   sourceX,
   sourceY,
@@ -18,7 +18,7 @@ function ConditionEdge({
   markerEnd,
   data,
   onDataChange,
-}: ConditionEdgeProps) {
+}) => {
   let edgePath = "";
   let labelX = 0;
   let labelY = 0;
@@ -72,6 +72,6 @@ function ConditionEdge({
       </EdgeLabelRenderer>
     </>
   );
-}
+};
 
-export default memo(ConditionEdge);
+export default memo(App);

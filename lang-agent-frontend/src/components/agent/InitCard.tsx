@@ -3,7 +3,7 @@ import { Card, CardBody, CardHeader } from "@heroui/react";
 import { useNavigate } from "react-router-dom";
 
 import { Icon } from "@/components";
-function InitCard() {
+const App: React.FC = () => {
   const navigate = useNavigate();
 
   return (
@@ -27,6 +27,6 @@ function InitCard() {
       </CardBody>
     </Card>
   );
-}
+};
 
-export default memo(InitCard);
+export default memo(App);

@@ -1,4 +1,4 @@
-import * as React from "react";
+import { memo } from "react";
 
 import { IconProps } from "@/types";
 import { useThemeStore } from "@/store";
@@ -108,4 +108,4 @@ const Icon: React.FC<IconProps> = ({
   );
 };
 
-export default Icon;
+export default memo(Icon);

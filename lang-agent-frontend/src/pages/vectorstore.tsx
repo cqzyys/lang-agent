@@ -41,7 +41,7 @@ const columns = [
   },
 ];
 
-export default function VectorStorePage() {
+const VectorStorePage: React.FC = () => {
   const [vectorstores, setVectorStores] = useState<VectorStore[]>([]);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [running, setRunning] = useState<boolean>(false);
@@ -168,4 +168,6 @@ export default function VectorStorePage() {
       />
     </>
   );
-}
+};
+
+export default VectorStorePage;

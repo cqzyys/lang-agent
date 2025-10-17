@@ -8,7 +8,7 @@ import VectorStorePage from "./vectorstore";
 import { Icon } from "@/components";
 import { useThemeStore } from "@/store";
 
-function HomePage() {
+const HomePage: React.FC = () => {
   const { dark, toggleDark } = useThemeStore();
 
   return (
@@ -47,6 +47,6 @@ function HomePage() {
       </Tabs>
     </div>
   );
-}
+};
 
 export default HomePage;
