@@ -44,7 +44,7 @@ const columns = [
   },
 ];
 
-export default function McpPage() {
+const McpPage: React.FC = () => {
   const [mcps, setMcps] = useState<Mcp[]>([]);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [running, setRunning] = useState<boolean>(false);
@@ -171,4 +171,6 @@ export default function McpPage() {
       />
     </>
   );
-}
+};
+
+export default McpPage;

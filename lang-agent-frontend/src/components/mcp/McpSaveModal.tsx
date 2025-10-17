@@ -23,13 +23,13 @@ type McpProps = {
   setRunning: (running: boolean) => void;
 };
 
-function McpSaveModal({
+const App: React.FC<McpProps> = ({
   id,
   isOpen,
   onOpenChange,
   onRefresh,
   setRunning,
-}: McpProps) {
+}) => {
   const init_mcp: Mcp = {
     id: "",
     name: "",
@@ -156,6 +156,6 @@ function McpSaveModal({
       </Modal>
     </>
   );
-}
+};
 
-export default memo(McpSaveModal);
+export default memo(App);

@@ -17,7 +17,7 @@ if (import.meta.env.MODE === "development") {
 } else {
   log.setLevel("warn");
 }
-function App() {
+const App: React.FC = () => {
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -51,6 +51,6 @@ function App() {
       </Routes>
     </main>
   );
-}
+};
 
 export default App;

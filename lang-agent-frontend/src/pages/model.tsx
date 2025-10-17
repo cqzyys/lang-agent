@@ -46,7 +46,7 @@ const columns = [
   },
 ];
 
-export default function ModelPage() {
+const ModelPage: React.FC = () => {
   const [models, setModels] = useState<Model[]>([]);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [running, setRunning] = useState<boolean>(false);
@@ -173,4 +173,6 @@ export default function ModelPage() {
       />
     </>
   );
-}
+};
+
+export default ModelPage;

@@ -63,7 +63,8 @@ import {
 import "@xyflow/react/dist/style.css";
 
 log.setLevel("debug");
-export default function FlowPage() {
+
+const FlowPage: React.FC = () => {
   const location = useLocation();
   const { init_agent } = location.state || {};
   let init_nodes = [];
@@ -499,4 +500,6 @@ export default function FlowPage() {
       </div>
     </div>
   );
-}
+};
+
+export default FlowPage;

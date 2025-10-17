@@ -8,7 +8,7 @@ export type EndNodeProps = {
   onDrawerOpen: () => void;
 };
 
-function EndNode({ onDrawerOpen }: EndNodeProps) {
+const EndNode: React.FC<EndNodeProps> = ({ onDrawerOpen }) => {
   return (
     <>
       <NodeResizer isVisible={false} />
@@ -29,6 +29,6 @@ function EndNode({ onDrawerOpen }: EndNodeProps) {
       </Card>
     </>
   );
-}
+};
 
 export default memo(EndNode);

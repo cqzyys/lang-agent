@@ -3,7 +3,7 @@ import { memo } from "react";
 
 import { Icon } from "@/components";
 
-function KeyInput({ id }: Record<string, string>) {
+const App: React.FC<Record<string, string>> = ({ id }) => {
   return (
     <Input
       isReadOnly
@@ -30,6 +30,6 @@ function KeyInput({ id }: Record<string, string>) {
       value={id}
     />
   );
-}
+};
 
-export default memo(KeyInput);
+export default memo(App);

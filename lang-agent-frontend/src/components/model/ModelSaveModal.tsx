@@ -33,13 +33,13 @@ type ModalProps = {
   setRunning: (running: boolean) => void;
 };
 
-function ModelSaveModal({
+const App: React.FC<ModalProps> = ({
   id,
   isOpen,
   onOpenChange,
   onRefresh,
   setRunning,
-}: ModalProps) {
+}) => {
   const init_model: Model = {
     id: "",
     type: "llm",
@@ -191,6 +191,6 @@ function ModelSaveModal({
       </Modal>
     </>
   );
-}
+};
 
-export default memo(ModelSaveModal);
+export default memo(App);

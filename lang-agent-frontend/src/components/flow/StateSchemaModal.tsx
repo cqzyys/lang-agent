@@ -21,7 +21,19 @@ const types = [
   { id: "list", name: "list" },
 ];
 
-function StateSchemaModal({ isOpen, onOpenChange, data, onDataChange }: any) {
+interface StateSchemaModalProps {
+  isOpen: boolean;
+  onOpenChange: (isOpen: boolean) => void;
+  data: any;
+  onDataChange: (data: any) => void;
+}
+
+const App: React.FC<StateSchemaModalProps> = ({
+  isOpen,
+  onOpenChange,
+  data,
+  onDataChange,
+}) => {
   const state_schema: Record<string, string> = JSON.parse(data.state_schema);
   const [schemaList, setSchemaList] = useState(Object.entries(state_schema));
   const currentIndex = useRef(0);
@@ -160,6 +172,6 @@ function StateSchemaModal({ isOpen, onOpenChange, data, onDataChange }: any) {
       </Modal>
     </>
   );
-}
+};
 
-export default memo(StateSchemaModal);
+export default memo(App);

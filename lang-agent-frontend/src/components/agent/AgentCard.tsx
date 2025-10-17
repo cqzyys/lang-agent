@@ -11,7 +11,7 @@ export type AgentCardData = {
   onDelete: () => void;
 };
 
-function AgentCard({ agent, onDelete }: AgentCardData) {
+const App: React.FC<AgentCardData> = ({ agent, onDelete }) => {
   const navigate = useNavigate();
 
   function onValueChange(value: boolean) {
@@ -85,6 +85,6 @@ function AgentCard({ agent, onDelete }: AgentCardData) {
       </CardBody>
     </Card>
   );
-}
+};
 
-export default memo(AgentCard);
+export default memo(App);

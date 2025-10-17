@@ -7,7 +7,7 @@ import type {
 } from "@xyflow/react";
 
 import log from "loglevel";
-import { useCallback, useState } from "react";
+import { memo, useCallback, useState } from "react";
 import {
   useReactFlow,
   ReactFlow,
@@ -42,7 +42,8 @@ interface DroppableReactFlowProps {
   selectedEdgeType: string;
   setResult: React.Dispatch<React.SetStateAction<string>>;
 }
-export default function DroppableReactFlow({
+
+const App: React.FC<DroppableReactFlowProps> = ({
   agent,
   setAgent,
   nodes,
@@ -55,7 +56,7 @@ export default function DroppableReactFlow({
   setEdges,
   selectedEdgeType,
   setResult,
-}: DroppableReactFlowProps) {
+}) => {
   const { screenToFlowPosition } = useReactFlow();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [running, setRunning] = useState<boolean>(false);
@@ -316,4 +317,6 @@ export default function DroppableReactFlow({
       />
     </>
   );
-}
+};
+
+export default memo(App);

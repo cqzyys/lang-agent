@@ -5,7 +5,7 @@ import { apiClient } from "@/util";
 import { Agent } from "@/types";
 import { AgentCard, InitCard } from "@/components";
 
-export default function AgentPage() {
+const AgentPage: React.FC = () => {
   const [agents, setAgents] = useState<Agent[]>([]);
   const fetchData = async () => {
     apiClient
@@ -46,4 +46,6 @@ export default function AgentPage() {
       </div>
     </div>
   );
-}
+};
+
+export default AgentPage;

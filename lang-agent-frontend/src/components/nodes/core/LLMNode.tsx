@@ -34,7 +34,7 @@ export type LLMNodeData = BaseNodeData & {
 
 export type LLMNodeProps = NodeProps<LLMNodeData>;
 
-function LLMNode({ id, data, onDataChange }: LLMNodeProps) {
+const LLMNode: React.FC<LLMNodeProps> = ({ id, data, onDataChange }) => {
   const { llms } = useModelStore();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [activeTriggerRef, setActiveTriggerRef] = useState<{
@@ -219,6 +219,6 @@ function LLMNode({ id, data, onDataChange }: LLMNodeProps) {
       />
     </>
   );
-}
+};
 
 export default memo(LLMNode);

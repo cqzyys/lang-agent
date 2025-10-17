@@ -2,7 +2,7 @@ import { ChatBotProvider, useFlow } from "react-chatbotify";
 import { Panel } from "@xyflow/react";
 import { Button } from "@heroui/button";
 import { nanoid } from "nanoid";
-import { useState } from "react";
+import { memo, useState } from "react";
 
 import EmbeddedChatbot from "./EmbeddedChatbot";
 
@@ -15,11 +15,11 @@ interface ChatBotWrapperProps {
   setResult: React.Dispatch<React.SetStateAction<string>>;
 }
 
-function CustomChatBotWrapper({
+const CustomChatBotWrapper: React.FC<ChatBotWrapperProps> = ({
   agent_data,
   setRunning,
   setResult,
-}: ChatBotWrapperProps) {
+}) => {
   const [chatId, setChatId] = useState("");
   const { restartFlow } = useFlow();
 
@@ -51,13 +51,13 @@ function CustomChatBotWrapper({
       />
     </>
   );
-}
+};
 
-function CustomChatBotProvider({
+const App: React.FC<ChatBotWrapperProps> = ({
   agent_data,
   setRunning,
   setResult,
-}: ChatBotWrapperProps) {
+}) => {
   return (
     <ChatBotProvider>
       <CustomChatBotWrapper
@@ -67,6 +67,6 @@ function CustomChatBotProvider({
       />
     </ChatBotProvider>
   );
-}
+};
 
-export default CustomChatBotProvider;
+export default memo(App);

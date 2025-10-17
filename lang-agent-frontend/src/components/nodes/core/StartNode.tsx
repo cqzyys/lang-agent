@@ -26,7 +26,7 @@ export type StartNodeData = BaseNodeData & {
 
 export type StartNodeProps = NodeProps<StartNodeData>;
 
-function StartNode({ id, data, onDataChange }: StartNodeProps) {
+const StartNode: React.FC<StartNodeProps> = ({ id, data, onDataChange }) => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   return (
@@ -97,6 +97,6 @@ function StartNode({ id, data, onDataChange }: StartNodeProps) {
       />
     </>
   );
-}
+};
 
 export default memo(StartNode);

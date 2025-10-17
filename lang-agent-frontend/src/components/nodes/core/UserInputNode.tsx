@@ -15,7 +15,11 @@ export type UserInputNodeData = BaseNodeData & {
 
 export type UserInputNodeProps = NodeProps<UserInputNodeData>;
 
-function UserInputNode({ id, data, onDataChange }: UserInputNodeProps) {
+const UserInputNode: React.FC<UserInputNodeProps> = ({
+  id,
+  data,
+  onDataChange,
+}) => {
   return (
     <>
       <NodeResizer isVisible={false} />
@@ -67,6 +71,6 @@ function UserInputNode({ id, data, onDataChange }: UserInputNodeProps) {
       />
     </>
   );
-}
+};
 
 export default memo(UserInputNode);

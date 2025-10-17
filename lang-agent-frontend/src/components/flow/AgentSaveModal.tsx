@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { Dispatch, memo, SetStateAction } from "react";
 import {
   Button,
   Input,
@@ -10,13 +10,23 @@ import {
   Textarea,
 } from "@heroui/react";
 
-function AgentSaveModal({
+import { Agent } from "@/types";
+
+interface AgentSaveModalProps {
+  isOpen: boolean;
+  onOpenChange: (isOpen: boolean) => void;
+  agent: Agent;
+  setAgent: Dispatch<SetStateAction<Agent>>;
+  onSave: () => void;
+}
+
+const App: React.FC<AgentSaveModalProps> = ({
   isOpen,
   onOpenChange,
   agent,
   setAgent,
   onSave,
-}: any) {
+}) => {
   return (
     <>
       <Modal isOpen={isOpen} placement="top-center" onOpenChange={onOpenChange}>
@@ -67,6 +77,6 @@ function AgentSaveModal({
       </Modal>
     </>
   );
-}
+};
 
-export default memo(AgentSaveModal);
+export default memo(App);
