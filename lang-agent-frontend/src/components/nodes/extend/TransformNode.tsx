@@ -16,20 +16,11 @@ export type TransformNodeData = BaseNodeData & {
 
 export type TransformNodeProps = NodeProps<TransformNodeData>;
 
-const TransformNodeConfig: NodeConfig<TransformNodeData> = {
-  type: "transform",
-  description: "转换器",
-  data: {
-    id: "",
-    type: "transform",
-    name: "transform",
-    origin_state_field: "",
-    target_state_field: "",
-  },
-  component: TransformNode,
-};
-
-function TransformNode({ id, data, onDataChange }: TransformNodeProps) {
+const TransformNode: React.FC<TransformNodeProps> = ({
+  id,
+  data,
+  onDataChange,
+}) => {
   return (
     <>
       <NodeResizer isVisible={false} />
@@ -93,6 +84,19 @@ function TransformNode({ id, data, onDataChange }: TransformNodeProps) {
       />
     </>
   );
-}
+};
+
+const TransformNodeConfig: NodeConfig<TransformNodeData> = {
+  type: "transform",
+  description: "转换器",
+  data: {
+    id: "",
+    type: "transform",
+    name: "transform",
+    origin_state_field: "",
+    target_state_field: "",
+  },
+  component: TransformNode,
+};
 
 export default TransformNodeConfig;

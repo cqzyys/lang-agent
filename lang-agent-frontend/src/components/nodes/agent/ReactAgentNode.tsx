@@ -26,7 +26,11 @@ export type ReactAgentNodeData = BaseNodeData & {
 
 export type ReactAgentNodeProps = NodeProps<ReactAgentNodeData>;
 
-function ReactAgentNode({ id, data, onDataChange }: ReactAgentNodeProps) {
+const ReactAgentNode: React.FC<ReactAgentNodeProps> = ({
+  id,
+  data,
+  onDataChange,
+}) => {
   const { llms } = useModelStore();
   const { mcp_map } = useMcpStore();
 
@@ -106,6 +110,6 @@ function ReactAgentNode({ id, data, onDataChange }: ReactAgentNodeProps) {
       />
     </>
   );
-}
+};
 
 export default memo(ReactAgentNode);

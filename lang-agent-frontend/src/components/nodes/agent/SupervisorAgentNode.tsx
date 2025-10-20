@@ -25,11 +25,11 @@ export type SupervisorAgentNodeData = BaseNodeData & {
 
 export type SupervisorAgentNodeProps = NodeProps<SupervisorAgentNodeData>;
 
-function SupervisorAgentNode({
+const SupervisorAgentNode: React.FC<SupervisorAgentNodeProps> = ({
   id,
   data,
   onDataChange,
-}: SupervisorAgentNodeProps) {
+}) => {
   const { llms } = useModelStore();
   const { reuse_agents } = useAgentStore();
 
@@ -104,6 +104,6 @@ function SupervisorAgentNode({
       />
     </>
   );
-}
+};
 
 export default memo(SupervisorAgentNode);

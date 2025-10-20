@@ -18,20 +18,6 @@ import {
 } from "@/components";
 import { useVsStore } from "@/store";
 
-const VectorIngestNodeConfig: NodeConfig<VectorIngestNodeData> = {
-  type: "vector_ingest",
-  description: "向量存储",
-  data: {
-    id: "",
-    name: "vector_ingest",
-    type: "vector_ingest",
-    vs_name: "",
-    content: "",
-    description: "",
-  },
-  component: VectorIngestNode,
-};
-
 export type VectorIngestNodeData = BaseNodeData & {
   vs_name: string;
   content: string;
@@ -39,11 +25,11 @@ export type VectorIngestNodeData = BaseNodeData & {
 };
 export type VectorIngestNodeProps = NodeProps<VectorIngestNodeData>;
 
-export function VectorIngestNode({
+const VectorIngestNode: React.FC<VectorIngestNodeProps> = ({
   id,
   data,
   onDataChange,
-}: VectorIngestNodeProps) {
+}) => {
   const { vectorstores } = useVsStore();
 
   return (
@@ -129,6 +115,20 @@ export function VectorIngestNode({
       />
     </>
   );
-}
+};
+
+const VectorIngestNodeConfig: NodeConfig<VectorIngestNodeData> = {
+  type: "vector_ingest",
+  description: "向量存储",
+  data: {
+    id: "",
+    name: "vector_ingest",
+    type: "vector_ingest",
+    vs_name: "",
+    content: "",
+    description: "",
+  },
+  component: VectorIngestNode,
+};
 
 export default VectorIngestNodeConfig;

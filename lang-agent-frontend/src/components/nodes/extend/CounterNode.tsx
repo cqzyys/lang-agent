@@ -9,25 +9,17 @@ import {
   NodeConfig,
 } from "@/components";
 
-const CounterNodeConfig: NodeConfig<CounterNodeData> = {
-  type: "counter",
-  description: "计数器",
-  data: {
-    id: "",
-    type: "counter",
-    name: "counter",
-    state_field: "",
-  },
-  component: CounterNode,
-};
-
 export type CounterNodeData = BaseNodeData & {
   state_field: string;
 };
 
 export type CounterNodeProps = NodeProps<CounterNodeData>;
 
-function CounterNode({ id, data, onDataChange }: CounterNodeProps) {
+const CounterNode: React.FC<CounterNodeProps> = ({
+  id,
+  data,
+  onDataChange,
+}) => {
   return (
     <>
       <NodeResizer isVisible={false} />
@@ -79,6 +71,18 @@ function CounterNode({ id, data, onDataChange }: CounterNodeProps) {
       />
     </>
   );
-}
+};
+
+const CounterNodeConfig: NodeConfig<CounterNodeData> = {
+  type: "counter",
+  description: "计数器",
+  data: {
+    id: "",
+    type: "counter",
+    name: "counter",
+    state_field: "",
+  },
+  component: CounterNode,
+};
 
 export default CounterNodeConfig;

@@ -9,19 +9,6 @@ import {
   NodeConfig,
 } from "@/components";
 
-const DocSaveNodeConfig: NodeConfig<DocSaveNodeData> = {
-  type: "doc_save",
-  description: "文档保存",
-  data: {
-    id: "",
-    type: "doc_save",
-    name: "doc_save",
-    content: "",
-    save_path: "",
-  },
-  component: DocSaveNode,
-};
-
 export type DocSaveNodeData = BaseNodeData & {
   content: string;
   save_path: string;
@@ -29,7 +16,11 @@ export type DocSaveNodeData = BaseNodeData & {
 
 export type DocSaveNodeProps = NodeProps<DocSaveNodeData>;
 
-function DocSaveNode({ id, data, onDataChange }: DocSaveNodeProps) {
+const DocSaveNode: React.FC<DocSaveNodeProps> = ({
+  id,
+  data,
+  onDataChange,
+}) => {
   return (
     <>
       <NodeResizer isVisible={false} />
@@ -97,6 +88,19 @@ function DocSaveNode({ id, data, onDataChange }: DocSaveNodeProps) {
       />
     </>
   );
-}
+};
+
+const DocSaveNodeConfig: NodeConfig<DocSaveNodeData> = {
+  type: "doc_save",
+  description: "文档保存",
+  data: {
+    id: "",
+    type: "doc_save",
+    name: "doc_save",
+    content: "",
+    save_path: "",
+  },
+  component: DocSaveNode,
+};
 
 export default DocSaveNodeConfig;

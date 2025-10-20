@@ -9,25 +9,17 @@ import {
   NodeConfig,
 } from "@/components";
 
-const DocLoaderNodeConfig: NodeConfig<DocLoaderNodeData> = {
-  type: "doc_loader",
-  description: "文档加载",
-  data: {
-    id: "",
-    type: "doc_loader",
-    name: "doc_loader",
-    guiding_words: "请上传文件",
-  },
-  component: DocLoaderNode,
-};
-
 export type DocLoaderNodeData = BaseNodeData & {
   guiding_words: string;
 };
 
 export type DocLoaderNodeProps = NodeProps<DocLoaderNodeData>;
 
-function DocLoaderNode({ id, data, onDataChange }: DocLoaderNodeProps) {
+const DocLoaderNode: React.FC<DocLoaderNodeProps> = ({
+  id,
+  data,
+  onDataChange,
+}) => {
   return (
     <>
       <NodeResizer isVisible={false} />
@@ -81,6 +73,18 @@ function DocLoaderNode({ id, data, onDataChange }: DocLoaderNodeProps) {
       />
     </>
   );
-}
+};
+
+const DocLoaderNodeConfig: NodeConfig<DocLoaderNodeData> = {
+  type: "doc_loader",
+  description: "文档加载",
+  data: {
+    id: "",
+    type: "doc_loader",
+    name: "doc_loader",
+    guiding_words: "请上传文件",
+  },
+  component: DocLoaderNode,
+};
 
 export default DocLoaderNodeConfig;
