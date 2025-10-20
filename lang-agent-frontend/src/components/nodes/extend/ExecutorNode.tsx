@@ -16,25 +16,17 @@ import {
   NodeConfig,
 } from "@/components";
 
-const ExecutorNodeConfig: NodeConfig<ExecutorNodeData> = {
-  type: "executor",
-  description: "代码执行器",
-  data: {
-    id: "",
-    type: "executor",
-    name: "executor",
-    code: "",
-  },
-  component: ExecutorNode,
-};
-
 export type ExecutorNodeData = BaseNodeData & {
   code: string;
 };
 
 export type ExecutorNodeProps = NodeProps<ExecutorNodeData>;
 
-function ExecutorNode({ id, data, onDataChange }: ExecutorNodeProps) {
+const ExecutorNode: React.FC<ExecutorNodeProps> = ({
+  id,
+  data,
+  onDataChange,
+}) => {
   return (
     <>
       <NodeResizer isVisible={false} />
@@ -86,6 +78,18 @@ function ExecutorNode({ id, data, onDataChange }: ExecutorNodeProps) {
       />
     </>
   );
-}
+};
+
+const ExecutorNodeConfig: NodeConfig<ExecutorNodeData> = {
+  type: "executor",
+  description: "代码执行器",
+  data: {
+    id: "",
+    type: "executor",
+    name: "executor",
+    code: "",
+  },
+  component: ExecutorNode,
+};
 
 export default ExecutorNodeConfig;

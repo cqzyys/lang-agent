@@ -336,25 +336,17 @@ import {
   NodeConfig,
 } from "@/components";
 
-const XXXNodeConfig: NodeConfig<XXXNodeData> = {
-  type: "xxx",
-  description: "xxx",
-  data: {
-    id: "",
-    type: "xxx",
-    name: "xxx",
-    yyy: "",
-  },
-  component: XXXNode,
-};
-
 export type XXXNodeData = BaseNodeData & {
   yyy: string;
 };
 
 export type XXXNodeProps = NodeProps<XXXNodeData>;
 
-function XXXNode({ id, data, onDataChange }: XXXNodeProps) {
+const XXXNode: React.FC<XXXNodeProps> = ({
+  id,
+  data,
+  onDataChange,
+}) => {
   return (
     <>
       <NodeResizer isVisible={false} />
@@ -383,7 +375,19 @@ function XXXNode({ id, data, onDataChange }: XXXNodeProps) {
       />
     </>
   );
-}
+};
+
+const XXXNodeConfig: NodeConfig<XXXNodeData> = {
+  type: "xxx",
+  description: "xxx",
+  data: {
+    id: "",
+    type: "xxx",
+    name: "xxx",
+    yyy: "",
+  },
+  component: XXXNode,
+};
 
 export default XXXNodeConfig;
 

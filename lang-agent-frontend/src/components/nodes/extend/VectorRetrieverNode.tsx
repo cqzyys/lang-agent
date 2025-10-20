@@ -18,30 +18,17 @@ import {
 } from "@/components";
 import { useVsStore } from "@/store";
 
-const VectorRetrieverNodeConfig: NodeConfig<VectorRetrieverNodeData> = {
-  type: "vector_retriever",
-  description: "向量召回",
-  data: {
-    id: "",
-    name: "vector_retriever",
-    type: "vector_retriever",
-    vs_name: "",
-    keywords: "",
-  },
-  component: VectorRetrieverNode,
-};
-
 export type VectorRetrieverNodeData = BaseNodeData & {
   vs_name: string;
   keywords: string;
 };
 export type VectorRetrieverNodeProps = NodeProps<VectorRetrieverNodeData>;
 
-export function VectorRetrieverNode({
+const VectorRetrieverNode: React.FC<VectorRetrieverNodeProps> = ({
   id,
   data,
   onDataChange,
-}: VectorRetrieverNodeProps) {
+}) => {
   const { vectorstores } = useVsStore();
 
   return (
@@ -114,6 +101,19 @@ export function VectorRetrieverNode({
       />
     </>
   );
-}
+};
+
+const VectorRetrieverNodeConfig: NodeConfig<VectorRetrieverNodeData> = {
+  type: "vector_retriever",
+  description: "向量召回",
+  data: {
+    id: "",
+    name: "vector_retriever",
+    type: "vector_retriever",
+    vs_name: "",
+    keywords: "",
+  },
+  component: VectorRetrieverNode,
+};
 
 export default VectorRetrieverNodeConfig;

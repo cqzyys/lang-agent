@@ -15,7 +15,11 @@ export type ReUseAgentNodeData = BaseNodeData & {
 
 export type ReUseAgentNodeProps = NodeProps<ReUseAgentNodeData>;
 
-function ReuseAgentNode({ id, data, onDataChange }: ReUseAgentNodeProps) {
+const ReuseAgentNode: React.FC<ReUseAgentNodeProps> = ({
+  id,
+  data,
+  onDataChange,
+}) => {
   return (
     <>
       <NodeResizer isVisible={false} />
@@ -55,6 +59,6 @@ function ReuseAgentNode({ id, data, onDataChange }: ReUseAgentNodeProps) {
       />
     </>
   );
-}
+};
 
 export default memo(ReuseAgentNode);
