@@ -9,25 +9,17 @@ import {
   NodeConfig,
 } from "@/components";
 
-const DocDowloadNodeConfig: NodeConfig<DocDowloadNodeData> = {
-  type: "doc_dowload",
-  description: "文档下载",
-  data: {
-    id: "",
-    type: "doc_dowload",
-    name: "doc_dowload",
-    content: "",
-  },
-  component: DocDowloadNode,
-};
-
 export type DocDowloadNodeData = BaseNodeData & {
   content: string;
 };
 
 export type DocDowloadNodeProps = NodeProps<DocDowloadNodeData>;
 
-function DocDowloadNode({ id, data, onDataChange }: DocDowloadNodeProps) {
+const DocDowloadNode: React.FC<DocDowloadNodeProps> = ({
+  id,
+  data,
+  onDataChange,
+}) => {
   return (
     <>
       <NodeResizer isVisible={false} />
@@ -81,6 +73,18 @@ function DocDowloadNode({ id, data, onDataChange }: DocDowloadNodeProps) {
       />
     </>
   );
-}
+};
+
+const DocDowloadNodeConfig: NodeConfig<DocDowloadNodeData> = {
+  type: "doc_dowload",
+  description: "文档下载",
+  data: {
+    id: "",
+    type: "doc_dowload",
+    name: "doc_dowload",
+    content: "",
+  },
+  component: DocDowloadNode,
+};
 
 export default DocDowloadNodeConfig;

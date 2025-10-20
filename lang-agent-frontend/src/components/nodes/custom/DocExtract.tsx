@@ -18,19 +18,6 @@ import {
 } from "@/components";
 import { useModelStore } from "@/store/model";
 
-const DocExtractNodeConfig: NodeConfig<DocExtractNodeData> = {
-  type: "doc_extract",
-  description: "文献萃取",
-  data: {
-    id: "",
-    type: "doc_extract",
-    name: "doc_extract",
-    guiding_words: "",
-    model: "qwen2.5-instruct",
-  },
-  component: DocExtractNode,
-};
-
 export type DocExtractNodeData = BaseNodeData & {
   guiding_words: string;
   model: string;
@@ -38,7 +25,11 @@ export type DocExtractNodeData = BaseNodeData & {
 
 export type DocExtractNodeProps = NodeProps<DocExtractNodeData>;
 
-function DocExtractNode({ id, data, onDataChange }: DocExtractNodeProps) {
+const DocExtractNode: React.FC<DocExtractNodeProps> = ({
+  id,
+  data,
+  onDataChange,
+}) => {
   const { llms } = useModelStore();
 
   return (
@@ -112,6 +103,19 @@ function DocExtractNode({ id, data, onDataChange }: DocExtractNodeProps) {
       />
     </>
   );
-}
+};
+
+const DocExtractNodeConfig: NodeConfig<DocExtractNodeData> = {
+  type: "doc_extract",
+  description: "文献萃取",
+  data: {
+    id: "",
+    type: "doc_extract",
+    name: "doc_extract",
+    guiding_words: "",
+    model: "qwen2.5-instruct",
+  },
+  component: DocExtractNode,
+};
 
 export default DocExtractNodeConfig;
