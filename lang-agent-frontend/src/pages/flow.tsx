@@ -97,6 +97,12 @@ const FlowPage: React.FC = () => {
   const [extendNodes, setExtendNodes] = useState<
     Array<{ type: string; description: string; data: any }>
   >([]);
+  const [customNodeTypes, setCustomNodeTypes] = useState<Record<string, any>>(
+    {},
+  );
+  const [customNodes, setCustomNodes] = useState<
+    Array<{ type: string; description: string; data: any }>
+  >([]);
   const [result, setResult] = useState("");
   const {
     isOpen: isDrawerOpen,
@@ -157,22 +163,15 @@ const FlowPage: React.FC = () => {
   );
 
   useEffect(() => {
-    const loadNodeModules = async () => {
-      const extendNodeModules = import.meta.glob(
-        "../components/nodes/extend/*.tsx",
-      );
-      const customNodeModules = import.meta.glob(
-        "../components/nodes/custom/*.tsx",
-      );
-      const nodeModules = { ...extendNodeModules, ...customNodeModules };
-      //const nodeModules = import.meta.glob("../components/nodes/extend/*.tsx");
+    const loadNodeModules = async (
+      nodeModules: Record<string, () => Promise<any>>,
+    ) => {
       const types: Record<string, any> = {};
-      const extendNodes: Array<{
+      const nodes: Array<{
         type: string;
         description: string;
         data: any;
       }> = [];
-
       const nodeModulePaths = Object.keys(nodeModules);
       const modulePromises = nodeModulePaths.map(async (path) => {
         const module = (await nodeModules[path]()) as {
@@ -188,7 +187,7 @@ const FlowPage: React.FC = () => {
               onDataChange={(newData) => updateNodeData(id, newData)}
             />
           );
-          extendNodes.push({
+          nodes.push({
             type: config.type,
             description: config.description,
             data: config.data,
@@ -198,18 +197,39 @@ const FlowPage: React.FC = () => {
 
       await Promise.all(modulePromises);
 
+      return { types, nodes };
+    };
+    const loadExtendNodeModules = async () => {
+      const extendModules = import.meta.glob(
+        "../components/nodes/extend/*.tsx",
+      );
+      const { types, nodes } = await loadNodeModules(extendModules);
+
       setExtendNodeTypes(types);
-      setExtendNodes(extendNodes);
+      setExtendNodes(nodes);
     };
 
-    loadNodeModules();
+    const loadCustomNodeModules = async () => {
+      const customModules = import.meta.glob(
+        "../components/nodes/custom/*.tsx",
+      );
+      const { types, nodes } = await loadNodeModules(customModules);
+
+      setCustomNodeTypes(types);
+      setCustomNodes(nodes);
+    };
+
+    loadExtendNodeModules();
+    loadCustomNodeModules();
   }, []);
 
   //log("extendNodeTypes=", extendNodeTypes);
+  //log("customNodeTypes=", customNodeTypes);
 
   const nodeTypes = useMemo(() => {
     return {
       ...extendNodeTypes,
+      ...customNodeTypes,
       start: ({ data, id }: { data: StartNodeData; id: string }) => (
         <StartNode
           data={data}
@@ -260,7 +280,7 @@ const FlowPage: React.FC = () => {
         />
       ),
     };
-  }, [extendNodeTypes]);
+  }, [extendNodeTypes, customNodeTypes]);
 
   //console.log("nodeTypes=", nodeTypes);
 
@@ -397,6 +417,21 @@ const FlowPage: React.FC = () => {
             >
               <ul style={{ listStyle: "none", paddingLeft: 0 }}>
                 {extendNodes.map((nodeData) => (
+                  <DraggableNode
+                    key={nodeData.type}
+                    node={nodeData}
+                    onDragStart={onDragStart}
+                  />
+                ))}
+              </ul>
+            </AccordionItem>
+            <AccordionItem
+              key="custom_nodes"
+              aria-label="自定义节点"
+              title="自定义节点"
+            >
+              <ul style={{ listStyle: "none", paddingLeft: 0 }}>
+                {customNodes.map((nodeData) => (
                   <DraggableNode
                     key={nodeData.type}
                     node={nodeData}
