@@ -13,9 +13,19 @@ async def load_document(file_path: str):
         case "txt":
             from langchain_community.document_loaders import TextLoader
             loader = TextLoader(file_path, encoding="utf-8")
-        case "docx" | "md":
-            from langchain_unstructured import UnstructuredLoader
-            loader = UnstructuredLoader(file_path)
+        case "docx" | "doc":
+            from langchain_community.document_loaders import (
+                UnstructuredWordDocumentLoader
+            )
+            loader = UnstructuredWordDocumentLoader(
+                file_path=file_path,
+                chunking_strategy="by_title",
+                strategy="hi_res",
+                languages=["chi_sim", "eng"],
+            )
+        case "md":
+            from langchain_community.document_loaders import UnstructuredMarkdownLoader
+            loader = UnstructuredMarkdownLoader(file_path)
         case _:
             raise ValueError("Unsupported File Type")
     return await loader.aload()
