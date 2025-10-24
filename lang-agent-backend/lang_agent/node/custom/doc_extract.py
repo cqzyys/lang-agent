@@ -163,7 +163,12 @@ class DocExtractNode(BaseNode):
         extract_list: list[str] = []
         for f in dir_path.iterdir():
             #logger.info("file: %s",f.name)
-            docs = await load_document(str(dir_path/f.name))
+            docs = await load_document(
+                str(dir_path/f.name),
+                strategy="fast",
+                languages=["chi_sim", "eng"],
+                chunking_strategy="by_title"
+            )
             content = "\n".join([doc.page_content for doc in docs])
             #logger.info("content: %s",content)
             extract_message = await self._extract(content)
