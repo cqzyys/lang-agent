@@ -1,24 +1,16 @@
-from enum import Enum
 import os
 
-class Strategy(Enum):
-    AUTO = "auto"
-    FAST = "fast"
-    HI_RES = "hi_res"
-    OCR_ONLY = "ocr_only"
-    VLM = "vlm"
-async def load_document(file_path: str, strategy: Strategy = Strategy.FAST):
+async def load_document(file_path: str, **unstructured_kwargs):
     file_extension = file_path.rsplit(".",maxsplit=1)[-1].lower()
     match file_extension:
         case "pdf":
             if os.environ.get("UNSTRUCTURED_API_KEY"):
-                from langchain_unstructured import UnstructuredLoader
-                loader = UnstructuredLoader(
+                from langchain_community.document_loaders import (
+                    UnstructuredPDFLoader
+                )
+                loader = UnstructuredPDFLoader(
                     file_path = file_path,
-                    partition_via_api=True,
-                    chunking_strategy="by_title",
-                    strategy=strategy.value,
-                    languages=["chi_sim", "eng"],
+                    **unstructured_kwargs
                 )
             else:
                 from langchain_community.document_loaders import PyPDFLoader
@@ -33,9 +25,7 @@ async def load_document(file_path: str, strategy: Strategy = Strategy.FAST):
                 )
                 loader = UnstructuredWordDocumentLoader(
                     file_path=file_path,
-                    chunking_strategy="by_title",
-                    strategy=strategy.value,
-                    languages=["chi_sim", "eng"],
+                    **unstructured_kwargs
                 )
             else:
                 from langchain_community.document_loaders import (
