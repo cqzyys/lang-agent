@@ -16,5 +16,5 @@ from .convert import (
 )
 
 from .document import (
-    load_document,Strategy
+    load_document
 )
