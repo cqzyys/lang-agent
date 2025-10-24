@@ -897,6 +897,23 @@ url = "https://pypi.tuna.tsinghua.edu.cn/simple"
 reference = "tsinghua"
 
 [[package]]
+name = "docx2txt"
+version = "0.9"
+description = "A pure python-based utility to extract text and images from docx files."
+optional = false
+python-versions = "*"
+groups = ["main"]
+files = [
+    {file = "docx2txt-0.9-py3-none-any.whl", hash = "sha256:e3718c0653fd6f2fcf4b51b02a61452ad1c38a4c163bcf0a6fd9486cd38f529a"},
+    {file = "docx2txt-0.9.tar.gz", hash = "sha256:18013f6229b14909028b19aa7bf4f8f3d6e4632d7b089ab29f7f0a4d1f660e28"},
+]
+
+[package.source]
+type = "legacy"
+url = "https://pypi.tuna.tsinghua.edu.cn/simple"
+reference = "tsinghua"
+
+[[package]]
 name = "emoji"
 version = "2.14.1"
 description = "Emoji for Python"
@@ -5982,4 +5999,4 @@ reference = "tsinghua"
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11,<4.0"
-content-hash = "233affb574cf8400e2be75aa2ad3ebc882def5676578473c16902da981622808"
+content-hash = "36a0be19049298946d11a04f85f2cee63fdf8b2a51b791c2ee2269b30b525864"
