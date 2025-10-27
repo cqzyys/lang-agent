@@ -12,7 +12,7 @@ from lang_agent.db.database import (
     Agent,
     create_agent,
     delete_agent,
-    list_agents,
+    list_available_agents,
     list_reuse_agents,
     save_agent,
     select_agent,
@@ -81,7 +81,7 @@ async def delete(id: str) -> ApiResponse:
 async def list():
     return ApiResponse(
         success=True,
-        data=objs_to_models(list_agents(),AgentResponse)
+        data=objs_to_models(list_available_agents(),AgentResponse)
     )
 
 
