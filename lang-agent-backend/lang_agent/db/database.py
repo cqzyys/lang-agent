@@ -110,14 +110,16 @@ def update_model(
         stmt = select(Model).where(Model.id == model.id)
         entity = session.scalars(stmt).first()
         if resource_manager is not None:
-            if entity.model_args != model.model_args or (
-                entity.disabled == True and model.disabled == False
-            ):
-                resource_manager.models[entity.type][entity.name] = (
-                    resource_manager.init_model(entity)
-                )
-            if entity.disabled == False and model.disabled == True:
-                del resource_manager.models[entity.type][entity.name]
+            if entity.name == model.name and entity.type==model.type and entity.model_args == model.model_args and entity.disabled == model.disabled:
+                pass
+            else:
+                if entity.name in resource_manager.models[entity.type]:
+                    if entity.disabled == False:
+                        del resource_manager.models[entity.type][entity.name]
+                if model.disabled == False:
+                    resource_manager.models[model.type][model.name] = (
+                        resource_manager.init_model(model)
+                    )
         entity.name = model.name
         entity.type = model.type
         entity.channel = model.channel
