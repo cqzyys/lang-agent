@@ -5,19 +5,22 @@ from contextlib import contextmanager
 from typing import Optional
 
 from dotenv import load_dotenv
-from sqlalchemy import create_engine, select
+from langchain_text_splitters import CharacterTextSplitter
+from sqlalchemy import create_engine, delete, desc, select
 from sqlalchemy.orm import sessionmaker
 from xid import XID
 
 from lang_agent.data_schema.request_params import (
     AgentParams,
+    DocumentParams,
     MCPParams,
     ModelParams,
     VectorStoreParams
 )
 from lang_agent.setting.manager import ResourceManager
+from lang_agent.util import load_document
 
-from .models import Agent, Base, Mcp, Model, VectorStore
+from .models import Agent, Base, Chunk, Document, Mcp, Model, VectorStore
 
 load_dotenv()
 logging.basicConfig()
@@ -455,3 +458,53 @@ def list_available_vectorstores() -> list[VectorStore]:
         ).order_by(VectorStore.name)
         entities = session.scalars(stmt).all()
         return entities
+
+
+def list_documents(vs_id:str) -> list[Document]:
+    with get_session() as session:
+        stmt = select(Document).where(
+            Document.vs_id == vs_id
+        ).where(
+            Document.disabled == False
+        ).order_by(desc(Document.created_at))
+        entities = session.scalars(stmt).all()
+        return entities
+
+def create_document(params: DocumentParams):
+    with get_session() as session:
+        docs = load_document(params.file_path)
+        splitter = CharacterTextSplitter(chunk_size=2048, chunk_overlap=100)
+        for doc in docs:
+            entity = Document(
+                id=XID().string(),
+                name=params.name,
+                vs_id=params.vs_id,
+                file_path=params.file_path,
+                meta_data=doc.metadata
+            )
+            session.add(entity)
+            session.flush()
+
+            chunks = splitter.split_documents([doc])
+            for chunk in chunks:
+                chunk_entity = Chunk(
+                    id=XID().string(),
+                    content=chunk.page_content,
+                    doc_id=entity.id,
+                    meta_data=chunk.metadata
+                )
+                session.add(chunk_entity)
+                session.flush()
+
+def delete_document(id: str):
+    with get_session() as session:
+        stmt = select(Document).where(Document.id == id)
+        entity = session.scalars(stmt).first()
+        if entity is not None:
+            chunk_stmt = delete(Chunk).where(Chunk.doc_id == entity.id)
+            session.execute(chunk_stmt)
+            session.delete(entity)
+            try:
+                os.remove(entity.file_path)
+            except Exception as error:
+                raise error

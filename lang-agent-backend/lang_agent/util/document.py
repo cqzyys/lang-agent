@@ -1,6 +1,6 @@
 import os
 
-async def load_document(file_path: str, **unstructured_kwargs):
+def init_loader(file_path: str, **unstructured_kwargs):
     file_extension = file_path.rsplit(".",maxsplit=1)[-1].lower()
     match file_extension:
         case "pdf":
@@ -34,4 +34,11 @@ async def load_document(file_path: str, **unstructured_kwargs):
                 loader = Docx2txtLoader(file_path)
         case _:
             raise ValueError("Unsupported File Type")
+    return loader
+async def aload_document(file_path: str, **unstructured_kwargs):
+    loader = init_loader(file_path, **unstructured_kwargs)
     return await loader.aload()
+
+def load_document(file_path: str, **unstructured_kwargs):
+    loader = init_loader(file_path, **unstructured_kwargs)
+    return loader.load()

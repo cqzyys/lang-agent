@@ -46,3 +46,16 @@ class VectorStoreParams(BaseModel):
     collection_name: str = Field(..., description="集合名")
     embedding_name: str = Field(..., description="嵌入模型")
     disabled: Optional[bool] = Field(False, description="是否禁用")
+
+class DocumentParams(BaseModel):
+    id: Optional[str] = Field(None, description="文档ID")
+    name: Optional[str] = Field(None, description="文档名称")
+    vs_id: Optional[str] = Field(None, description="向量库ID")
+    file_path: Optional[str] = Field(None, description="文件路径")
+    disabled: Optional[bool] = Field(False, description="是否禁用")
+
+class ChunkParams(BaseModel):
+    id: Optional[str] = Field(None, description="文档片段ID")
+    content: Optional[str] = Field(None, description="内容")
+    doc_id: Optional[str] = Field(None, description="文档ID")
+    disabled: Optional[bool] = Field(False, description="是否禁用")

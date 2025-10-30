@@ -1,8 +1,9 @@
-from sqlalchemy import Boolean, Column, String
+from sqlalchemy import Boolean, Column, DateTime, String, func
 from sqlalchemy.orm import declarative_base
 
-Base = declarative_base()
+from lang_agent.util.alchemy import JSONEncodedDict
 
+Base = declarative_base()
 
 class Model(Base):
     __tablename__ = "model"
@@ -44,3 +45,30 @@ class VectorStore(Base):
     collection_name = Column(String, comment="集合名")
     embedding_name = Column(String, comment="嵌入模型")
     disabled = Column(Boolean, default=False, comment="是否禁用")
+
+class Document(Base):
+    __tablename__ = "document"
+    id = Column(String, primary_key=True, unique=True, index=True, comment="文档ID")
+    name = Column(String, comment="文档名")
+    file_path = Column(String, comment="文件路径")
+    meta_data = Column(JSONEncodedDict, comment="元数据")
+    vs_id = Column(String, comment="向量库ID")
+    disabled = Column(Boolean, default=False, comment="是否禁用")
+    embedding_flag = Column(Boolean, default=False, comment="是否向量化")
+    created_at = Column(DateTime, default=func.now(), comment="创建时间")
+    updated_at = Column(
+        DateTime, default=func.now(), onupdate=func.now(), comment="更新时间"
+    )
+
+class Chunk(Base):
+    __tablename__ = "chunk"
+    id = Column(String, primary_key=True, unique=True, index=True, comment="文档块ID")
+    content = Column(String, comment="内容")
+    meta_data = Column(JSONEncodedDict, comment="元数据")
+    doc_id = Column(String, comment="文档ID")
+    disabled = Column(Boolean, default=False, comment="是否禁用")
+    embedding_flag = Column(Boolean, default=False, comment="是否向量化")
+    created_at = Column(DateTime, default=func.now(), comment="创建时间")
+    updated_at = Column(
+        DateTime, default=func.now(), onupdate=func.now(), comment="更新时间"
+    )

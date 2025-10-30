@@ -5,7 +5,6 @@ from .util import (
     sync_wrapper,
     merge_json,
 )
-
 from .convert import (
     convert_str_to_type,
     parse_json,
@@ -14,7 +13,9 @@ from .convert import (
     obj_to_model,
     objs_to_models,
 )
-
 from .document import (
-    load_document
+    aload_document,load_document
+)
+from .alchemy import (
+    JSONEncodedDict
 )
