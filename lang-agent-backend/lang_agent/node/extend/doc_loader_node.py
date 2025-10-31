@@ -13,7 +13,7 @@ from langchain_core.messages import AIMessage
 from langgraph.types import interrupt
 
 from lang_agent.logger import get_logger
-from lang_agent.util import objs_to_models,load_document
+from lang_agent.util import objs_to_models,aload_document
 from ..core import BaseNode, BaseNodeData, BaseNodeParam
 
 logger = get_logger(__name__)
@@ -61,7 +61,7 @@ class DocLoaderNode(BaseNode):
                 file_path = tmp_dir_path / file.file_name
                 async with aiofiles.open(file_path, "wb") as f:
                     await f.write(file_data)
-                docs = await load_document(str(file_path))
+                docs = await aload_document(str(file_path))
                 contents.append(
                     "\n".join([page.page_content for page in docs])
                 )

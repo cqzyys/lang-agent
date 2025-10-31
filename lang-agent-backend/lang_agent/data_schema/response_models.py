@@ -46,3 +46,12 @@ class VectorStoreResponse(BaseModel):
     collection_name: str = Field(..., description="集合名")
     embedding_name: str = Field(..., description="嵌入模型")
     disabled: Optional[bool] = Field(False, description="是否禁用")
+
+class DocumentResponse(BaseModel):
+    id: str = Field(..., description="文档ID")
+    name: str = Field(..., description="文档名称")
+    meta_data: Optional[dict] = Field(None, description="元数据")
+    file_path: Optional[str] = Field(None, description="文件路径")
+    vs_id: Optional[str] = Field(None, description="向量库ID")
+    disabled: Optional[bool] = Field(False, description="是否禁用")
+    embedding_flag: Optional[bool] = Field(False, description="是否向量化")

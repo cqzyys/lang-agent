@@ -139,5 +139,5 @@ cython_debug/
 
 tmp/
 log/
-
-*.db*
+lang_agent/db/documents/*
+lang_agent/db/*.db*
