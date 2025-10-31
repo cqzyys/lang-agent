@@ -5,7 +5,7 @@ from lang_agent.api.v1 import (
     mcp_router,
     model_router,
     vectorstore_router,
-    file_router
+    file_router,
     document_router
 )
 

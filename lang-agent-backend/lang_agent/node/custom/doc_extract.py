@@ -17,7 +17,7 @@ from langgraph.types import interrupt
 
 from lang_agent.logger import get_logger
 from lang_agent.setting.manager import resource_manager
-from lang_agent.util import objs_to_models,load_document
+from lang_agent.util import objs_to_models,aload_document
 from ..core import BaseNode, BaseNodeData, BaseNodeParam
 
 PROJECT_ROOT = Path(__file__).parent.parent.parent.parent.resolve()
@@ -163,7 +163,7 @@ class DocExtractNode(BaseNode):
         extract_list: list[str] = []
         for f in dir_path.iterdir():
             #logger.info("file: %s",f.name)
-            docs = await load_document(
+            docs = await aload_document(
                 str(dir_path/f.name),
                 strategy="fast",
                 languages=["chi_sim", "eng"],
