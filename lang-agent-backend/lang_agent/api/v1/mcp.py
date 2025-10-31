@@ -35,7 +35,7 @@ async def cached_mcp_map():
 
 @router.post("/save", status_code=200)
 async def save(mcp: MCPParams):
-    await save_mcp(mcp, resource_manager)
+    await save_mcp(mcp)
     return ApiResponse(
         success=True,
     )
@@ -43,18 +43,18 @@ async def save(mcp: MCPParams):
 
 @router.post("/create", status_code=200)
 async def create(mcp: MCPParams) -> ApiResponse:
-    return ApiResponse(success=True, data=await create_mcp(mcp, resource_manager))
+    return ApiResponse(success=True, data=await create_mcp(mcp))
 
 
 @router.post("/update", status_code=200)
 async def update(mcp: MCPParams) -> ApiResponse:
-    await update_mcp(mcp, resource_manager)
+    await update_mcp(mcp)
     return ApiResponse(success=True)
 
 
 @router.post("/delete", status_code=200)
 async def delete(id: str) -> ApiResponse:
-    delete_mcp(id, resource_manager)
+    delete_mcp(id)
     return ApiResponse(success=True)
 
 

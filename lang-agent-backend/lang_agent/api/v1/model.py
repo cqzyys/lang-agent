@@ -31,7 +31,7 @@ logger = get_logger(__name__)
 
 @router.post("/save", status_code=200)
 async def save(model: ModelParams):
-    save_model(model, resource_manager)
+    save_model(model)
     return ApiResponse(
         success=True,
     )
@@ -39,18 +39,18 @@ async def save(model: ModelParams):
 
 @router.post("/create", status_code=200)
 async def create(model: ModelParams) -> ApiResponse:
-    return ApiResponse(success=True, data=create_model(model, resource_manager))
+    return ApiResponse(success=True, data=create_model(model))
 
 
 @router.post("/update", status_code=200)
 async def update(model: ModelParams) -> ApiResponse:
-    update_model(model, resource_manager)
+    update_model(model)
     return ApiResponse(success=True)
 
 
 @router.post("/delete", status_code=200)
 async def delete(id: str) -> ApiResponse:
-    delete_model(id, resource_manager)
+    delete_model(id)
     return ApiResponse(success=True)
 
 

@@ -2,7 +2,6 @@ import json
 import logging
 import os
 from contextlib import contextmanager
-from typing import Optional
 
 from dotenv import load_dotenv
 from langchain_text_splitters import CharacterTextSplitter
@@ -17,7 +16,7 @@ from lang_agent.data_schema.request_params import (
     ModelParams,
     VectorStoreParams
 )
-from lang_agent.setting.manager import ResourceManager
+from lang_agent.setting.manager import resource_manager
 from lang_agent.util import load_document
 
 from .models import Agent, Base, Chunk, Document, Mcp, Model, VectorStore
@@ -82,7 +81,7 @@ def get_session():
 
 
 def create_model(
-    model: ModelParams, resource_manager: Optional[ResourceManager] = None
+    model: ModelParams
 ) -> str:
     with get_session() as session:
         if select_model_by_name(model.name):
@@ -104,7 +103,7 @@ def create_model(
 
 
 def update_model(
-    model: ModelParams, resource_manager: Optional[ResourceManager] = None
+    model: ModelParams
 ):
     with get_session() as session:
         existent_entity = select_model_by_name(model.name)
@@ -130,14 +129,14 @@ def update_model(
         entity.disabled = model.disabled
 
 
-def save_model(model: ModelParams, resource_manager: Optional[ResourceManager] = None):
+def save_model(model: ModelParams):
     if not select_model(model.id):
-        create_model(model, resource_manager)
+        create_model(model)
     else:
-        update_model(model, resource_manager)
+        update_model(model)
 
 
-def delete_model(id: str, resource_manager: Optional[ResourceManager] = None):
+def delete_model(id: str):
     with get_session() as session:
         stmt = select(Model).where(Model.id == id)
         entity = session.scalars(stmt).first()
@@ -266,15 +265,15 @@ def select_agent_by_name(name: str) -> Agent:
         return entity
 
 
-async def save_mcp(mcp: MCPParams, resource_manager: Optional[ResourceManager] = None):
+async def save_mcp(mcp: MCPParams):
     if not select_mcp(mcp.id):
-        await create_mcp(mcp, resource_manager)
+        await create_mcp(mcp)
     else:
-        await update_mcp(mcp, resource_manager)
+        await update_mcp(mcp)
 
 
 async def create_mcp(
-    mcp: MCPParams, resource_manager: Optional[ResourceManager] = None
+    mcp: MCPParams
 ) -> str:
     with get_session() as session:
         if select_mcp_by_name(mcp.name):
@@ -292,7 +291,7 @@ async def create_mcp(
 
 
 async def update_mcp(
-    mcp: MCPParams, resource_manager: Optional[ResourceManager] = None
+    mcp: MCPParams
 ):
     with get_session() as session:
         existent_entity = select_mcp_by_name(mcp.name)
@@ -315,7 +314,7 @@ async def update_mcp(
         entity.disabled = mcp.disabled
 
 
-def delete_mcp(id: str, resource_manager: Optional[ResourceManager] = None):
+def delete_mcp(id: str):
     with get_session() as session:
         stmt = select(Mcp).where(Mcp.id == id)
         entity = session.scalars(stmt).first()
@@ -353,17 +352,16 @@ def list_available_mcps() -> list[Mcp]:
 
 
 async def save_vectorstore(
-        vectorstore: VectorStoreParams,
-        resource_manager: Optional[ResourceManager] = None
+        vectorstore: VectorStoreParams
     ):
     if not select_vectorstore(vectorstore.id):
-        await create_vectorstore(vectorstore, resource_manager)
+        await create_vectorstore(vectorstore)
     else:
-        await update_vectorstore(vectorstore, resource_manager)
+        await update_vectorstore(vectorstore)
 
 
 async def create_vectorstore(
-    vectorstore: VectorStoreParams, resource_manager: Optional[ResourceManager] = None
+    vectorstore: VectorStoreParams
 ) -> str:
     with get_session() as session:
         if select_vectorstore_by_name(vectorstore.name):
@@ -388,11 +386,11 @@ async def create_vectorstore(
                 resource_manager.vectorstore_map[entity.name] = vs
         return id
 
-def del_vs(resource_manager: ResourceManager, name: str):
+def del_vs(name: str):
     if name in resource_manager.vectorstore_map:
         del resource_manager.vectorstore_map[name]
 async def update_vectorstore(
-    vectorstore: VectorStoreParams, resource_manager: Optional[ResourceManager] = None
+    vectorstore: VectorStoreParams
 ):
     with get_session() as session:
         existent_entity = select_vectorstore_by_name(vectorstore.name)
@@ -406,9 +404,9 @@ async def update_vectorstore(
                 if vs is not None:
                     resource_manager.vectorstore_map[entity.name] = vs
                 else:
-                    del_vs(resource_manager, entity.name)
+                    del_vs(entity.name)
             else:
-                del_vs(resource_manager, entity.name)
+                del_vs(entity.name)
         entity.name = vectorstore.name
         entity.disabled = vectorstore.disabled
         entity.type = vectorstore.type
@@ -421,12 +419,12 @@ async def update_vectorstore(
         entity.disabled = vectorstore.disabled
 
 
-def delete_vectorstore(id: str, resource_manager: Optional[ResourceManager] = None):
+def delete_vectorstore(id: str):
     with get_session() as session:
         stmt = select(VectorStore).where(VectorStore.id == id)
         entity = session.scalars(stmt).first()
         if resource_manager is not None and entity.disabled is False:
-            del_vs(resource_manager, entity.name)
+            del_vs(entity.name)
         session.delete(entity)
 
 

@@ -34,7 +34,7 @@ async def cached_vectorstores():
 
 @router.post("/save", status_code=200)
 async def save(vectorstore: VectorStoreParams):
-    await save_vectorstore(vectorstore, resource_manager)
+    await save_vectorstore(vectorstore)
     return ApiResponse(
         success=True,
     )
@@ -44,19 +44,19 @@ async def save(vectorstore: VectorStoreParams):
 async def create(vectorstore: VectorStoreParams) -> ApiResponse:
     return ApiResponse(
         success=True,
-        data=await create_vectorstore(vectorstore, resource_manager)
+        data=await create_vectorstore(vectorstore)
     )
 
 
 @router.post("/update", status_code=200)
 async def update(vectorstore: VectorStoreParams) -> ApiResponse:
-    await update_vectorstore(vectorstore, resource_manager)
+    await update_vectorstore(vectorstore)
     return ApiResponse(success=True)
 
 
 @router.post("/delete", status_code=200)
 async def delete(id: str) -> ApiResponse:
-    delete_vectorstore(id, resource_manager)
+    delete_vectorstore(id)
     return ApiResponse(success=True)
 
 
