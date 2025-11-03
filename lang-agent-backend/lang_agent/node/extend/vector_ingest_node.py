@@ -39,8 +39,8 @@ class VectorIngestNode(BaseNode):
         self.vs: VectorStore = resource_manager.vectorstore_map[self.vs_name]
         self.text_splitter = RecursiveCharacterTextSplitter(
             separators=["\n\n","\n","."," ","。"],
-            chunk_size=1024,
-            chunk_overlap=50,
+            chunk_size=500,
+            chunk_overlap=10,
         )
 
     async def ainvoke(self, state: dict):

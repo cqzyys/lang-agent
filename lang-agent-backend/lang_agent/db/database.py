@@ -5,7 +5,7 @@ from contextlib import contextmanager
 
 from dotenv import load_dotenv
 from langchain_text_splitters import CharacterTextSplitter
-from sqlalchemy import create_engine, delete, desc, select
+from sqlalchemy import create_engine, delete, desc, select, update
 from sqlalchemy.orm import sessionmaker
 from xid import XID
 
@@ -18,6 +18,7 @@ from lang_agent.data_schema.request_params import (
 )
 from lang_agent.setting.manager import resource_manager
 from lang_agent.util import load_document
+from lang_agent.logger import get_logger
 
 from .models import Agent, Base, Chunk, Document, Mcp, Model, VectorStore
 
@@ -25,6 +26,7 @@ load_dotenv()
 logging.basicConfig()
 logging.getLogger("sqlalchemy.engine").setLevel(logging.INFO)
 
+logger = get_logger(__name__)
 
 class Database:
     def __init__(self):
@@ -468,20 +470,23 @@ def list_documents(vs_id:str) -> list[Document]:
         entities = session.scalars(stmt).all()
         return entities
 
-def create_document(params: DocumentParams):
+def create_document(params: DocumentParams) -> str:
     with get_session() as session:
         docs = load_document(params.file_path)
-        splitter = CharacterTextSplitter(chunk_size=2048, chunk_overlap=100)
+        splitter = CharacterTextSplitter(chunk_size=500, chunk_overlap=10)
         for doc in docs:
             entity = Document(
                 id=XID().string(),
                 name=params.name,
                 vs_id=params.vs_id,
                 file_path=params.file_path,
-                meta_data=doc.metadata
             )
             session.add(entity)
             session.flush()
+            entity.meta_data = doc.metadata | {
+                "doc_id": entity.id,
+                "created_at": entity.created_at.strftime('%Y-%m-%d %H:%M:%S')
+            }
 
             chunks = splitter.split_documents([doc])
             for chunk in chunks:
@@ -489,16 +494,26 @@ def create_document(params: DocumentParams):
                     id=XID().string(),
                     content=chunk.page_content,
                     doc_id=entity.id,
-                    meta_data=chunk.metadata
                 )
                 session.add(chunk_entity)
                 session.flush()
+                chunk_entity.meta_data = chunk.metadata | {
+                    "doc_id": entity.id,
+                    "chunk_id": chunk_entity.id,
+                    "created_at": chunk_entity.created_at.strftime('%Y-%m-%d %H:%M:%S')
+                }
+            return entity.id
 
 def delete_document(id: str):
     with get_session() as session:
         stmt = select(Document).where(Document.id == id)
         entity = session.scalars(stmt).first()
         if entity is not None:
+            if entity.embedding_flag:
+                vs_name = select_vectorstore(entity.vs_id).name
+                vs = resource_manager.vectorstore_map[vs_name]
+                chunk_ids = [chunk.id for chunk in list_chunks(id)]
+                vs.delete(chunk_ids)
             chunk_stmt = delete(Chunk).where(Chunk.doc_id == entity.id)
             session.execute(chunk_stmt)
             session.delete(entity)
@@ -506,3 +521,44 @@ def delete_document(id: str):
                 os.remove(entity.file_path)
             except Exception as error:
                 raise error
+
+def select_document(id: str) -> Document:
+    with get_session() as session:
+        stmt = select(Document).where(Document.id == id)
+        entity = session.scalars(stmt).first()
+        return entity
+
+def embed_document(doc_id: str):
+    from langchain_core.documents import Document as Doc
+    document = select_document(doc_id)
+    vs_name = select_vectorstore(document.vs_id).name
+    if vs_name not in resource_manager.vectorstore_map:
+        raise ValueError("VectorStore Not Found")
+    vs = resource_manager.vectorstore_map[vs_name]
+    try:
+        chunks: list[Chunk] = list_chunks(doc_id)
+        docs = [
+            Doc(
+                id=chunk.id,
+                page_content=chunk.content,
+                metadata=chunk.meta_data
+            ) for chunk in chunks
+        ]
+        vs.add_documents(docs)
+        update_embedding_flag(doc_id, True)
+    except Exception as error:
+        logger.error("Failed to embed document: %s",error)
+        raise error
+
+def update_embedding_flag(doc_id: str, flag: bool):
+    with get_session() as session:
+        chunk_stmt = update(Chunk).where(Chunk.doc_id == doc_id).values(embedding_flag=flag)
+        session.execute(chunk_stmt)
+        stmt = update(Document).where(Document.id == doc_id).values(embedding_flag=flag)
+        session.execute(stmt)
+
+def list_chunks(doc_id: str) -> list[Chunk]:
+    with get_session() as session:
+        stmt = select(Chunk).where(Chunk.doc_id == doc_id)
+        entities = session.scalars(stmt).all()
+        return entities

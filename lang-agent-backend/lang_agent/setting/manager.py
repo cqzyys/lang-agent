@@ -55,7 +55,11 @@ class ResourceManager:
                 )
             case "embedding":
                 if model.channel == "openai":
-                    return OpenAIEmbeddings(**args)
+                    return OpenAIEmbeddings(
+                        tiktoken_enabled=False,
+                        tiktoken_model_name="BEE-spoke-data/cl100k_base",
+                        **args
+                    )
                 raise ResourceInitializationError(
                     f"Unsupported LLM channel: {model.channel} for {model.name}"
                 )
