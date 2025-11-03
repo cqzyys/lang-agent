@@ -12,6 +12,7 @@ import {
   Spinner,
 } from "@heroui/react";
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { Key } from "@react-types/shared";
 
 import { apiClient } from "@/util";
@@ -46,6 +47,7 @@ const VectorStorePage: React.FC = () => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [running, setRunning] = useState<boolean>(false);
   const [id, setId] = useState<string>();
+  const navigate = useNavigate();
   const fetchData = async () => {
     apiClient
       .get("/v1/vectorstore/list")
@@ -101,6 +103,13 @@ const VectorStorePage: React.FC = () => {
               }}
             />
             <Icon size={18} type="trash" onClick={onDelete} />
+            <Icon
+              size={18}
+              type="document"
+              onClick={() => {
+                navigate("/document", { state: { vs_id: data.id } });
+              }}
+            />
           </div>
         );
       case "disabled":

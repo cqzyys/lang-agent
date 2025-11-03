@@ -46,6 +46,14 @@ export type VectorStore = {
   disabled?: boolean;
 };
 
+export type Document = {
+  id?: string;
+  name?: string;
+  vs_id?: string;
+  embedding_flag?: string;
+  disabled?: boolean;
+};
+
 export type McpMap = Record<string, string[]>;
 
 export type Message = {
