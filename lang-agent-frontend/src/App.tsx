@@ -4,6 +4,7 @@ import log from "loglevel";
 
 import HomePage from "@/pages/home";
 import FlowPage from "@/pages/flow";
+import DocumentPage from "@/pages/document";
 import {
   useModelStore,
   useAgentStore,
@@ -48,6 +49,7 @@ const App: React.FC = () => {
       <Routes>
         <Route element={<HomePage />} path="/" />
         <Route element={<FlowPage />} path="/flow" />
+        <Route element={<DocumentPage />} path="/document" />
       </Routes>
     </main>
   );
