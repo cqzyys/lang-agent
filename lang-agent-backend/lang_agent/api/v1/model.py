@@ -7,15 +7,16 @@ from lang_agent.data_schema.response_models import (
 )
 from lang_agent.db.database import (
     Model,
+    ModelType,
     create_model,
     delete_model,
-    list_embedding_models,
-    list_llm_models,
+    list_available_models,
     list_models,
     save_model,
     select_model,
     update_model,
 )
+
 from lang_agent.logger import get_logger
 from lang_agent.setting.manager import resource_manager
 from lang_agent.util import (
@@ -70,26 +71,44 @@ async def models() -> ApiResponse:
 
 @router.get("/cached_llm", status_code=200)
 async def cached_llm() -> ApiResponse:
-    return ApiResponse(success=True, data=list(resource_manager.models['llm'].keys()))
+    return ApiResponse(
+        success=True,
+        data=list(resource_manager.models[ModelType.LLM.value].keys())
+    )
 
 
 @router.get("/cached_embedding", status_code=200)
 async def cached_embedding() -> ApiResponse:
     return ApiResponse(
         success=True,
-        data=list(resource_manager.models["embedding"].keys())
+        data=list(resource_manager.models[ModelType.EMBEDDING.value].keys())
+    )
+
+@router.get("/cached_vlm", status_code=200)
+async def cached_vlm() -> ApiResponse:
+    return ApiResponse(
+        success=True,
+        data=list(resource_manager.models[ModelType.VLM.value].keys())
     )
 
 
 @router.get("/llm_models", status_code=200)
 async def llm_models() -> ApiResponse:
     return ApiResponse(
-        success=True, data=objs_to_models(list_llm_models(),ModelResponse)
+        success=True,
+        data=objs_to_models(list_available_models(ModelType.LLM),ModelResponse)
     )
-
 
 @router.get("/embedding_models", status_code=200)
 async def embedding_models() -> ApiResponse:
     return ApiResponse(
-        success=True, data=objs_to_models(list_embedding_models(),ModelResponse)
+        success=True,
+        data=objs_to_models(list_available_models(ModelType.EMBEDDING),ModelResponse)
+    )
+
+@router.get("/vlm_models", status_code=200)
+async def vlm_models() -> ApiResponse:
+    return ApiResponse(
+        success=True,
+        data=objs_to_models(list_available_models(ModelType.VLM),ModelResponse)
     )

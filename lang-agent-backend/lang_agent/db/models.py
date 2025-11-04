@@ -1,9 +1,15 @@
+from enum import Enum
 from sqlalchemy import Boolean, Column, DateTime, String, func
 from sqlalchemy.orm import declarative_base
 
 from lang_agent.util.alchemy import JSONEncodedDict
 
 Base = declarative_base()
+
+class ModelType(str, Enum):
+    LLM = "llm"
+    EMBEDDING = "embedding"
+    VLM = "vlm"
 
 class Model(Base):
     __tablename__ = "model"

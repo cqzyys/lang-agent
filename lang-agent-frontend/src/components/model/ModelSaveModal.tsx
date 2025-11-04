@@ -21,6 +21,7 @@ import { Model } from "@/types";
 const types = [
   { id: "llm", name: "llm" },
   { id: "embedding", name: "embedding" },
+  { id: "vlm", name: "vlm" },
 ];
 
 const channels = [{ id: "openai", name: "openai" }];

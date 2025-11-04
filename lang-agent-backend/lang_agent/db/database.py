@@ -20,7 +20,7 @@ from lang_agent.setting.manager import resource_manager
 from lang_agent.util import load_document
 from lang_agent.logger import get_logger
 
-from .models import Agent, Base, Chunk, Document, Mcp, Model, VectorStore
+from .models import Agent, Base, Chunk, Document, Mcp, Model, ModelType, VectorStore
 
 load_dotenv()
 logging.basicConfig()
@@ -168,25 +168,11 @@ def list_models() -> list[Model]:
         return entities
 
 
-def list_available_models() -> list[Model]:
+def list_available_models(model_type:ModelType=None) -> list[Model]:
     with get_session() as session:
         stmt = select(Model).where(Model.disabled == False)
-        entities = session.scalars(stmt).all()
-        return entities
-
-
-def list_llm_models() -> list[Model]:
-    with get_session() as session:
-        stmt = select(Model).where(Model.type == "llm" and Model.disabled == False).order_by(Model.name)
-        entities = session.scalars(stmt).all()
-        return entities
-
-
-def list_embedding_models() -> list[Model]:
-    with get_session() as session:
-        stmt = select(Model).where(
-            Model.type == "embedding" and Model.disabled == False
-        ).order_by(Model.name)
+        if model_type:
+            stmt = stmt.where(Model.type == model_type.value)
         entities = session.scalars(stmt).all()
         return entities
 
