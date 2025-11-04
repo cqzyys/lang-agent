@@ -107,11 +107,11 @@ class DocExtractNode(BaseNode):
         self.message_show = param.data.message_show
 
     async def ainvoke(self, state: dict):
+        resume_state: dict = interrupt({
+            "type": "file_upload",
+            "message": self.guiding_words
+        })
         try:
-            resume_state: dict = interrupt({
-                "type": "file_upload",
-                "message": self.guiding_words
-            })
             files: list[FileData] = objs_to_models(
                 resume_state.get("files", []),FileData
             )
