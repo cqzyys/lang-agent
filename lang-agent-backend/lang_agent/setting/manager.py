@@ -8,7 +8,7 @@ from langchain_core.vectorstores import VectorStore as VS
 from langchain_mcp_adapters.tools import load_mcp_tools
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 
-from lang_agent.db.models import Mcp, Model, VectorStore
+from lang_agent.db.models import Mcp, Model, ModelType, VectorStore
 from lang_agent.logger import get_logger
 
 logger = get_logger(__name__)
@@ -20,7 +20,7 @@ class ResourceInitializationError(Exception):
 
 class ResourceManager:
     def __init__(self):
-        self.models = {"llm": {}, "embedding": {}}
+        self.models = {model_type.value: {} for model_type in ModelType}
         self.mcp_map: Dict[str, Dict[str, BaseTool]] = {}
         self.vectorstore_map: Dict[str, VS] = {}
 
@@ -47,13 +47,13 @@ class ResourceManager:
                 f"Invalid arguments for {model.name}"
             ) from je
         match model.type:
-            case "llm":
+            case ModelType.LLM.value | ModelType.VLM.value:
                 if model.channel == "openai":
                     return ChatOpenAI(**args)
                 raise ResourceInitializationError(
                     f"Unsupported LLM channel: {model.channel} for {model.name}"
                 )
-            case "embedding":
+            case ModelType.EMBEDDING.value:
                 if model.channel == "openai":
                     return OpenAIEmbeddings(
                         tiktoken_enabled=False,
