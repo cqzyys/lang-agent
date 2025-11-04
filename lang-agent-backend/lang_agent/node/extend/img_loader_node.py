@@ -37,11 +37,11 @@ class ImgLoaderNode(BaseNode):
         self.guiding_words = param.data.guiding_words
 
     async def ainvoke(self, state: dict):
+        resume_state: dict = interrupt({
+            "type": "file_upload",
+            "message": self.guiding_words
+        })
         try:
-            resume_state: dict = interrupt({
-                "type": "file_upload",
-                "message": self.guiding_words
-            })
             image:FileData = obj_to_model(resume_state.get("files", [])[0],FileData)
             encode_data = image.file_content
             return {"messages": [

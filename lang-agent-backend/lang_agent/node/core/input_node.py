@@ -31,8 +31,10 @@ class InputNode(BaseNode):
         self.state_field = param.data.state_field
 
     async def ainvoke(self, state: dict):
+        resume_state: dict = interrupt({
+            "type": "user_input"
+        })
         try:
-            resume_state: dict = interrupt({"interrupt_type": self.type})
             if self.state_field == "messages":
                 message: HumanMessage = HumanMessage(
                     content=resume_state.get("messages",""),
