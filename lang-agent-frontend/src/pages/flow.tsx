@@ -3,6 +3,7 @@ import type {
   StartNodeData,
   UserInputNodeData,
   LLMNodeData,
+  VLMNodeData,
   ReUseAgentNodeData,
   ReactAgentNodeData,
   SupervisorAgentNodeData,
@@ -43,6 +44,7 @@ import {
   EndNode,
   UserInputNode,
   LLMNode,
+  VLMNode,
   ReactAgentNode,
   SupervisorAgentNode,
   ReuseAgentNode,
@@ -252,6 +254,13 @@ const FlowPage: React.FC = () => {
           onDataChange={(newData) => updateNodeData(id, newData)}
         />
       ),
+      vlm: ({ data, id }: { data: VLMNodeData; id: string }) => (
+        <VLMNode
+          data={data}
+          id={id}
+          onDataChange={(newData) => updateNodeData(id, newData)}
+        />
+      ),
       react_agent: ({ data, id }: { data: ReactAgentNodeData; id: string }) => (
         <ReactAgentNode
           data={data}
@@ -329,9 +338,20 @@ const FlowPage: React.FC = () => {
       type: "llm",
       data: {
         name: "llm",
-        model: "qwen2.5",
+        model: "qwen",
         system_prompt: "你是一个聪明的助手，你可以回答我的任何问题",
         user_prompt: "",
+      },
+    },
+    {
+      description: "VLM",
+      type: "vlm",
+      data: {
+        name: "vlm",
+        model: "o4-mini",
+        system_prompt: "",
+        user_prompt: "描述一下这张图片",
+        image_url: "",
       },
     },
   ];

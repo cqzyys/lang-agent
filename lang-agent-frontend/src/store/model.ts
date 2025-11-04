@@ -5,6 +5,7 @@ import { apiClient } from "@/util";
 type ModelStore = {
   llms: string[];
   embeddings: string[];
+  vlms: string[];
   fetchModels: () => Promise<void>;
 };
 
@@ -20,13 +21,21 @@ export const cachedEmbedding = async () => {
   return data.data;
 };
 
+export const cachedVLM = async () => {
+  const { data } = await apiClient.get("/v1/model/cached_vlm");
+
+  return data.data;
+};
+
 export const useModelStore = create<ModelStore>((set) => ({
   llms: [],
   embeddings: [],
+  vlms: [],
   fetchModels: async () => {
     const llms = await cachedLLM();
     const embeddings = await cachedEmbedding();
+    const vlms = await cachedVLM();
 
-    set({ llms, embeddings });
+    set({ llms, embeddings, vlms });
   },
 }));
