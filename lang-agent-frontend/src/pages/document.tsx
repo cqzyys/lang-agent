@@ -133,7 +133,9 @@ const DocumentPage: React.FC = () => {
         return (
           <div className="relative flex items-center gap-2">
             <Icon size={18} type="trash" onClick={onDelete} />
-            <Icon size={18} type="embedding" onClick={onEmbed} />
+            {!data.embedding_flag && (
+              <Icon size={18} type="embedding" onClick={onEmbed} />
+            )}
           </div>
         );
       case "embedding_flag":

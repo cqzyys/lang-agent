@@ -473,7 +473,16 @@ def list_documents(vs_id:str) -> list[Document]:
 def create_document(params: DocumentParams) -> str:
     with get_session() as session:
         docs = load_document(params.file_path)
-        splitter = CharacterTextSplitter(chunk_size=500, chunk_overlap=10)
+        try:
+            chunk_size = int(os.getenv("CHUNK_SIZE", "2048"))
+        except ValueError:
+            chunk_size = 2048
+            logger.warning("Invalid CHUNK_SIZE value, using default value: 2048")
+        splitter = CharacterTextSplitter(
+            separator="\n",
+            chunk_size=chunk_size,
+            chunk_overlap=chunk_size*0.05
+        )
         for doc in docs:
             entity = Document(
                 id=XID().string(),
