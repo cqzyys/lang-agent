@@ -45,7 +45,7 @@ class DocLoaderNode(BaseNode):
     async def ainvoke(self, state: dict):
         try:
             resume_state: dict = interrupt({
-                "type": self.type,
+                "type": "file_upload",
                 "message": self.guiding_words
             })
             files: list[FileData] = objs_to_models(

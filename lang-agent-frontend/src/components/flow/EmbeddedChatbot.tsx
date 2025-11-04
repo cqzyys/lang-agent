@@ -50,7 +50,7 @@ const styles: Styles = {
 };
 
 const path_map: Record<string, string> = {
-  doc_loader: "upload",
+  file_upload: "upload",
   user_input: "blank",
 };
 
