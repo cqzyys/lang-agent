@@ -5,6 +5,7 @@ export {
   type UserInputNodeData,
 } from "./core/UserInputNode";
 export { default as LLMNode, type LLMNodeData } from "./core/LLMNode";
+export { default as VLMNode, type VLMNodeData } from "./core/VLMNode";
 export {
   default as ReactAgentNode,
   type ReactAgentNodeData,
