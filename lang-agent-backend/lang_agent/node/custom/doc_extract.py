@@ -109,7 +109,7 @@ class DocExtractNode(BaseNode):
     async def ainvoke(self, state: dict):
         try:
             resume_state: dict = interrupt({
-                "type": "doc_loader",
+                "type": "file_upload",
                 "message": self.guiding_words
             })
             files: list[FileData] = objs_to_models(
