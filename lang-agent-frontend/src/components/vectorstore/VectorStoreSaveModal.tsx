@@ -38,7 +38,7 @@ const App: React.FC<ModalProps> = ({
   onRefresh,
   setRunning,
 }) => {
-  const { embeddings } = useModelStore();
+  const { embeddings, fetchModels } = useModelStore();
   const init_vectorstore: VectorStore = {
     id: "",
     name: "",
@@ -72,6 +72,12 @@ const App: React.FC<ModalProps> = ({
       setVectorStore(init_vectorstore);
     }
   }, [id]);
+
+  useEffect(() => {
+    if (isOpen) {
+      fetchModels();
+    }
+  }, [isOpen, fetchModels]);
 
   const onSave = useCallback(() => {
     setRunning(true);
