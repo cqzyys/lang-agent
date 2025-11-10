@@ -26,7 +26,7 @@ class Agent(Base):
     id = Column(String, primary_key=True, unique=True, index=True, comment="Agent ID")
     name = Column(String, comment="Agent名称")
     description = Column(String, comment="Agent描述")
-    data = Column(String, comment="Agent数据")
+    data = Column(JSONEncodedDict, comment="Agent数据")
     reuse_flag = Column(Boolean, default=False, comment="是否可复用")
     disabled = Column(Boolean, default=False, comment="是否禁用")
 

@@ -14,7 +14,7 @@ class AgentResponse(BaseModel):
     id: str = Field(..., description="AgentId")
     name: str = Field(..., description="Agent名称")
     description: Optional[str] = Field(None, description="Agent描述")
-    data: Optional[str] = Field(None, description="Agent数据")
+    data: Optional[dict] = Field(None, description="Agent数据")
     reuse_flag: bool = Field(..., description="是否可复用")
     disabled: Optional[bool] = Field(False, description="是否禁用")
 

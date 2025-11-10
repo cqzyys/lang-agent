@@ -10,7 +10,7 @@ import {
 } from "@/components";
 
 export type ReUseAgentNodeData = BaseNodeData & {
-  data?: string;
+  data?: Record<string, any>;
 };
 
 export type ReUseAgentNodeProps = NodeProps<ReUseAgentNodeData>;
