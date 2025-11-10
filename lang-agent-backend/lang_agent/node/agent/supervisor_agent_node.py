@@ -1,5 +1,4 @@
 import traceback
-import json
 from typing import Optional, Union
 
 from langchain_core.language_models.base import BaseLanguageModel
@@ -121,15 +120,14 @@ class SupervisorAgentNode(BaseAgentNode):
             graph_builder = StateGraph(SupervisorState)
             graph_builder.add_node("Supervisor", self._supervisor)
             for agent in self.agents:
-                agent_data = json.loads(agent.data)
                 param: ReuseAgentNodeParam = ReuseAgentNodeParam(id=agent.id)
                 param.data = ReuseAgentNodeData(
                     name=agent.name,
-                    data=json.dumps(agent_data)
+                    data=agent.data
                 )
                 reuse_agent = ReuseAgentNode(
                     param,
-                    state_schema = agent_data["state_schema"]
+                    state_schema = agent.data["state_schema"]
                 )
                 graph_builder.add_node(agent.name, reuse_agent.ainvoke)
             graph_builder.add_edge(START, "Supervisor")

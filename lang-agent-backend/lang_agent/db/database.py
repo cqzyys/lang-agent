@@ -1,4 +1,3 @@
-import json
 import logging
 import os
 from contextlib import contextmanager
@@ -192,7 +191,7 @@ def create_agent(agent: AgentParams):
             id=agent.id,
             name=agent.name,
             description=agent.description,
-            data=json.dumps(agent.data, ensure_ascii=False),
+            data=agent.data,
             reuse_flag=False,
         )
         session.add(entity)
@@ -207,7 +206,7 @@ def update_agent(agent: AgentParams):
         entity = session.scalars(stmt).first()
         entity.name = agent.name
         entity.description = agent.description
-        entity.data = json.dumps(agent.data, ensure_ascii=False)
+        entity.data = agent.data
         entity.reuse_flag = agent.reuse_flag
 
 

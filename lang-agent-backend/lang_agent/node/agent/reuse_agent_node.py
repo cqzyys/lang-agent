@@ -6,7 +6,6 @@ import nest_asyncio
 from pydantic import Field, TypeAdapter
 
 from lang_agent.logger import get_logger
-from lang_agent.util import parse_json
 
 from ..core import BaseNodeData, BaseNodeParam
 from .base_agent import BaseAgentNode
@@ -19,7 +18,7 @@ logger = get_logger(__name__)
 
 
 class ReuseAgentNodeData(BaseNodeData):
-    data: Optional[str] = Field(None, description="Agent数据")
+    data: Optional[dict] = Field(None, description="Agent数据")
 
 
 class ReuseAgentNodeParam(BaseNodeParam):
@@ -38,7 +37,7 @@ class ReuseAgentNode(BaseAgentNode):
     async def compile(self, param: ReuseAgentNodeParam):
         try:
             from lang_agent.graph.engine import GraphEngine
-            data = parse_json(param.data.data)
+            data = param.data.data
             self.engine = GraphEngine(
                 agent_data = data,
                 subgraph = True,
