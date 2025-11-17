@@ -49,7 +49,6 @@ const DocLoaderNode: React.FC<DocLoaderNodeProps> = ({
               onChange={(e) => onDataChange({ ...data, name: e.target.value })}
             />
             <Input
-              isRequired
               className="nodrag"
               errorMessage="请输入引导词"
               label="引导词"
