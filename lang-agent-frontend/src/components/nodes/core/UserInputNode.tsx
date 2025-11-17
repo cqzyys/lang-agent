@@ -10,6 +10,7 @@ import {
 } from "@/components";
 
 export type UserInputNodeData = BaseNodeData & {
+  guiding_words: string;
   state_field?: string;
 };
 
@@ -47,6 +48,19 @@ const UserInputNode: React.FC<UserInputNodeProps> = ({
               size="sm"
               value={data.name}
               onChange={(e) => onDataChange({ ...data, name: e.target.value })}
+            />
+            <Input
+              className="nodrag"
+              errorMessage="请输入引导词"
+              label="引导词"
+              name="guiding_words"
+              placeholder="请输入引导词"
+              radius="sm"
+              size="sm"
+              value={data.guiding_words}
+              onChange={(e) =>
+                onDataChange({ ...data, guiding_words: e.target.value })
+              }
             />
             <Input
               className="nodrag"

@@ -331,7 +331,11 @@ const FlowPage: React.FC = () => {
     {
       description: "输入",
       type: "user_input",
-      data: { name: "user_input", state_field: "messages" },
+      data: {
+        name: "user_input",
+        guiding_words: "",
+        state_field: "messages",
+      },
     },
     {
       description: "LLM",

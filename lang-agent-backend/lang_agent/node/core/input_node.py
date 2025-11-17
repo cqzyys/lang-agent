@@ -14,6 +14,7 @@ __all__ = ["InputNode", "InputNodeParam"]
 
 
 class InputNodeData(BaseNodeData):
+    guiding_words: Optional[str] = Field(default="", description="引导词")
     state_field: str = Field(..., description="状态字段")
 
 
@@ -28,11 +29,13 @@ class InputNode(BaseNode):
         adapter = TypeAdapter(InputNodeParam)
         param = adapter.validate_python(param)
         super().__init__(param, **kwargs)
+        self.guiding_words = param.data.guiding_words
         self.state_field = param.data.state_field
 
     async def ainvoke(self, state: dict):
         resume_state: dict = interrupt({
-            "type": "user_input"
+            "type": "user_input",
+            "message": self.guiding_words
         })
         try:
             if self.state_field == "messages":
