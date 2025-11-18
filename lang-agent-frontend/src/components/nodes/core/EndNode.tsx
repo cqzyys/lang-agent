@@ -2,7 +2,21 @@ import { memo } from "react";
 import { Handle, Position, NodeResizer } from "@xyflow/react";
 import { Card, CardHeader } from "@heroui/react";
 
-import { DEFAULT_HANDLE_STYLE } from "../..";
+import {
+  DEFAULT_HANDLE_STYLE,
+  NodeConfigData,
+  BaseNodeData,
+} from "@/components";
+
+export type EndNodeData = BaseNodeData;
+
+export const endNodeInitData: NodeConfigData<EndNodeData> = {
+  description: "结束",
+  type: "end",
+  data: {
+    name: "end",
+  },
+};
 
 export type EndNodeProps = {
   onDrawerOpen: () => void;

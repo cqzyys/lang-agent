@@ -1,5 +1,4 @@
 import { SVGProps } from "react";
-export * from "@/types/nodes";
 export * from "@/types/edges";
 export * from "@/types/api";
 

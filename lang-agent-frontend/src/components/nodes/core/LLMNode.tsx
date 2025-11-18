@@ -23,6 +23,7 @@ import {
   NodeProps,
   Icon,
   StateList,
+  NodeConfigData,
 } from "@/components";
 import { useModelStore, useFlowStore } from "@/store";
 
@@ -30,6 +31,17 @@ export type LLMNodeData = BaseNodeData & {
   model: string;
   system_prompt?: string;
   user_prompt?: string;
+};
+
+export const llmNodeInitData: NodeConfigData<LLMNodeData> = {
+  description: "LLM",
+  type: "llm",
+  data: {
+    name: "llm",
+    model: "qwen",
+    system_prompt: "你是一个聪明的助手，你可以回答我的任何问题",
+    user_prompt: "",
+  },
 };
 
 export type LLMNodeProps = NodeProps<LLMNodeData>;
