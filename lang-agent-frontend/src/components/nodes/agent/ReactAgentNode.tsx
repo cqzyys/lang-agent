@@ -16,12 +16,23 @@ import {
   BaseNodeData,
   DEFAULT_HANDLE_STYLE,
   NodeProps,
+  NodeConfigData,
 } from "@/components";
 import { useModelStore, useMcpStore } from "@/store";
 
 export type ReactAgentNodeData = BaseNodeData & {
   model: string;
   tools?: string;
+};
+
+export const reactAgentNodeInitData: NodeConfigData<ReactAgentNodeData> = {
+  description: "React",
+  type: "react_agent",
+  data: {
+    name: "react_agent",
+    model: "qwen",
+    tools: "",
+  },
 };
 
 export type ReactAgentNodeProps = NodeProps<ReactAgentNodeData>;

@@ -23,6 +23,7 @@ import {
   NodeProps,
   Icon,
   StateList,
+  NodeConfigData,
 } from "@/components";
 import { useModelStore, useFlowStore } from "@/store";
 
@@ -31,6 +32,18 @@ export type VLMNodeData = BaseNodeData & {
   system_prompt?: string;
   user_prompt?: string;
   image_url?: string;
+};
+
+export const vlmNodeInitData: NodeConfigData<VLMNodeData> = {
+  description: "VLM",
+  type: "vlm",
+  data: {
+    name: "vlm",
+    model: "o4-mini",
+    system_prompt: "",
+    user_prompt: "描述一下这张图片",
+    image_url: "",
+  },
 };
 
 export type VLMNodeProps = NodeProps<VLMNodeData>;

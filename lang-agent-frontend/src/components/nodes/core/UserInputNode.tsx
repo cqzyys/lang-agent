@@ -7,11 +7,22 @@ import {
   BaseNodeData,
   DEFAULT_HANDLE_STYLE,
   NodeProps,
+  NodeConfigData,
 } from "@/components";
 
 export type UserInputNodeData = BaseNodeData & {
   guiding_words: string;
   state_field?: string;
+};
+
+export const userInputNodeInitData: NodeConfigData<UserInputNodeData> = {
+  description: "输入",
+  type: "user_input",
+  data: {
+    name: "user_input",
+    guiding_words: "",
+    state_field: "messages",
+  },
 };
 
 export type UserInputNodeProps = NodeProps<UserInputNodeData>;

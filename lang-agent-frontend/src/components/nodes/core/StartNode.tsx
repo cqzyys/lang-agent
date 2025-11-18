@@ -15,6 +15,7 @@ import {
   DEFAULT_HANDLE_STYLE,
   Icon,
   KeyInput,
+  NodeConfigData,
   NodeProps,
   StateSchemaModal,
 } from "@/components";
@@ -22,6 +23,16 @@ import {
 export type StartNodeData = BaseNodeData & {
   guiding_words?: string;
   state_schema?: string;
+};
+
+export const startNodeInitData: NodeConfigData<StartNodeData> = {
+  description: "开始",
+  type: "start",
+  data: {
+    name: "start",
+    guiding_words: "你好，有什么可以帮助你的吗？",
+    state_schema: '{ "messages": "list" }',
+  },
 };
 
 export type StartNodeProps = NodeProps<StartNodeData>;

@@ -15,6 +15,7 @@ import {
   BaseNodeData,
   DEFAULT_HANDLE_STYLE,
   NodeProps,
+  NodeConfigData,
 } from "@/components";
 import { useModelStore, useAgentStore } from "@/store";
 
@@ -22,6 +23,17 @@ export type SupervisorAgentNodeData = BaseNodeData & {
   model: string;
   agents?: string;
 };
+
+export const supervisorAgentNodeInitData: NodeConfigData<SupervisorAgentNodeData> =
+  {
+    description: "Supervisor",
+    type: "supervisor_agent",
+    data: {
+      name: "supervisor_agent",
+      model: "qwen",
+      agents: "",
+    },
+  };
 
 export type SupervisorAgentNodeProps = NodeProps<SupervisorAgentNodeData>;
 

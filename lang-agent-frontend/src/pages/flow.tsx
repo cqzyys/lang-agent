@@ -53,6 +53,13 @@ import {
   DraggableNode,
   NodeConfig,
   Icon,
+  startNodeInitData,
+  endNodeInitData,
+  userInputNodeInitData,
+  llmNodeInitData,
+  vlmNodeInitData,
+  reactAgentNodeInitData,
+  supervisorAgentNodeInitData,
 } from "@/components";
 import { apiClient } from "@/util";
 import {
@@ -318,60 +325,14 @@ const FlowPage: React.FC = () => {
   }, []);
 
   const coreNodes = [
-    {
-      description: "开始",
-      type: "start",
-      data: {
-        name: "start",
-        guiding_words: "你好，有什么可以帮助你的吗？",
-        state_schema: '{ "messages": "list" }',
-      },
-    },
-    { description: "结束", type: "end", data: { name: "end" } },
-    {
-      description: "输入",
-      type: "user_input",
-      data: {
-        name: "user_input",
-        guiding_words: "",
-        state_field: "messages",
-      },
-    },
-    {
-      description: "LLM",
-      type: "llm",
-      data: {
-        name: "llm",
-        model: "qwen",
-        system_prompt: "你是一个聪明的助手，你可以回答我的任何问题",
-        user_prompt: "",
-      },
-    },
-    {
-      description: "VLM",
-      type: "vlm",
-      data: {
-        name: "vlm",
-        model: "o4-mini",
-        system_prompt: "",
-        user_prompt: "描述一下这张图片",
-        image_url: "",
-      },
-    },
+    startNodeInitData,
+    endNodeInitData,
+    userInputNodeInitData,
+    llmNodeInitData,
+    vlmNodeInitData,
   ];
 
-  const prebuiltAgents = [
-    {
-      description: "React",
-      type: "react_agent",
-      data: { name: "react_agent", model: "qwen2.5", tools: "" },
-    },
-    {
-      description: "Supervisor",
-      type: "supervisor_agent",
-      data: { name: "supervisor_agent", model: "qwen2.5", agents: "" },
-    },
-  ];
+  const prebuiltAgents = [reactAgentNodeInitData, supervisorAgentNodeInitData];
 
   const [selectedEdgeType, setSelectedEdgeType] = useState("default");
   const prebuiltEdges = [
