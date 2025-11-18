@@ -34,7 +34,7 @@ const settings: Settings = {
     enabledPlaceholderText: "请输入信息...",
   },
   fileAttachment: {
-    accept: ".md,.txt,.pdf,.docx,.rar,.zip,.jpg,.png,.jpeg",
+    accept: ".md,.txt,.pdf,.docx,.rar,.zip,.jpg,.png,.jpeg,.xlsx",
   },
 };
 
