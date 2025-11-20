@@ -1,5 +1,5 @@
 import { Handle, Position, NodeResizer } from "@xyflow/react";
-import { Card, CardBody, CardHeader, Form, Input } from "@heroui/react";
+import { Card, CardBody, CardHeader, Form, Input, Textarea } from "@heroui/react";
 
 import {
   KeyInput,
@@ -48,7 +48,7 @@ const DocDowloadNode: React.FC<DocDowloadNodeProps> = ({
               value={data.name}
               onChange={(e) => onDataChange({ ...data, name: e.target.value })}
             />
-            <Input
+            <Textarea
               isRequired
               className="nodrag"
               errorMessage="请输入文档内容"
