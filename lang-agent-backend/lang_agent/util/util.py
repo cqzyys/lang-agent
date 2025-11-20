@@ -38,7 +38,7 @@ def complete_content(content: str, state: dict) -> str:
             for message in messages:
                 if message.name and message.name == node_name[0]:
                     content = content.replace(f"{{{{{key}}}}}", message.content)
-                    return content
+                    break
         else:
             content = content.replace(f"{{{{{key}}}}}", str(state[key]))
     return content
