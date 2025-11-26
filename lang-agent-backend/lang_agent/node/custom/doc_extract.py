@@ -1,6 +1,8 @@
 import traceback
 import base64
 import os
+
+from concurrent.futures import ThreadPoolExecutor
 from typing import Optional, Union
 from pathlib import Path
 import asyncio
@@ -13,6 +15,7 @@ import aiofiles
 from langchain_core.language_models.base import BaseLanguageModel
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.messages import BaseMessage, AIMessage
+from langchain_core.documents import Document
 from langgraph.types import interrupt
 
 from lang_agent.logger import get_logger
@@ -160,20 +163,31 @@ class DocExtractNode(BaseNode):
             raise e
 
     async def _extract_summary(self, dir_path: Path) -> str:
-        extract_list: list[str] = []
-        for f in dir_path.iterdir():
-            #logger.info("file: %s",f.name)
-            docs = await aload_document(
-                str(dir_path/f.name),
-                strategy="fast",
-                languages=["chi_sim", "eng"],
-                chunking_strategy="by_title"
-            )
+        #logger.debug("_extract_summary start, time: %s", time.time())
+        loop = asyncio.get_event_loop()
+        with ThreadPoolExecutor(max_workers=4) as executor:
+            tasks = []
+            file_names: list[str] = []
+            for f in dir_path.iterdir():
+                # 使用线程池执行同步操作
+                task = loop.run_in_executor(
+                    executor,
+                    lambda fp: asyncio.run(
+                        aload_document(fp, strategy="fast", languages=["chi_sim", "eng"], chunking_strategy="by_title")
+                    ),
+                    str(dir_path / f.name)
+                )
+                tasks.append(task)
+                file_names.append(f.name)
+            all_docs: list[list[Document]] = await asyncio.gather(*tasks)
+        # 处理结果
+        extract_list = []
+        for i, docs in enumerate(all_docs):
             content = "\n".join([doc.page_content for doc in docs])
-            #logger.info("content: %s",content)
             extract_message = await self._extract(content)
-            extract_message = "#  "+f.name.split(".")[0]+"\n\n"+extract_message
+            extract_message = "#  " + file_names[i].split(".")[0] + "\n\n" + extract_message
             extract_list.append(extract_message)
+        #logger.debug("_extract_summary end, time: %s", time.time())
         return "\n\n\n\n".join(extract_list)
 
     async def _extract(self, content: str) -> str:
