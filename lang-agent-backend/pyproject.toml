@@ -22,28 +22,20 @@ disallow_untyped_defs = "True"
 python = ">=3.11,<4.0"
 langchain-core = "^0.3.15"
 langchain-openai = "^0.3.8"
-langchain-milvus = "^0.1.8"
+langchain-community = "^0.3.27"
+langchain-experimental = "^0.3.4"
+langchain-mcp-adapters = "^0.1.0"
+langgraph = "^0.6.7"
+langgraph-checkpoint-sqlite = "^2.0.6"
 sqlalchemy = "^2.0.39"
 py-xid = "^1.0.0"
 grandalf = "^0.8"
-langgraph-checkpoint-sqlite = "^2.0.6"
-langchain-mcp-adapters = "^0.1.0"
 nest-asyncio = "^1.6.0"
 aiosqlite = "^0.21.0"
 fastapi = "^0.115.14"
-langchain-community = "^0.3.27"
-pypdf = "^5.8.0"
 nltk = "^3.9.1"
-langchain-unstructured = "^0.1.6"
-unstructured = {extras = ["docx", "pdf"], version = "^0.18.15"}
-langchain-postgres = "^0.0.15"
-langchain-experimental = "^0.3.4"
 colorlog = "^6.9.0"
-langgraph = "^0.6.7"
 patool = "^4.0.1"
-docx2txt = "^0.9"
-openpyxl = "^3.1.5"
-tabulate = "^0.9.0"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "T201"]
@@ -84,9 +76,23 @@ ruff = "^0.5"
 [tool.poetry.group.typing.dependencies]
 mypy = "^1.10"
 
-
 [tool.poetry.group.pg.dependencies]
+langchain-postgres = "^0.0.15"
 psycopg-binary = "^3.2.9"
+
+[tool.poetry.group.milvus.dependencies]
+langchain-milvus = "^0.1.8"
+
+[tool.poetry.group.github.dependencies]
+pygithub = "^2.8.1"
+
+[tool.poetry.group.unstructured.dependencies]
+langchain-unstructured = "^0.1.6"
+unstructured = {extras = ["docx", "pdf"], version = "^0.18.15"}
+pypdf = "^5.8.0"
+docx2txt = "^0.9"
+openpyxl = "^3.1.5"
+tabulate = "^0.9.0"
 
 [[tool.poetry.source]]
 name = "tsinghua"
