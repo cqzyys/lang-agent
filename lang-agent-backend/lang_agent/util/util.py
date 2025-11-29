@@ -112,8 +112,8 @@ def merge_json(a: dict, b: dict) -> dict:
 
 class CommandResult(BaseModel):
     success: bool = Field(default=False, description="命令执行成功与否")
-    stdout: Optional[str] = Field(None, description="命令执行成功时的输出")
-    stderr: Optional[str] = Field(None, description="命令执行失败时的错误信息")
+    data: Optional[str] = Field(None, description="命令执行成功时的输出")
+    error: Optional[str] = Field(None, description="命令执行失败时的错误信息")
 
 def run_command(command) -> CommandResult:
     """
@@ -135,9 +135,9 @@ def run_command(command) -> CommandResult:
     if result.returncode == 0:
         return CommandResult(
             success=True,
-            stdout=result.stdout,
+            data=result.stdout,
         )
     return CommandResult(
         success=False,
-        stderr=result.stderr,
+        error=result.stderr,
     )
