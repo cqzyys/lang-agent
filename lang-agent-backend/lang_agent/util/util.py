@@ -1,14 +1,22 @@
 import asyncio
+import subprocess
 import re
 from collections.abc import Awaitable
-from typing import Any, Callable, List, Set
+from typing import Any, Callable, List, Optional, Set
 
 import nest_asyncio
+
 from langchain_core.messages import BaseMessage
+from pydantic import BaseModel, Field
 
 nest_asyncio.apply()
 
 def parse_args(content: str, state: dict):
+    """
+    解析提示词，使用state中对应的值替换掉提示词中的变量
+    """
+    if not state:
+        return {}
     args = {}
     key_set: Set[str] = set(re.findall(r"{{(.+?)}}", content))
     messages: List[BaseMessage] = list(reversed(state["messages"]))
@@ -30,6 +38,11 @@ def parse_args(content: str, state: dict):
     return args
 
 def complete_content(content: str, state: dict) -> str:
+    """
+    解析文本内容，使用state中对应的值替换掉文本内容中的变量
+    """
+    if not state:
+        return content
     keys: List[str] = re.findall(r"{{(.+?)}}", content)
     messages: List[BaseMessage] = list(reversed(state["messages"]))
     for key in keys:
@@ -44,12 +57,30 @@ def complete_content(content: str, state: dict) -> str:
     return content
 
 def sync_wrapper(coro: Callable[..., Awaitable[Any]]):
+    """
+    将一个协程函数包装为一个同步函数。
+    
+    Args:
+        coro (Callable[..., Awaitable[Any]]): 协程函数
+        
+    Returns:
+        Callable[..., Any]: 同步函数
+    """
     def wrapper(*args, **kwargs):
         return asyncio.run(coro(*args, **kwargs))
 
     return wrapper
 
 def async_run(coro):
+    """
+    异步运行一个协程。
+    
+    Args:
+        coro (Awaitable): 协程对象
+        
+    Returns:
+        Any: 协程的返回值
+    """
     try:
         loop = asyncio.get_event_loop()
     except RuntimeError:
@@ -78,3 +109,35 @@ def merge_json(a: dict, b: dict) -> dict:
         elif isinstance(result[key], dict) and isinstance(value, dict):
             result[key] = merge_json(result[key], value)
     return result
+
+class CommandResult(BaseModel):
+    success: bool = Field(default=False, description="命令执行成功与否")
+    stdout: Optional[str] = Field(None, description="命令执行成功时的输出")
+    stderr: Optional[str] = Field(None, description="命令执行失败时的错误信息")
+
+def run_command(command) -> CommandResult:
+    """
+    运行shell命令并返回结果。
+    
+    Args:
+        command (str): 要运行的shell命令
+        
+    Returns:
+        CommandResult: 命令执行结果
+    """
+    result = subprocess.run(
+        command,
+        shell=True,
+        text=True,
+        capture_output=True,
+        check=False
+    )
+    if result.returncode == 0:
+        return CommandResult(
+            success=True,
+            stdout=result.stdout,
+        )
+    return CommandResult(
+        success=False,
+        stderr=result.stderr,
+    )
