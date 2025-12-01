@@ -138,13 +138,19 @@ def run_command(command:str, cwd:os.PathLike = None) -> CommandResult:
     Returns:
         CommandResult: 命令执行结果
     """
+    env = os.environ.copy()
+    env['PYTHONIOENCODING'] = 'utf-8'
+
     with working_directory(cwd) if cwd else contextlib.nullcontext():
         result = subprocess.run(
             command,
             shell=True,
             text=True,
             capture_output=True,
-            check=False
+            check=False,
+            encoding='utf-8',
+            errors='ignore',
+            env=env
         )
     if result.returncode == 0:
         return CommandResult(
