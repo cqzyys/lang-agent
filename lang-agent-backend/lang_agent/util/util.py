@@ -1,4 +1,6 @@
 import asyncio
+import contextlib
+import os
 import subprocess
 import re
 from collections.abc import Awaitable
@@ -115,23 +117,35 @@ class CommandResult(BaseModel):
     data: Optional[str] = Field(None, description="命令执行成功时的输出")
     error: Optional[str] = Field(None, description="命令执行失败时的错误信息")
 
-def run_command(command) -> CommandResult:
+@contextlib.contextmanager
+def working_directory(cwd:os.PathLike):
+    """上下文管理器，用于临时切换工作目录"""
+    prev_cwd = os.getcwd()
+    os.chdir(cwd)
+    try:
+        yield
+    finally:
+        os.chdir(prev_cwd)
+
+def run_command(command:str, cwd:os.PathLike = None) -> CommandResult:
     """
-    运行shell命令并返回结果。
+    运行命令，并返回命令执行结果。
     
     Args:
-        command (str): 要运行的shell命令
+        command (str): 要运行的命令
+        cwd (os.PathLike, optional): 运行命令的目录。默认为None，表示使用当前目录。
         
     Returns:
         CommandResult: 命令执行结果
     """
-    result = subprocess.run(
-        command,
-        shell=True,
-        text=True,
-        capture_output=True,
-        check=False
-    )
+    with working_directory(cwd) if cwd else contextlib.nullcontext():
+        result = subprocess.run(
+            command,
+            shell=True,
+            text=True,
+            capture_output=True,
+            check=False
+        )
     if result.returncode == 0:
         return CommandResult(
             success=True,
