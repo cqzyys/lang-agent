@@ -9,6 +9,7 @@ from lang_agent.util import (
     parse_json,
     parse_type,
     sync_wrapper,
+    run_command,
 )
 
 
@@ -78,3 +79,9 @@ def test_error_to_str():
 
     he = MockHTTPException()
     assert error_to_str(he) == "Not Found"
+
+def test_run_command():
+    result = run_command("echo Hello World")
+    assert result.success
+    assert result.data.strip().strip("'\"") == "Hello World"
+    assert result.error is None
