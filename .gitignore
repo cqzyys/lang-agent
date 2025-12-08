@@ -9,4 +9,6 @@ coverage/
 .venv
 .gitee/
 log/
+*.bat
+*.sh
 </import>
