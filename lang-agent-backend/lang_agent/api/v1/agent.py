@@ -115,15 +115,10 @@ async def arun_by_agent_id(
     if not agent:
         logger.error("Agent Not Found")
         raise HTTPException(status_code=404, detail=AGENT_NOT_FOUND)
-    try:
-        agent_data = json.loads(agent.data)
-    except json.JSONDecodeError as e:
-        logger.error("Invalid agent data format: %s (Raw data: %s)", e, agent.data)
-        raise HTTPException(status_code=400, detail=INVALID_AGENT_DATA) from e
     return await arun(
         params=AgentRunParams(
             chat_id=chat_id,
-            agent_data=agent_data,
+            agent_data=agent.data,
             state=state,
             agent_name=agent.name
         )
