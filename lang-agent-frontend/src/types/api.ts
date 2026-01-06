@@ -21,7 +21,7 @@ export type Model = {
   type: string;
   name?: string;
   channel: string;
-  model_args?: Record<string, any>;
+  model_args?: string;
   disabled?: boolean;
 };
 
