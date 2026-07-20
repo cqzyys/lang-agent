@@ -10,17 +10,17 @@ integration_test integration_tests: TEST_FILE = tests/integration_tests/
 
 # unit tests are run with the --disable-socket flag to prevent network calls
 test tests:
-	poetry run pytest --disable-socket --allow-unix-socket $(TEST_FILE)
+	uv run --group test pytest --disable-socket --allow-unix-socket $(TEST_FILE)
 
 test_watch:
-	poetry run ptw --snapshot-update --now . -- -vv $(TEST_FILE)
+	uv run --group test ptw --snapshot-update --now . -- -vv $(TEST_FILE)
 
 # integration tests are run without the --disable-socket flag to allow network calls
 integration_test integration_tests:
-	poetry run pytest $(TEST_FILE)
+	uv run --group test pytest $(TEST_FILE)
 
 coverage:
-	poetry run pytest --disable-socket --cov=lang_agent --cov-report=html:${CURDIR}\\htmlcov tests/unit_tests/
+	uv run --group test pytest --disable-socket --cov=lang_agent --cov-report=html:${CURDIR}\\htmlcov tests/unit_tests/
 	@echo "Coverage report generated at ${CURDIR}\\htmlcov\\index.html"
 
 ######################
@@ -37,22 +37,22 @@ lint_tests: PYTHON_FILES=tests
 lint_tests: MYPY_CACHE=.mypy_cache_test
 
 lint lint_diff lint_package lint_tests:
-	[ "$(PYTHON_FILES)" = "" ] || poetry run ruff check $(PYTHON_FILES)
-	[ "$(PYTHON_FILES)" = "" ] || poetry run ruff format $(PYTHON_FILES) --diff
-	[ "$(PYTHON_FILES)" = "" ] || mkdir -p $(MYPY_CACHE) && poetry run mypy $(PYTHON_FILES) --cache-dir $(MYPY_CACHE)
+	[ "$(PYTHON_FILES)" = "" ] || uv run --group lint ruff check $(PYTHON_FILES)
+	[ "$(PYTHON_FILES)" = "" ] || uv run --group lint ruff format $(PYTHON_FILES) --diff
+	[ "$(PYTHON_FILES)" = "" ] || mkdir -p $(MYPY_CACHE) && uv run --group typing mypy $(PYTHON_FILES) --cache-dir $(MYPY_CACHE)
 
 format format_diff:
-	[ "$(PYTHON_FILES)" = "" ] || poetry run ruff format $(PYTHON_FILES)
-	[ "$(PYTHON_FILES)" = "" ] || poetry run ruff check --select I --fix $(PYTHON_FILES)
+	[ "$(PYTHON_FILES)" = "" ] || uv run --group lint ruff format $(PYTHON_FILES)
+	[ "$(PYTHON_FILES)" = "" ] || uv run --group lint ruff check --select I --fix $(PYTHON_FILES)
 
 spell_check:
-	poetry run codespell --toml pyproject.toml
+	uv run --group codespell codespell --toml pyproject.toml
 
 spell_fix:
-	poetry run codespell --toml pyproject.toml -w
+	uv run --group codespell codespell --toml pyproject.toml -w
 
-check_imports: $(shell find langchain_lang_agent -name '*.py')
-	poetry run python ./scripts/check_imports.py $^
+check_imports: $(shell find lang_agent -name '*.py')
+	uv run python ./scripts/check_imports.py $^
 
 ######################
 # HELP

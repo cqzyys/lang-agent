@@ -1,41 +1,77 @@
-[build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
-
-[tool.poetry]
+[project]
 name = "lang-agent"
 version = "0.1.0"
 description = "Agents system using LangGraph"
-authors = []
-readme = "README.md"
-repository = "https://github.com/cqzyys/lang-agent"
-license = "Apache-2.0 License"
+license = { text = "Apache-2.0" }
+requires-python = ">=3.11,<4.0"
+authors = [{ name = "andyz" }]
+dependencies = [
+    "langchain-core>=0.3.15,<0.4.0",
+    "langchain-openai>=0.3.8,<0.4.0",
+    "langchain-community>=0.3.27,<0.4.0",
+    "langchain-experimental>=0.3.4,<0.4.0",
+    "langchain-mcp-adapters>=0.1.0,<0.2.0",
+    "langgraph>=0.6.7,<0.7.0",
+    "langgraph-checkpoint-sqlite>=2.0.6,<3.0.0",
+    "sqlalchemy>=2.0.39,<3.0.0",
+    "py-xid>=1.0.0,<2.0.0",
+    "grandalf>=0.8,<0.9",
+    "nest-asyncio>=1.6.0,<2.0.0",
+    "aiosqlite>=0.21.0,<0.22.0",
+    "aiofiles>=22.1.0,<26.0.0",
+    "fastapi>=0.115.14,<0.116.0",
+    "nltk>=3.9.1,<4.0.0",
+    "colorlog>=6.9.0,<7.0.0",
+    "patool>=4.0.1,<5.0.0",
+]
+
+[project.urls]
+Repository = "https://github.com/cqzyys/lang-agent"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["lang_agent"]
+
+[dependency-groups]
+test = [
+    "pytest>=7.4.3,<8.0.0",
+    "pytest-asyncio>=0.23.2,<0.24.0",
+    "pytest-socket>=0.7.0,<0.8.0",
+    "pytest-watcher>=0.3.4,<0.4.0",
+    "langchain-tests>=0.3.5,<0.4.0",
+    "pytest-cov>=6.2.1,<7.0.0",
+]
+codespell = ["codespell>=2.2.6,<3.0.0"]
+lint = ["ruff>=0.5,<0.6"]
+typing = ["mypy>=1.10,<2.0"]
+pg = [
+    "langchain-postgres>=0.0.15,<0.0.16",
+    "psycopg-binary>=3.2.9,<4.0.0",
+]
+milvus = ["langchain-milvus>=0.1.8,<0.2.0"]
+github = ["pygithub>=2.8.1,<3.0.0"]
+unstructured = [
+    "langchain-unstructured>=0.1.6,<0.2.0",
+    "unstructured[docx,pdf]>=0.18.15,<0.19.0",
+    "pypdf>=5.8.0,<6.0.0",
+    "docx2txt>=0.9,<0.10",
+    "openpyxl>=3.1.5,<4.0.0",
+    "tabulate>=0.9.0,<0.10.0",
+]
+
+[tool.uv]
+default-groups = []
+
+[[tool.uv.index]]
+name = "tsinghua"
+url = "https://pypi.tuna.tsinghua.edu.cn/simple/"
+default = true
 
 [tool.mypy]
 disallow_untyped_defs = "True"
-
-[tool.poetry.urls]
-"Source Code" = ""
-"Release Notes" = ""
-
-[tool.poetry.dependencies]
-python = ">=3.11,<4.0"
-langchain-core = "^0.3.15"
-langchain-openai = "^0.3.8"
-langchain-community = "^0.3.27"
-langchain-experimental = "^0.3.4"
-langchain-mcp-adapters = "^0.1.0"
-langgraph = "^0.6.7"
-langgraph-checkpoint-sqlite = "^2.0.6"
-sqlalchemy = "^2.0.39"
-py-xid = "^1.0.0"
-grandalf = "^0.8"
-nest-asyncio = "^1.6.0"
-aiosqlite = "^0.21.0"
-fastapi = "^0.115.14"
-nltk = "^3.9.1"
-colorlog = "^6.9.0"
-patool = "^4.0.1"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "T201"]
@@ -49,52 +85,3 @@ markers = [
     "compile: mark placeholder test used to compile integration tests without running them",
 ]
 asyncio_mode = "auto"
-
-[tool.poetry.group.test]
-optional = true
-
-[tool.poetry.group.codespell]
-optional = true
-
-[tool.poetry.group.lint]
-optional = true
-
-[tool.poetry.group.test.dependencies]
-pytest = "^7.4.3"
-pytest-asyncio = "^0.23.2"
-pytest-socket = "^0.7.0"
-pytest-watcher = "^0.3.4"
-langchain-tests = "^0.3.5"
-pytest-cov = "^6.2.1"
-
-[tool.poetry.group.codespell.dependencies]
-codespell = "^2.2.6"
-
-[tool.poetry.group.lint.dependencies]
-ruff = "^0.5"
-
-[tool.poetry.group.typing.dependencies]
-mypy = "^1.10"
-
-[tool.poetry.group.pg.dependencies]
-langchain-postgres = "^0.0.15"
-psycopg-binary = "^3.2.9"
-
-[tool.poetry.group.milvus.dependencies]
-langchain-milvus = "^0.1.8"
-
-[tool.poetry.group.github.dependencies]
-pygithub = "^2.8.1"
-
-[tool.poetry.group.unstructured.dependencies]
-langchain-unstructured = "^0.1.6"
-unstructured = {extras = ["docx", "pdf"], version = "^0.18.15"}
-pypdf = "^5.8.0"
-docx2txt = "^0.9"
-openpyxl = "^3.1.5"
-tabulate = "^0.9.0"
-
-[[tool.poetry.source]]
-name = "tsinghua"
-url = "https://pypi.tuna.tsinghua.edu.cn/simple/"
-
